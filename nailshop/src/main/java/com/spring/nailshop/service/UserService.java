@@ -1,10 +1,15 @@
 package com.spring.nailshop.service;
 
-import lombok.RequiredArgsConstructor;
+import com.spring.nailshop.dto.request.UserCreationRequest;
+import com.spring.nailshop.dto.response.UserResponse;
+import com.spring.nailshop.entity.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 public interface UserService {
- UserDetailsService userDetailsService();
+    List<UserResponse> getAllUsers();
+
+    User createUser(UserCreationRequest request);
 }

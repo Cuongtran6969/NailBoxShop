@@ -36,6 +36,7 @@ public class ApplicationInitConfig {
             havingValue = "com.mysql.cj.jdbc.Driver"
     )
     ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository) {
+        log.info("Initializing application.....");
         return args -> {
             if(roleRepository.findByName(PredefinedRole.ADMIN_ROLE).isEmpty()) {
                 roleRepository.save(Role.builder()
@@ -61,7 +62,9 @@ public class ApplicationInitConfig {
                 User user = User.builder()
                         .email(ADMIN_USER_NAME)
                         .password(passwordEncoder.encode(ADMIN_PASSWORD))
-                        .userName("Cuong")
+                        .firstName("Tran")
+                        .lastName("Cuong")
+                        .name("Tran Cuong")
                         .phone("0383459560")
                         .role(roleAdmin)
                         .build();

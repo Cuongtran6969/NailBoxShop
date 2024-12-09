@@ -25,8 +25,14 @@ public class User extends AbstractEntity<Long>{
     @Column(name = "password")
     private String password;
 
-    @Column(name = "user_name", nullable = false)
-    private String userName;
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
 
     @Column(name = "avatar")
     private String avatar;

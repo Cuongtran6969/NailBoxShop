@@ -7,11 +7,10 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class TokenResponse {
-    String accessToken;
+    private String accessToken;
 
-    String refreshToken;
+    private String refreshToken;
 
-    long userId;
+    private long userId;
 }

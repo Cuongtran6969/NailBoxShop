@@ -1,7 +1,7 @@
 package com.spring.nailshop.configuration;
 
+import com.spring.nailshop.security.UserSecurityDetails;
 import com.spring.nailshop.service.UserService;
-import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +19,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @RequiredArgsConstructor
 public class AppConfig {
-    private final UserService userService;
+
+    private final UserSecurityDetails userSecurityDetails;
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
@@ -29,7 +30,7 @@ public class AppConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userService.userDetailsService());
+        provider.setUserDetailsService(userSecurityDetails);
         provider.setPasswordEncoder(getPasswordEncoder());
         return provider;
     }

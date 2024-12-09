@@ -37,6 +37,18 @@ public class JwtServiceImpl implements JwtService {
     public String generateRefreshToken(UserDetails userDetails) {
         return generateRefreshToken(new HashMap<>(), userDetails);
     }
+
+    @Override
+    public String extractUsername(String token, TokenType type) {
+        return extractClaims(token, type, Claims::getSubject);
+    }
+
+    @Override
+    public boolean isValid(String token, TokenType type, UserDetails user) {
+       String username = extractUsername(token, type);
+       return (username.equals(user.getUsername()) && !isTokenExpired(token, type));
+    }
+
     private String generateToken(Map<String, Object> claims, UserDetails userDetails) {
         return Jwts.builder()
                 .setClaims(claims)//thong tin bi mat khong public (ma hoa thong tin)
