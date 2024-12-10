@@ -1,13 +1,20 @@
 package com.spring.nailshop.service.impl;
 
 import com.spring.nailshop.dto.request.AuthenticationRequest;
+import com.spring.nailshop.dto.request.LogoutRequest;
+import com.spring.nailshop.dto.request.RefreshTokenRequest;
 import com.spring.nailshop.dto.response.TokenResponse;
 import com.spring.nailshop.entity.Token;
 import com.spring.nailshop.entity.User;
+import com.spring.nailshop.exception.AppException;
+import com.spring.nailshop.exception.ErrorCode;
+import com.spring.nailshop.exception.InvalidTokenException;
+import com.spring.nailshop.model.RedisToken;
 import com.spring.nailshop.repository.UserRepository;
 import com.spring.nailshop.security.UserSecurity;
 import com.spring.nailshop.service.JwtService;
 import com.spring.nailshop.service.JwtTokenService;
+import com.spring.nailshop.service.RedisTokenService;
 import com.spring.nailshop.util.TokenType;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
@@ -34,6 +41,8 @@ public class AuthenticationService {
 
     JwtTokenService jwtTokenService;
 
+    RedisTokenService redisTokenService;
+
     private final AuthenticationManager authenticationManager;
 
     public TokenResponse authenticate(AuthenticationRequest request) {
@@ -47,8 +56,8 @@ public class AuthenticationService {
         var refreshToken = jwtService.generateRefreshToken(userSecurity);
 
 
-        jwtTokenService.save(Token.builder()
-                        .user(user)
+        redisTokenService.save(RedisToken.builder()
+                        .id(user.getEmail())
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
                 .build());
@@ -59,30 +68,40 @@ public class AuthenticationService {
                 .userId(user.getId())
                 .build();
     }
-    public TokenResponse refresh(HttpServletRequest request) {
-        String refreshToken = request.getHeader("x-token");
+    public TokenResponse refresh(RefreshTokenRequest request) {
+        String refreshToken = request.getToken();
         if(StringUtils.isBlank(refreshToken)) {
-            System.out.println("Refresh token is empty");
-            //throw ex
+            throw new AppException(ErrorCode.INVALID_TOKEN);
         }
         final String userName = jwtService.extractUsername(refreshToken, TokenType.REFRESH_TOKEN);
-        Optional<User> user = userRepository.findByEmail(userName);
-        UserSecurity userSecurity = new UserSecurity(user.get());
+        User user = userRepository.findByEmail(userName)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        UserSecurity userSecurity = new UserSecurity(user);
+
         if(!jwtService.isValid(refreshToken, TokenType.REFRESH_TOKEN, userSecurity)) {
-            System.out.println("Refresh invalid");
-            //throw ex
+            throw new InvalidTokenException();
         }
         String accessToken = jwtService.generateToken(userSecurity);
+        redisTokenService.save(RedisToken.builder()
+                .id(user.getEmail())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build());
 
         return TokenResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .userId(user.get().getId())
+                .userId(user.getId())
                 .build();
     }
 
-    public String logout(HttpServletRequest request) {
-        return null;
+    public void logout(LogoutRequest request) {
+        String logoutToken = request.getToken();
+        if(StringUtils.isBlank(logoutToken)) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
+        final String userName = jwtService.extractUsername(logoutToken, TokenType.ACCESS_TOKEN);
+        redisTokenService.delete(userName);
     }
 
     public String forgetPassword(HttpServletRequest request) {
