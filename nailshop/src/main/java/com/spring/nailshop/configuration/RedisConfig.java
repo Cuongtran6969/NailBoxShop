@@ -1,5 +1,6 @@
 package com.spring.nailshop.configuration;
 
+import com.spring.nailshop.model.RedisToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -31,8 +32,8 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate() {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
+    public RedisTemplate<String, ?> redisTemplate() {
+        RedisTemplate<String, ?> template = new RedisTemplate<>();
         template.setConnectionFactory(jedisConnectionFactory());
         log.info("Redis connected !");
         return template;

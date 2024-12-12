@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OtpService {
-    RedisTemplate<String, Object> redisTemplate;
+    RedisTemplate<String, String> redisTemplate;
 
     public void saveOtp(String email, String otp) {
         redisTemplate.opsForValue().set(email, otp, 5, TimeUnit.MINUTES);

@@ -1,5 +1,6 @@
 package com.spring.nailshop.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,5 +21,6 @@ public class Role extends AbstractEntity<Long> {
     private String description;
 
     @OneToMany(mappedBy = "role")
+    @JsonIgnore
     private Set<User> users;
 }

@@ -39,23 +39,8 @@ public class UserController {
        apiResponse.setResult(userService.getAllUsers());
        return apiResponse;
     }
-    @PostMapping("/register")
-    public ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request,
-                                                @RequestParam String otp) {
-        var result = userService.createUser(request, otp);
-        return ApiResponse.<UserResponse>builder()
-                .result(result)
-                .code(HttpStatus.CREATED.value())
-                .build();
-    }
 
-    @PostMapping("/send-otp-register")
-    public ApiResponse<Void> sendOtpRegister(@RequestBody EmailRequest request)
-            throws MessagingException, UnsupportedEncodingException {
-        userService.sendOtpRegister(request);
-        return ApiResponse.<Void>builder()
-                .code(HttpStatus.OK.value())
-                .message("Send Otp Successfully")
-                .build();
-    }
+
+
+
 }

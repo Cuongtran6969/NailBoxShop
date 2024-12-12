@@ -1,6 +1,8 @@
 package com.spring.nailshop.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.spring.nailshop.dto.request.AuthenticationRequest;
+import com.spring.nailshop.dto.request.EmailRequest;
 import com.spring.nailshop.dto.request.LogoutRequest;
 import com.spring.nailshop.dto.request.RefreshTokenRequest;
 import com.spring.nailshop.dto.response.TokenResponse;
@@ -68,6 +70,7 @@ public class AuthenticationService {
                 .userId(user.getId())
                 .build();
     }
+
     public TokenResponse refresh(RefreshTokenRequest request) {
         String refreshToken = request.getToken();
         if(StringUtils.isBlank(refreshToken)) {
@@ -101,10 +104,14 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.INVALID_TOKEN);
         }
         final String userName = jwtService.extractUsername(logoutToken, TokenType.ACCESS_TOKEN);
-        redisTokenService.delete(userName);
+        redisTokenService.remove(userName);
     }
 
     public String forgetPassword(HttpServletRequest request) {
         return null;
+    }
+
+    public String getOtp(EmailRequest request) {
+        return redisTokenService.getById(request.getEmail()).getAccessToken();
     }
 }
