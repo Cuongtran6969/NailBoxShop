@@ -24,7 +24,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequestMapping("/user")
+@RequestMapping("/users")
 @Tag(name = "User Controller")
 @Slf4j
 @Validated
@@ -32,14 +32,16 @@ public class UserController {
 
     UserService userService;
 
-    @GetMapping("/list")
-    public ApiResponse<List<UserResponse>> getUsers() {
-       ApiResponse<List<UserResponse>> apiResponse = new ApiResponse<>();
-       apiResponse.setCode(100);
-       apiResponse.setResult(userService.getAllUsers());
-       return apiResponse;
-    }
 
+
+
+    @GetMapping("/info/{userId}")
+    public ApiResponse<UserResponse> getUserInfo(@PathVariable Long userId) {
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(userService.getUserInfo(userId));
+        return apiResponse;
+    }
 
 
 

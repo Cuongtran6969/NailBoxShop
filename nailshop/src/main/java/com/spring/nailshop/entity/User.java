@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import javax.naming.Name;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -50,4 +51,7 @@ public class User extends AbstractEntity<Long>{
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+    private Set<Address> addresses;
 }

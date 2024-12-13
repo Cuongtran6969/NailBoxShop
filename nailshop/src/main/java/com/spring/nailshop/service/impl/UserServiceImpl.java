@@ -69,6 +69,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserResponse getUserInfo(Long userId) {
+        return userMapper.toUserResponse(userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+    }
+
+    @Override
     public void sendOtpRegister(EmailRequest request)
             throws MessagingException, UnsupportedEncodingException {
         String otp = generateOtp();

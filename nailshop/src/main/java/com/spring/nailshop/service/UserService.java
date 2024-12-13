@@ -16,5 +16,7 @@ public interface UserService {
 
     UserResponse createUser(UserCreationRequest request, String otp);
 
+    UserResponse getUserInfo(Long userId);
+
     void sendOtpRegister(EmailRequest request) throws MessagingException, UnsupportedEncodingException;
 }
