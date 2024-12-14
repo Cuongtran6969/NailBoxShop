@@ -16,6 +16,9 @@ public enum ErrorCode {
     INVALID_OTP(400, "OTP is invalid or expired", HttpStatus.BAD_REQUEST),
     INVALID_TOKEN(400, "OTP is invalid or expired", HttpStatus.BAD_REQUEST),
     UNAUTHENTICATED(401, "You need to log in to perform this action.", HttpStatus.UNAUTHORIZED),
+    CATEGORIES_EXISTED(400, "Category existed", HttpStatus.BAD_REQUEST),
+    CATEGORIES_NOT_EXISTED(400, "Category not existed", HttpStatus.BAD_REQUEST),
+    INVALID_DESIGN(400, "Need provide enough image for design", HttpStatus.BAD_REQUEST),
     ;
     private int code;
     private String message;

@@ -3,21 +3,29 @@ package com.spring.nailshop.service.impl;
 import com.spring.nailshop.constant.PredefinedRole;
 import com.spring.nailshop.dto.request.EmailRequest;
 import com.spring.nailshop.dto.request.UserCreationRequest;
+import com.spring.nailshop.dto.request.UserUpdateRequest;
 import com.spring.nailshop.dto.response.UserResponse;
+import com.spring.nailshop.dto.response.UserUpdateResponse;
 import com.spring.nailshop.entity.Role;
 import com.spring.nailshop.entity.User;
 import com.spring.nailshop.exception.AppException;
 import com.spring.nailshop.exception.ErrorCode;
+import com.spring.nailshop.mapper.ProfileMapper;
 import com.spring.nailshop.mapper.UserMapper;
 import com.spring.nailshop.repository.RoleRepository;
 import com.spring.nailshop.repository.UserRepository;
+import com.spring.nailshop.service.CloudinaryService;
 import com.spring.nailshop.service.MailService;
 import com.spring.nailshop.service.OtpService;
 import com.spring.nailshop.service.UserService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -25,11 +33,14 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
     private final UserMapper userMapper;
+
+    private final ProfileMapper profileMapper;
 
     private final RoleRepository roleRepository;
 
@@ -39,6 +50,9 @@ public class UserServiceImpl implements UserService {
 
     private final OtpService otpService;
 
+    private final CloudinaryService cloudinaryService;
+
+
     @Override
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll()
@@ -47,7 +61,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse createUser(UserCreationRequest request, String otp) {
-        if(userRepository.findByEmail(request.getEmail()).isPresent()) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
         //check otp
@@ -62,7 +76,7 @@ public class UserServiceImpl implements UserService {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(role);
-        user.setName(request.getFirstName() +" "+request.getLastName());
+        user.setName(request.getFirstName() + " " + request.getLastName());
         userRepository.save(user);
         otpService.deleteOtp(request.getEmail());
         return userMapper.toUserResponse(user);
@@ -105,10 +119,27 @@ public class UserServiceImpl implements UserService {
         mailService.sendMail(List.of(request.getEmail()), subject, emailContent, null);
     }
 
-    private static String generateOtp(){
+    @Override
+    public UserUpdateResponse updateUser(UserUpdateRequest request, MultipartFile file) {
+        SecurityContext contextHolder = SecurityContextHolder.getContext();
+        String email = contextHolder.getAuthentication().getName();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        profileMapper.updateUser(request, user);
+        if (file != null && !file.isEmpty()) {
+            String avatar = cloudinaryService.uploadImage(file);
+            user.setAvatar(avatar);
+        }
+        user.setName(request.getFirstName() + " " + request.getLastName());
+        userRepository.save(user);
+        log.info("User profile updated successfully for user with email: {}", email);
+        return profileMapper.toUserUpdateResponse(user);
+    }
+
+    private static String generateOtp() {
         Random random = new Random();
         StringBuilder otp = new StringBuilder();
-        for(int i = 0; i < 6 ; i++){
+        for (int i = 0; i < 6; i++) {
             otp.append(random.nextInt(10));
         }
         return otp.toString();

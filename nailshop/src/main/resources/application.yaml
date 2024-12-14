@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost:3306/nailShop"
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+    username: root
+    password: 123456789
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 200MB
+      max-request-size: 200MB
+      file-size-threshold: 2KB

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import static com.spring.nailshop.repository.specification.SearchOperation.*;
 @Slf4j
-public final  class UserSpecificationsBuilder {
+public final class UserSpecificationsBuilder {
 
     public final List<SpecSearchCriteria> params;
 

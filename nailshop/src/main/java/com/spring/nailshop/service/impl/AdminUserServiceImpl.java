@@ -34,7 +34,6 @@ public class AdminUserServiceImpl implements AdminUserService {
     public PageResponse<?> advanceSearchWithSpecifications(Pageable pageable, String[] user, String[] address) {
         log.info("user: {}, address: {}", user, address);
         if (user != null && address != null) {
-            //find join
             return searchRepository.searchUserByCriteriaWithJoin(pageable, user, address);
 
         } else if (user != null) {
@@ -45,7 +44,7 @@ public class AdminUserServiceImpl implements AdminUserService {
                 Matcher matcher = pattern.matcher(u);
                 if (matcher.find()) {
                     builder.with(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5));
-                } //api: name:cuong** = name:*cuong*
+                }
             }
             Page<User> users = userRepository.findAll(Objects.requireNonNull(builder.build()), pageable);
             return convertToPageResponse(users, pageable);
