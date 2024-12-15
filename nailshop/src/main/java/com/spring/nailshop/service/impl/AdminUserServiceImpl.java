@@ -3,6 +3,8 @@ package com.spring.nailshop.service.impl;
 import com.spring.nailshop.dto.response.PageResponse;
 import com.spring.nailshop.dto.response.UserResponse;
 import com.spring.nailshop.entity.User;
+import com.spring.nailshop.exception.AppException;
+import com.spring.nailshop.exception.ErrorCode;
 import com.spring.nailshop.mapper.UserMapper;
 import com.spring.nailshop.repository.SearchRepository;
 import com.spring.nailshop.repository.UserRepository;
@@ -50,6 +52,32 @@ public class AdminUserServiceImpl implements AdminUserService {
             return convertToPageResponse(users, pageable);
         }
         return convertToPageResponse(userRepository.findAll(pageable), pageable);
+    }
+
+    @Override
+    public void banUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        if (user.getEnabled() != null && !user.getEnabled()) {
+            throw new AppException(ErrorCode.USER_ALREADY_BANNED);
+        }
+
+        user.setEnabled(false); // Vô hiệu hóa tài khoản
+        userRepository.save(user);
+    }
+
+    @Override
+    public void unBanUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        if (user.getEnabled() != null && user.getEnabled()) {
+            throw new AppException(ErrorCode.USER_NOT_BANNED);
+        }
+
+        user.setEnabled(true); // Kích hoạt lại tài khoản
+        userRepository.save(user);
     }
 
     private PageResponse<?> convertToPageResponse(Page<User> users, Pageable pageable) {

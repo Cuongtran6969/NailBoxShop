@@ -1,12 +1,15 @@
 package com.spring.nailshop.controller.admin;
 
+import com.spring.nailshop.dto.request.ProductStatusRequest;
 import com.spring.nailshop.dto.response.ApiResponse;
 import com.spring.nailshop.dto.response.PageResponse;
+import com.spring.nailshop.dto.response.ProductResponse;
 import com.spring.nailshop.dto.response.UserResponse;
 import com.spring.nailshop.entity.User;
 import com.spring.nailshop.service.AdminUserService;
 import com.spring.nailshop.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -17,10 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -47,5 +47,21 @@ public class AdminUserController {
         apiResponse.setResult(pageResponse);
         apiResponse.setMessage("Get List Of User");
         return apiResponse;
+    }
+
+    @PutMapping("/ban/{userId}")
+    public ResponseEntity<String> banUser(
+            @PathVariable Long userId
+    ) {
+        adminUserService.banUser(userId);
+        return ResponseEntity.ok("User banned successfully");
+    }
+
+    @PutMapping("/unban/{userId}")
+    public ResponseEntity<String> unbanUser(
+            @PathVariable Long userId
+    ) {
+        adminUserService.banUser(userId);
+        return ResponseEntity.ok("User unbanned successfully");
     }
 }

@@ -1,12 +1,10 @@
 package com.spring.nailshop.entity;
 
-import com.spring.nailshop.util.UserStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import javax.naming.Name;
 import java.util.Set;
 
 @Getter
@@ -44,9 +42,8 @@ public class User extends AbstractEntity<Long>{
     @Column(name = "point", columnDefinition = "BIGINT DEFAULT 0")
     private Long points;
 
-    @Column(name = "status")
-    @Enumerated(EnumType.STRING)
-    private UserStatus status;
+    @Column(name = "enabled")
+    Boolean enabled;//false = ban
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)

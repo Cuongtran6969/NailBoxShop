@@ -1,0 +1,30 @@
+@import "@styles/mixin.module.scss";
+@import "@styles/variables.module.scss";
+
+.container {
+    position: relative;
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #0000004d;
+        z-index: 1000;
+        transition: all 0.3s ease;
+    }
+    .sideBar {
+        position: fixed;
+        width: 350px;
+        top: 0;
+        right: 0;
+        height: 100vh;
+        background-color: red;
+        z-index: 1001;
+        transform: translateX(350px);
+        transition: all 0.3s ease;
+    }
+    .slideSideBar {
+        transform: translateX(0);
+    }
+}

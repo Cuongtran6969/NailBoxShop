@@ -6,4 +6,8 @@ import org.springframework.data.domain.Pageable;
 
 public interface AdminUserService {
     PageResponse<?> advanceSearchWithSpecifications(Pageable pageable, String[] user, String[] address);
+
+    void banUser(Long userId);
+
+    void unBanUser(Long userId);
 }

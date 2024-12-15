@@ -2,6 +2,8 @@ package com.spring.nailshop.service;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.spring.nailshop.exception.AppException;
+import com.spring.nailshop.exception.ErrorCode;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,6 +32,14 @@ public class CloudinaryService {
             return data.get("secure_url").toString();
         }catch (IOException io){
             throw new RuntimeException("Image upload fail");
+        }
+    }
+
+    public void deleteImage(String secure_url) {
+        try {
+            this.cloudinary.uploader().destroy(secure_url, Map.of());
+        } catch (IOException e) {
+            throw new AppException(ErrorCode.FAIL_DELETE_CLOUDINARY);
         }
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatusCode;
 public enum ErrorCode {
     USER_EXISTED(400, "User existed", HttpStatus.BAD_REQUEST),
     USER_NOT_EXISTED(404, "User not existed", HttpStatus.NOT_FOUND),
+    USER_NOT_BANNED(400, "User is not banned", HttpStatus.BAD_REQUEST),
     ROLE_NOT_EXISTED(400, "Role not existed", HttpStatus.NOT_FOUND),
     FIRST_NAME_NOT_BLANK(400, "First name is mandatory", HttpStatus.BAD_REQUEST),
     LAST_NAME_NOT_BLANK(400, "Last name is mandatory", HttpStatus.BAD_REQUEST),
@@ -19,6 +20,10 @@ public enum ErrorCode {
     CATEGORIES_EXISTED(400, "Category existed", HttpStatus.BAD_REQUEST),
     CATEGORIES_NOT_EXISTED(400, "Category not existed", HttpStatus.BAD_REQUEST),
     INVALID_DESIGN(400, "Need provide enough image for design", HttpStatus.BAD_REQUEST),
+    DESIGN_NOT_EXISTED(400, "Design not exist", HttpStatus.BAD_REQUEST),
+    FAIL_DELETE_CLOUDINARY(400, "Fail to delete file", HttpStatus.BAD_REQUEST),
+    PRODUCT_ID_INVALID(404, "Product not found", HttpStatus.NOT_FOUND),
+    USER_ALREADY_BANNED(400, "User is already banned", HttpStatus.BAD_REQUEST),
     ;
     private int code;
     private String message;

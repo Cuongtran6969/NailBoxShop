@@ -2,6 +2,7 @@ package com.spring.nailshop.service.impl;
 
 import com.spring.nailshop.dto.request.DesignRequest;
 import com.spring.nailshop.dto.request.ProductRequest;
+import com.spring.nailshop.dto.request.ProductStatusRequest;
 import com.spring.nailshop.dto.response.ProductResponse;
 import com.spring.nailshop.entity.Category;
 import com.spring.nailshop.entity.Design;
@@ -82,5 +83,22 @@ public class AdminProductServiceImpl implements AdminProductService {
         productRepository.save(product);
         return productMapper.toProductResponse(product);
     }
+
+    @Override
+    public String deleteProductDesign(long designId) {
+        var design = designRepository.findById(designId).orElseThrow(() -> new AppException(ErrorCode.DESIGN_NOT_EXISTED));
+        designRepository.delete(design);
+        cloudinaryService.deleteImage(design.getPicture());
+        return design.getName();
+    }
+
+    @Override
+    public void updateProductStatus(ProductStatusRequest request) {
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_ID_INVALID));
+        product.setIsActive(request.getStatus());
+        productRepository.save(product);
+    }
+
 
 }
