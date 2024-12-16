@@ -1,0 +1,44 @@
+@import "@styles/mixin.module.scss";
+@import "@styles/variables.module.scss";
+.saleTitle {
+    font-size: 24px;
+    font-weight: 400;
+    color: $thr_color;
+}
+.saleContainer {
+    background-color: $white_color;
+    border-radius: 15px;
+    overflow: hidden;
+    .saleHeader {
+        padding: 10px;
+        // width: 30%;
+        @include flex_box_custom(space-between, center, 0px);
+        .saleHeaderConent {
+            @include flex_box_custom(start, center, 0px);
+            .saleHeaderText {
+                font-size: 16px;
+            }
+            .saleTimeBox {
+                @include flex_box_custom(end, center, 0px);
+                .saleTimeText {
+                    font-size: 18px;
+                    color: $color_line;
+                    margin-right: 15px;
+                }
+            }
+        }
+        .saleHeaderButton {
+            border: 1px solid $color_line;
+            color: $color_line;
+            background-color: transparent;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 5px;
+            padding: 10px;
+        }
+    }
+    .listProduct {
+        border-top: 1px solid $color_border;
+        padding: 25px 10px 50px;
+    }
+}

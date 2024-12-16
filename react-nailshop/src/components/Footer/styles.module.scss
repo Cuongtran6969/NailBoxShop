@@ -1,0 +1,101 @@
+@import "@styles/mixin.module.scss";
+@import "@styles/variables.module.scss";
+
+.footer {
+    background-color: rgba(219, 84, 161, 0.658);
+    color: $white_color;
+    margin-top: 100px;
+    padding: 40px 0;
+    border-top-left-radius: 250px;
+    font-family: Arial, sans-serif;
+
+    .footerMain {
+        .footerTitle {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        .footerSubTitle {
+            font-size: 0.8rem;
+            color: $white_color;
+            margin-bottom: 20px;
+        }
+        .emailInput {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+
+            .inputField {
+                width: 100%;
+                padding: 15px 40px 15px 10px;
+                border: none;
+                border-radius: 20px;
+                background: #222;
+                color: $white_color;
+            }
+            .sendBtn {
+                position: absolute;
+                top: 50%;
+                right: 10px;
+                transform: translateY(-50%);
+                background: transparent;
+                border: none;
+                color: #ff00aa;
+                font-size: 1.2rem;
+                cursor: pointer;
+            }
+        }
+    }
+
+    .footerImage {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .footerImg {
+            max-width: 60%;
+            height: 270px;
+        }
+    }
+
+    .footerInfo {
+        margin-top: 40px;
+        font-size: 0.9rem;
+
+        ul {
+            list-style: none;
+            padding: 0;
+            li {
+                margin-bottom: 5px;
+                cursor: pointer;
+            }
+        }
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            color: #db2ba1;
+            img {
+                width: 30%;
+                margin-right: 20px;
+                border-radius: 50%;
+                border: 1px solid #db2ba1;
+            }
+        }
+        .socialIcons {
+            margin-top: 10px;
+            display: flex;
+            width: 40%;
+            justify-content: space-between;
+            a {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                background-color: $white_color;
+                width: 40px;
+                height: 40px;
+                text-decoration: none;
+                color: $primary_color;
+            }
+        }
+    }
+}
