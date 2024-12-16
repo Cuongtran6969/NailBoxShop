@@ -1,0 +1,51 @@
+.container {
+    padding: 30px 20px 0 20px;
+
+    .title {
+        font-size: 18px;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .boxRememberMe {
+        margin-bottom: 30px;
+
+        input {
+            margin-right: 10px;
+        }
+
+        span {
+            font-size: 14px;
+        }
+    }
+
+    .lostbtn {
+        margin-top: 20px;
+        text-align: left;
+        font-size: 12px;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
+    .loginButton {
+        width: 100%;
+        padding: 12px 0;
+        background-color: pink;
+        color: #fff;
+        text-transform: uppercase;
+        text-align: center;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+            background-color: #b8265c;
+        }
+    }
+
+}

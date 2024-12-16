@@ -6,6 +6,8 @@ import { MdSearch } from "react-icons/md";
 import { BiFontSize } from "react-icons/bi";
 import { FaUser } from "react-icons/fa";
 import { IoCart } from "react-icons/io5";
+import { useContext } from "react";
+import { SideBarContext } from '@/contexts/SideBarProvider';
 
 function Header() {
     const {
@@ -19,6 +21,10 @@ function Header() {
         headerNavUser,
         headerNavCart
     } = styles;
+
+    const { isOpen, setIsOpen } = useContext(SideBarContext);
+    // console.log(isOpen);
+
     return (
         <>
             <div className={headerText}>
@@ -37,6 +43,7 @@ function Header() {
                                         type={item.type}
                                         href={item.href}
                                     />
+
                                 );
                             })}
                         </div>
@@ -50,7 +57,7 @@ function Header() {
                         </div>
                     </div>
                     <div className={conatinerBoxIcon}>
-                        <FaUser className={headerNavUser} />
+                        <FaUser className={headerNavUser} onClick={() => setIsOpen(!isOpen)} />
                         <IoCart className={headerNavCart} />
                     </div>
                 </div>
