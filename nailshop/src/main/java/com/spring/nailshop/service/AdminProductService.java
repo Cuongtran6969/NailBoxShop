@@ -3,6 +3,7 @@ package com.spring.nailshop.service;
 import com.spring.nailshop.dto.request.ProductRequest;
 import com.spring.nailshop.dto.request.ProductStatusRequest;
 import com.spring.nailshop.dto.response.ProductResponse;
+import com.spring.nailshop.entity.Product;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface AdminProductService {
    String deleteProductDesign(long designId);
 
    void updateProductStatus(ProductStatusRequest request);
+
+   ProductResponse getProductDetail(Long id);
 }

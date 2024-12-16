@@ -100,5 +100,12 @@ public class AdminProductServiceImpl implements AdminProductService {
         productRepository.save(product);
     }
 
+    @Override
+    public ProductResponse getProductDetail(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_ID_INVALID));
+        return productMapper.toProductResponse(product);
+    }
+
 
 }
