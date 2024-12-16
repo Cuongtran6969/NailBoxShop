@@ -6,6 +6,8 @@ import { FaEyeSlash } from "react-icons/fa";
 function InputCommon({ label, type, isRequired = false }) {
 
     const [showPassword, setShowPassword] = useState(false);
+    const [isRegister, setIsRegister] = useState(false);
+
     const { labelInput, boxInput, container, boxIcon } = styles;
     const isPassword = type === 'password';
 
