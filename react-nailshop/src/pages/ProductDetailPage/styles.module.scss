@@ -1,0 +1,67 @@
+@import "@styles/mixin.module.scss";
+@import "@styles/variables.module.scss";
+
+.navPage {
+    padding: 10px 0;
+    .navPageItem {
+        color: $sub_color;
+        text-decoration: none;
+    }
+}
+
+.mainProductImg {
+    img {
+        border-radius: 10px;
+    }
+}
+.imageSlider {
+    margin-top: 20px;
+    img {
+        border-radius: 10px;
+        cursor: pointer;
+    }
+}
+
+.productContent {
+    margin-top: 30px;
+    .productType {
+        color: $color_alert;
+        font-size: 18px;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .productTitle {
+        margin-top: 12px;
+        font-size: 22px;
+    }
+    .productPriceBox {
+        margin-top: 20px;
+        @include flex_box_custom(start, center, 0px);
+        .currentPrice {
+            font-size: 22px;
+            font-weight: 600;
+            color: $sub_color;
+        }
+        .rootPrice {
+            text-decoration: line-through;
+            color: $thr_color;
+            font-size: 18px;
+            margin: 0 20px;
+        }
+        .priceSymbol {
+            font-weight: 200;
+            font-size: 12px;
+            position: absolute;
+        }
+    }
+    .productOptions {
+        margin-top: 20px;
+    }
+    .productSize {
+        margin-top: 20px;
+        .sizeBtn {
+            width: 40;
+            height: 40;
+        }
+    }
+}

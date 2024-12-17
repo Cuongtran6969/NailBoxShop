@@ -1,12 +1,18 @@
 import ProgressBar from "@components/ProgressBar/ProgressBar";
 import styles from "./styles.module.scss";
-function ProductItem({ sold, stock }) {
+import DiscountTicket from "@components/DiscountTicket/DiscountTicket";
+function ProductItem({ sold, stock, discount = 20 }) {
     const {
         productBox,
         productItem,
         productCate,
         productTitle,
-        productContent
+        productContent,
+        productContentPrice,
+        productPrice,
+        productPriceRoot,
+        discountTicket,
+        discountPercent
     } = styles;
     return (
         <div className={productBox}>
@@ -29,6 +35,15 @@ function ProductItem({ sold, stock }) {
                     <p className={productTitle}>
                         Combo 2 bộ Nail box Trắng gạo + Cute trendy mắt mèo
                     </p>
+                    <div className={productContentPrice}>
+                        <span className={productPrice}>
+                            119.000 <span>₫</span>
+                        </span>
+                        <p className={productPriceRoot}>
+                            200.000<span>₫</span>
+                        </p>
+                    </div>
+                    <DiscountTicket value={discount} />
                 </div>
             </div>
         </div>

@@ -23,15 +23,30 @@
             padding: 15px;
             .productCate {
                 display: block;
-                font-size: 20px;
+                font-size: 18px;
+                margin-top: 8px;
                 font-weight: 500;
                 text-decoration: none;
                 text-align: center;
                 color: $four_color;
             }
             .productTitle {
-                font-size: 16px;
+                font-size: 14px;
                 font-weight: 400;
+            }
+            .productContentPrice {
+                @include flex_box_custom(space-between, center, 0px);
+                .productPrice {
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: $sub_color;
+                }
+                .productPriceRoot {
+                    text-decoration: line-through;
+                    color: $thr_color;
+                    font-size: 13px;
+                    margin-bottom: 0;
+                }
             }
         }
     }

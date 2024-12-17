@@ -1,5 +1,5 @@
 body {
-    background-color: #00000008;
+    /* background-color: #00000008; */
 }
 .swiper-button-next,
 .swiper-button-prev {
@@ -28,4 +28,31 @@ body {
 }
 .swiper-pagination-bullet-active {
     background: #ffff;
+}
+/* Ant css custom */
+/* :where(.css-dev-only-do-not-override-1kf000u).ant-select-outlined:not(
+        .ant-select-disabled
+    ):not(.ant-select-customize-input):not(.ant-pagination-size-changer):hover
+    .ant-select-selector {
+    border-color: #ff90bc;
+}
+:where(.css-dev-only-do-not-override-1kf000u).ant-select
+    .ant-select-selection-wrap {
+    font-weight: 500;
+    font-size: 20px;
+    padding-bottom: 4px;
+} */
+:where(
+        .css-dev-only-do-not-override-1lwqn8e
+    ).ant-btn-color-primary.ant-btn-background-ghost {
+    color: #fff;
+    border-color: #ff90bc;
+}
+:where(
+        .css-dev-only-do-not-override-1lwqn8e
+    ).ant-btn-color-primary.ant-btn-background-ghost:not(:disabled):not(
+        .ant-btn-disabled
+    ):hover {
+    color: #fff;
+    border-color: #ff90bc;
 }
