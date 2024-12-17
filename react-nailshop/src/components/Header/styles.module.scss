@@ -11,16 +11,11 @@
 .container {
     @include flex_box_custom(center, center, 0px);
 }
-.containerContent {
-    @include flex_box_custom(space-between, center, 0px);
-    width: 1250px;
-    padding: 10px 0;
-    .headerLogo {
-        width: 90px;
-        height: 90px;
-        border-radius: 50%;
-        border: 1px solid $thr_color;
-    }
+.headerLogo {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 1px solid $thr_color;
 }
 
 .containerBox {
@@ -34,9 +29,10 @@
     }
 }
 .boxIcon {
+    display: flex;
     background-color: $primary_color;
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
     padding: 5px;
     border-radius: 50%;
 }
@@ -65,8 +61,8 @@
     background-color: $primary_color;
     color: $white_color;
     font-size: 10px;
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
     padding: 5px;
     border-radius: 50%;
 }

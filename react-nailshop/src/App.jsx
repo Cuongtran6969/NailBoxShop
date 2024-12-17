@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import routers from "@/routers/routers";
-
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./styles.css";
 function App() {
     return (
         <BrowserRouter>

@@ -3,11 +3,11 @@ import styles from "./styles.module.scss";
 import classNames from "classnames";
 function SideBar() {
     const { container, sideBar, overlay, slideSideBar } = styles;
-    const [isopen, setOpen] = useState(true);
+    const [isopen, setOpen] = useState(false);
     //dang de true de code template login/signup
 
     const handleToggle = () => {
-        // setOpen(!isopen);
+        setOpen(!isopen);
     };
     console.log(isopen);
 

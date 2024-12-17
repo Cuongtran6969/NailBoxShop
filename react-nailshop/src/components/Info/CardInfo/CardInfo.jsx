@@ -1,0 +1,20 @@
+import styles from "../styles.module.scss";
+import NailIcon from "@icons/images/nail_icon.png";
+function CardInfo({ title, desc, icon }) {
+    const { cardItem, cardContent, cardTitle, cardDesc, cardImage } = styles;
+    return (
+        <div>
+            <div className={cardItem}>
+                <div className={cardContent}>
+                    <h4 className={cardTitle}>{title}</h4>
+                    <p className={cardDesc}>{desc}</p>
+                </div>
+                <div className={cardImage}>
+                    <img src={icon} alt="" />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default CardInfo;

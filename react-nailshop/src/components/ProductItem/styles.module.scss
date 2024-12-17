@@ -1,0 +1,38 @@
+@import "@styles/mixin.module.scss";
+@import "@styles/variables.module.scss";
+.productBox {
+    flex: 0 0 50%;
+    max-width: 50%;
+
+    /* Màn hình vừa: 3 sản phẩm */
+    @media (min-width: 768px) and (max-width: 991.98px) {
+        flex: 0 0 33.333%;
+        max-width: 33.333%;
+    }
+
+    /* Màn hình lớn: 5 sản phẩm */
+    @media (min-width: 992px) {
+        flex: 0 0 20%;
+        max-width: 20%;
+    }
+    .productItem {
+        border: 1px solid $color_border;
+        border-radius: 15px;
+        overflow: hidden;
+        .productContent {
+            padding: 15px;
+            .productCate {
+                display: block;
+                font-size: 20px;
+                font-weight: 500;
+                text-decoration: none;
+                text-align: center;
+                color: $four_color;
+            }
+            .productTitle {
+                font-size: 16px;
+                font-weight: 400;
+            }
+        }
+    }
+}
