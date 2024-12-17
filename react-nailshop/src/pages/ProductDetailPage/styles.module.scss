@@ -3,10 +3,6 @@
 
 .navPage {
     padding: 10px 0;
-    .navPageItem {
-        color: $sub_color;
-        text-decoration: none;
-    }
 }
 
 .mainProductImg {
@@ -23,7 +19,8 @@
 }
 
 .productContent {
-    margin-top: 30px;
+    margin-top: 16px;
+    padding: 0 10px;
     .productType {
         color: $color_alert;
         font-size: 18px;
@@ -60,8 +57,41 @@
     .productSize {
         margin-top: 20px;
         .sizeBtn {
-            width: 40;
-            height: 40;
+            width: 40px;
+            height: 40px;
         }
+    }
+    .productQuantity {
+        margin-top: 20px;
+        .addToCartBtn {
+            height: 40px;
+            margin-left: 30px;
+            width: 200px;
+            font-size: 14px;
+            background-color: #162d4b;
+            &:hover {
+                background-color: #1d5fb1;
+                transform: scale(1.03);
+            }
+        }
+    }
+    .buyNowBtn {
+        height: 50px;
+        margin-top: 40px;
+        width: 300px;
+        font-size: 14px;
+        background-color: #ff7ba7;
+        font-weight: 600;
+        &:hover {
+            background-color: #f54680;
+            transform: scale(1.03);
+        }
+    }
+}
+.productRelation {
+    margin-top: 40px;
+    .relationTitle {
+        font-size: 25px;
+        margin-bottom: 20px;
     }
 }

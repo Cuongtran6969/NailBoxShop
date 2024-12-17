@@ -1,7 +1,8 @@
 import ProgressBar from "@components/ProgressBar/ProgressBar";
 import styles from "./styles.module.scss";
 import DiscountTicket from "@components/DiscountTicket/DiscountTicket";
-function ProductItem({ sold, stock, discount = 20 }) {
+import classNames from "classnames";
+function ProductItem({ sold, stock, discount = 20, numberDisplay = 5 }) {
     const {
         productBox,
         productItem,
@@ -11,11 +12,16 @@ function ProductItem({ sold, stock, discount = 20 }) {
         productContentPrice,
         productPrice,
         productPriceRoot,
+        forItemDisplay,
         discountTicket,
         discountPercent
     } = styles;
     return (
-        <div className={productBox}>
+        <div
+            className={classNames(productBox, {
+                [forItemDisplay]: numberDisplay == 4
+            })}
+        >
             <div className={productItem}>
                 <div>
                     <a href="#">

@@ -1,0 +1,9 @@
+@import "@styles/mixin.module.scss";
+@import "@styles/variables.module.scss";
+.cateViewBtn {
+    color: #333;
+    text-decoration: underline;
+    &:hover {
+        color: $primary_color !important;
+    }
+}
