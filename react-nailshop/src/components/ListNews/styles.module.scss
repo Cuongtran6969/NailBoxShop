@@ -1,0 +1,61 @@
+@import "@styles/mixin.module.scss";
+@import "@styles/variables.module.scss";
+.newsHeading {
+    text-decoration: underline solid $color_line;
+    color: $sub_color;
+    text-align: center;
+}
+.newsBox {
+    @media (min-width: 768px) and (max-width: 991.98px) {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+
+    /* Màn hình lớn: 5 sản phẩm */
+    @media (min-width: 992px) {
+        flex: 0 0 33.333%;
+        max-width: 33.333%;
+    }
+    .newsItem {
+        display: flex;
+        background-color: $white_color;
+        padding: 15px;
+        border-radius: 15px;
+        .newsImage {
+            width: 50%;
+            img {
+                border-radius: 5px;
+            }
+        }
+        .newsContent {
+            width: 70%;
+            margin-left: 10px;
+            .newsType {
+                border: 1px solid $primary_color;
+                color: $primary_color;
+                padding: 5px 15px;
+                font-size: 14px;
+                border-radius: 5px;
+            }
+            .newsTitle {
+                font-size: 18px;
+                margin-top: 10px;
+                color: $four_color;
+            }
+            .newsDesc {
+                font-size: 14px;
+                color: $thr_color;
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+    }
+}
+.newsBottom {
+    width: 150px;
+    margin: 0 auto;
+    margin-top: 20px;
+}

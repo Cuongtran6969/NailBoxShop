@@ -1,0 +1,15 @@
+@import "@styles/mixin.module.scss";
+@import "@styles/variables.module.scss";
+/* Custom nút Prev và Next */
+.listBanner {
+    border-radius: 8px;
+    overflow: hidden;
+    .bannerItem {
+        border-radius: 8px;
+    }
+}
+.rightBanner {
+    height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+}

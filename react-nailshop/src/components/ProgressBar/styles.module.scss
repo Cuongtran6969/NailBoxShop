@@ -1,0 +1,49 @@
+.progressContainer {
+    width: 100%; /* Độ dài của thanh */
+    height: 20px;
+    background: rgb(254, 52, 52);
+    background: linear-gradient(
+        90deg,
+        rgba(254, 52, 52, 0.2777485994397759) 0%,
+        rgba(252, 141, 67, 0.5130427170868348) 61%,
+        rgba(255, 151, 40, 0.5410539215686274) 100%
+    );
+    border-radius: 50px;
+    position: relative;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
+        rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+}
+
+.progressBar {
+    height: 100%;
+    background: rgb(255, 0, 0);
+    background: linear-gradient(
+        90deg,
+        rgba(255, 0, 0, 1) 0%,
+        rgba(255, 102, 0, 1) 35%,
+        rgba(255, 132, 0, 0.4234068627450981) 100%
+    );
+    display: flex;
+    align-items: center;
+    border-radius: 50px;
+    padding-left: 10px;
+    box-sizing: border-box;
+    position: relative;
+    transition: width 0.5s ease-in-out;
+}
+
+.progressIcon {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 20px;
+    margin-right: 8px;
+}
+
+.progressText {
+    color: #fff;
+    font-size: 12px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

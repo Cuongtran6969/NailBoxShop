@@ -1,0 +1,31 @@
+body {
+    background-color: #00000008;
+}
+.swiper-button-next,
+.swiper-button-prev {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.493);
+    color: #000;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.swiper-button-next::after,
+.swiper-button-prev::after {
+    font-size: 14px;
+    font-weight: bold;
+}
+/* Ẩn mặc định background hover của Swiper */
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+    background-color: #f0f0f0; /* Màu nền hover nhạt */
+}
+.swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+}
+.swiper-pagination-bullet-active {
+    background: #ffff;
+}

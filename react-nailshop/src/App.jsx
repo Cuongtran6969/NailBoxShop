@@ -3,7 +3,8 @@ import routers from "@/routers/routers";
 import { SidebarProvider } from '@/contexts/SideBarProvider';
 import SideBar from '@components/Sidebar/Sidebar';
 
-
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./styles.css";
 function App() {
     return (
         <SidebarProvider>

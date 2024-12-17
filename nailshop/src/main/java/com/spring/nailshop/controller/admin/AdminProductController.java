@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -59,5 +60,10 @@ public class AdminProductController {
                 .build();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponse> getProductDetail(@PathVariable Long id) {
+        ProductResponse response = adminProductService.getProductDetail(id);
+        return ResponseEntity.ok(response);
+    }
 
 }

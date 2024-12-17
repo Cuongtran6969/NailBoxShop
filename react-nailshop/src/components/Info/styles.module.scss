@@ -1,0 +1,41 @@
+@import "@styles/mixin.module.scss";
+@import "@styles/variables.module.scss";
+
+.cardList {
+    @include flex_box_custom(space-between, center, 20px);
+    width: 100%;
+    overflow-x: scroll;
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.cardList::-webkit-scrollbar {
+    display: none; /* Chrome, Safari và Edge */
+}
+.cardItem {
+    @include flex_box_custom(center, center, 0px);
+    width: 350px;
+    height: 130px;
+    background-color: $white_color;
+    border-radius: 6px;
+    overflow: hidden;
+    padding: 10px;
+    cursor: pointer;
+    .cardContent {
+        width: 70%;
+        margin-bottom: auto;
+
+        .cardTitle {
+            font-size: 20px;
+        }
+        .cardDesc {
+            font-size: 16px;
+            color: $thr_color;
+        }
+    }
+    .cardImage {
+        width: 30%;
+        padding: 10px;
+        background-color: rgba(250, 235, 215, 0.432);
+        border-radius: 15px;
+    }
+}
