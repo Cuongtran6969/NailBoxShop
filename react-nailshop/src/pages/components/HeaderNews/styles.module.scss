@@ -1,0 +1,94 @@
+@import "@styles/mixin.module.scss";
+@import "@styles/variables.module.scss";
+
+.headerText {
+    background-color: $primary_color;
+    color: $white_color;
+    font-size: 14px;
+    padding: 5px 0;
+    @include flex_box_custom(center, center, 0px);
+}
+
+.container {
+    @include flex_box_custom(center, center, 0px);
+}
+
+.headerLogo {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 1px solid $thr_color;
+}
+
+.containerBox {
+    display: flex;
+    gap: 20px;
+}
+
+.conatinerBoxIcon {
+    @include flex_box_custom(center, center, 10px);
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.boxIcon {
+    display: flex;
+    background-color: $primary_color;
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+    border-radius: 50%;
+}
+
+.searchBox {
+    width: 400px;
+    padding: 2px;
+    border-radius: 35px;
+    border: 1px solid $color_border;
+    background-color: #00000008;
+    overflow: hidden;
+
+    input {
+        height: 40px;
+        padding: 0 10px;
+        background-color: transparent;
+        width: 100%;
+        border: none;
+        outline: none;
+    }
+
+    @include flex_box_custom(space-between, center, 0px);
+}
+
+.headerNavUser {
+    background-color: $white_color;
+}
+
+.headerNavUser,
+.headerNavCart {
+    background-color: $primary_color;
+    color: $white_color;
+    font-size: 10px;
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+    border-radius: 50%;
+}
+
+.menuButton {
+    display: inline-block;
+    padding: 10px 20px;
+    border: 1px solid #ff99cc;
+    border-radius: 10px;
+    color: #ff99cc;
+    text-decoration: none;
+    font-size: 16px;
+    text-align: center;
+
+    &:hover {
+        background-color: #ff99cc;
+        color: white;
+    }
+}

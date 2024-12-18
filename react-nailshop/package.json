@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "antd": "^5.22.5",
     "bootstrap": "^5.3.3",
     "classnames": "^2.5.1",
     "normalize.css": "^8.0.1",

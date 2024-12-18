@@ -18,7 +18,9 @@ function Header() {
         conatinerBoxIcon,
         searchBox,
         headerNavUser,
-        headerNavCart
+        headerNavCart,
+        headerMenu,
+        menuButton
     } = styles;
 
     const { isOpen, setIsOpen } = useContext(SideBarContext);
@@ -106,6 +108,17 @@ function Header() {
                         </div>
                     </Col>
                 </Row>
+
+                <Row className="justify-content-center py-2">
+                    {dataMenu.map((item, index) => (
+                        <Col key={index} xs="auto" className="mb-2">
+                            <a href={item.href} className={menuButton}>
+                                {item.name}
+                            </a>
+                        </Col>
+                    ))}
+                </Row>
+
             </Container>
         </>
     );
