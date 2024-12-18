@@ -1,0 +1,15 @@
+@import "@styles/mixin.module.scss";
+@import "@styles/variables.module.scss";
+.carts {
+    border: 1px solid $color_border;
+    border-radius: 15px;
+    padding: 15px;
+    @media (min-width: 992px) {
+        padding: 30px;
+        padding-left: 15px;
+    }
+}
+.qrTitle {
+    font-size: 16px;
+    font-weight: 500;
+}

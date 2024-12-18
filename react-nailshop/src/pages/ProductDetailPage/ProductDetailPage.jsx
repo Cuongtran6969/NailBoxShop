@@ -94,7 +94,6 @@ function ProductDetailPage() {
                     }
                 }}
             >
-                <Header />
                 <Container>
                     <Row>
                         <Col sm={9}>
@@ -390,7 +389,7 @@ function ProductDetailPage() {
                                                         Kích cỡ:{" "}
                                                     </p>
                                                     <Space>
-                                                        <InputNumberBox />
+                                                        <InputNumberBox type="large" />
                                                         <Button
                                                             type="primary"
                                                             shape="round"
@@ -474,9 +473,6 @@ function ProductDetailPage() {
                         </Col>
                     </Row>
                 </Container>
-                <div>
-                    <Footer />
-                </div>
             </ConfigProvider>
         </div>
     );

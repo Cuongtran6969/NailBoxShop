@@ -1,7 +1,7 @@
 import styles from "./styles.module.scss";
 import classNames from "classnames";
 function DiscountTicket({ value, isAnimation = true }) {
-    const { discountTicket, discountPercent, ticketAnimation } = styles;
+    const { discountTicket, discountPercent, ticketAnimation = true } = styles;
     return (
         <div
             className={classNames(discountTicket, {

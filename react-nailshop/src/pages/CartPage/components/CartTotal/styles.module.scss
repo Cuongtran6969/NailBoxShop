@@ -1,0 +1,103 @@
+@import "@styles/mixin.module.scss";
+@import "@styles/variables.module.scss";
+
+.container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0 10px;
+    margin: 0 auto;
+    z-index: 100;
+
+    .box {
+        border: 1px solid rgba(216, 216, 216, 0.418);
+        background-color: #ffff;
+        padding: 0 42px;
+        @media (max-width: 576px) {
+            padding: 0 11px;
+        }
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+            rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+            rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    }
+    .voucherBox {
+        padding: 10px 0;
+        text-align: end;
+        .inputBox {
+            width: 120px;
+            margin-left: 5px;
+            margin-right: 10px;
+            outline: none;
+            border: 1px solid rgba(20, 59, 114, 0.24);
+            height: 25px;
+            font-size: 14px;
+            @media (min-width: 576px) {
+                height: 30px;
+                width: 200px;
+                font-size: 16px;
+            }
+        }
+        .applyDicountBtn {
+            height: 25px;
+            padding: 10px;
+            background-color: #143b72;
+            @media (min-width: 576px) {
+                height: 30px;
+                width: 80px;
+            }
+            &:hover {
+                background-color: #143b72;
+                opacity: 0.8;
+            }
+        }
+        .tickerIcon {
+            font-size: 18px;
+            color: $color_line;
+            @media (min-width: 576px) {
+                font-size: 30px;
+            }
+        }
+    }
+    .priceBox {
+        width: 100%;
+        display: flex;
+        padding: 10px 0;
+        align-items: center;
+        justify-content: space-between;
+        .totalPrice {
+            margin-left: 5px;
+            color: red;
+            font-size: 15px;
+
+            @media (min-width: 576px) {
+                margin-right: 15px;
+            }
+        }
+        .chooseOrder {
+            font-size: 12px;
+            @media (min-width: 576px) {
+                font-size: 14px;
+            }
+        }
+        .totalBuyNumber {
+            font-size: 12px;
+            @media (min-width: 576px) {
+                font-size: 14px;
+            }
+        }
+        .buyBtn {
+            width: 210px;
+            height: 45px;
+            font-size: 16px;
+            background-color: $primary_color;
+            color: $white_color;
+            &:hover {
+                border-color: $primary_color;
+                background-color: $primary_color;
+                opacity: 0.8;
+                color: $white_color;
+            }
+        }
+    }
+}

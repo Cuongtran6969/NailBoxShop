@@ -14,6 +14,10 @@ export default defineConfig({
             "@productPages": path.resolve(
                 __dirname,
                 "src/pages/ProductDetailPage/components"
+            ),
+            "@cartPages": path.resolve(
+                __dirname,
+                "src/pages/CartPage/components"
             )
         }
     }
