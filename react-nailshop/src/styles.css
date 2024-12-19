@@ -203,3 +203,19 @@ a {
     > .ant-menu-submenu-title {
     color: #333;
 }
+
+.ant-pagination-item,
+.ant-pagination-prev,
+.ant-pagination-next,
+.ant-pagination-item-link {
+    border-radius: 50% !important;
+    overflow: hidden;
+    font-size: 16px;
+}
+.ant-pagination-item:hover,
+.ant-pagination-item.ant-pagination-item-active,
+.ant-pagination-item.ant-pagination-item-active:hover {
+    background-color: #ff90bc !important;
+    border-color: #ff90bc;
+    color: #fff;
+}

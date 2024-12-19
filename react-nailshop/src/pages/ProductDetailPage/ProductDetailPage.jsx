@@ -14,8 +14,6 @@ import { Navigation } from "swiper/modules";
 import { useState } from "react";
 import DiscountTicket from "@components/DiscountTicket/DiscountTicket";
 
-//Ant
-// import { Button, , Input, Space, theme } from 'antd';
 import {
     Select,
     Space,
@@ -28,7 +26,7 @@ import {
 import classNames from "classnames";
 import { FaShoppingCart } from "react-icons/fa";
 import CateFilter from "@components/CateFilter/CateFilter";
-import ProductSuggest from "@productPages/ProductSuggest/ProductSuggest";
+import ProductSuggest from "@components/ProductSuggest/ProductSuggest";
 import Description from "@productPages/CollapseDesc/Description";
 import ProductItem from "@components/ProductItem/ProductItem";
 import Footer from "@components/Footer/Footer";

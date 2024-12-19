@@ -1,12 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Menu, Checkbox, Button } from "antd";
 import { BiSolidCategory } from "react-icons/bi";
 import styles from "./styles.module.scss";
 const { SubMenu } = Menu;
 
-function CateFilter() {
+function CateFilter({ handleChoose, checkedKeys }) {
     const { cateViewBtn } = styles;
-    const [checkedKeys, setCheckedKeys] = useState([]);
     const [visibleItems, setVisibleItems] = useState(4); // Số lượng danh mục hiển thị ban đầu
 
     // Danh sách danh mục
@@ -19,15 +18,14 @@ function CateFilter() {
         { key: "g6", label: "Sơn nail màu pastel" }
     ];
 
-    // Toggle trạng thái checkbox
     const handleCheckboxChange = (key) => {
-        setCheckedKeys((prev) =>
-            prev.includes(key)
-                ? prev.filter((item) => item !== key)
-                : [...prev, key]
-        );
-    };
+        const newCheckedKeys = checkedKeys.includes(key)
+            ? checkedKeys.filter((item) => item !== key)
+            : [...checkedKeys, key];
 
+        handleChoose(newCheckedKeys); // Gửi danh sách mới lên cha
+    };
+    //
     // Xử lý khi nhấn "Load More"
     const handleLoadMore = () => {
         if (visibleItems >= categories.length) {
@@ -53,8 +51,10 @@ function CateFilter() {
                 {categories.slice(0, visibleItems).map((category) => (
                     <Menu.Item key={category.key}>
                         <Checkbox
-                            checked={checkedKeys.includes(category.key)}
-                            onChange={() => handleCheckboxChange(category.key)}
+                            checked={checkedKeys.includes(category.label)}
+                            onChange={() =>
+                                handleCheckboxChange(category.label)
+                            }
                         >
                             {category.label}
                         </Checkbox>
