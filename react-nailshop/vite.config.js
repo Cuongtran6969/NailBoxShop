@@ -18,6 +18,10 @@ export default defineConfig({
             "@cartPages": path.resolve(
                 __dirname,
                 "src/pages/CartPage/components"
+            ),
+            "@productManagePages": path.resolve(
+                __dirname,
+                "src/pages/ProductManage/components"
             )
         }
     }

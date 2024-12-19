@@ -1,0 +1,99 @@
+@import "@styles/mixin.module.scss";
+@import "@styles/variables.module.scss";
+.container.openNav {
+    width: 200px;
+    animation: all linear 0.03s;
+    .menuLabel {
+        display: block;
+    }
+    .menuBox {
+        .navMenu {
+            .menuItem {
+                justify-content: start;
+                .menuIcon {
+                    margin-right: 20px;
+                    width: auto;
+                }
+                .menuLabel {
+                    display: block !important;
+                }
+            }
+        }
+    }
+}
+.container {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 10px 10px;
+    width: 60px;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    bottom: 20px;
+
+    .menuNavBtn {
+        display: flex;
+        margin: 0 auto;
+        background-color: $color_mess;
+        color: $white_color;
+        border-radius: 5px;
+        padding: 5px;
+        font-size: 28px;
+        margin-bottom: 20px;
+        cursor: pointer;
+        &:hover {
+            opacity: 0.9;
+        }
+    }
+
+    .sideBarLogo {
+        display: flex;
+        margin: 0 auto;
+        width: 40px;
+        height: 40px;
+        border: 1px solid $secondary_color;
+        border-radius: 50%;
+    }
+    .sideBarTitle {
+        font-size: 14px;
+        margin-left: 5px;
+        color: #333;
+    }
+    .menuBox {
+        margin-top: 30px;
+        .menuTitle {
+            margin-bottom: 5px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: $thr_color;
+        }
+        .navMenu {
+            margin: 0;
+            padding: 0;
+            .menuItem {
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                font-size: 14px;
+                // background-color: red;
+                border-radius: 12px;
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 10px;
+                color: $sub_color;
+                .menuLabel {
+                    display: none;
+                }
+                &:hover {
+                    background-color: #9edbff38;
+                    color: #000;
+                }
+                .menuIcon {
+                    font-size: 14px;
+                    width: 100%;
+                    text-align: center;
+                }
+            }
+        }
+    }
+}
