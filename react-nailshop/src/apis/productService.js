@@ -1,6 +1,10 @@
 import axiosClient from "./axiosClient";
-const getProduct = async () => {
-    const res = await axiosClient.get("/admin/products/get-product");
+const getProduct = async (currentPage, filterQuery) => {
+    let urlApi = `/admin/products/get-product?page=${currentPage}`;
+    if (filterQuery) {
+        urlApi += `&filter=${filterQuery}`;
+    }
+    const res = await axiosClient.get(urlApi);
     return res.data;
 };
 

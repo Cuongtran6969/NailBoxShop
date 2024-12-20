@@ -3,20 +3,26 @@ import { Menu, Checkbox, Button } from "antd";
 import { BiSolidCategory } from "react-icons/bi";
 import styles from "./styles.module.scss";
 const { SubMenu } = Menu;
-
-function CateFilter({ handleChoose, checkedKeys }) {
+import { getCategory } from "@/apis/categoryService";
+function CateFilter({ handleChoose = () => {}, checkedKeys = [] }) {
     const { cateViewBtn } = styles;
-    const [visibleItems, setVisibleItems] = useState(4); // Số lượng danh mục hiển thị ban đầu
+    const [visibleItems, setVisibleItems] = useState(4);
+    const [categories, setCategories] = useState([]);
 
     // Danh sách danh mục
-    const categories = [
-        { key: "g1", label: "Sơn nail" },
-        { key: "g2", label: "Sơn nail đẹp" },
-        { key: "g3", label: "Sơn nail đơn giản" },
-        { key: "g4", label: "Sơn nail thạch" },
-        { key: "g5", label: "Sơn nail cá tính" },
-        { key: "g6", label: "Sơn nail màu pastel" }
-    ];
+    // const categories = [
+    //     { key: "g1", label: "Sơn nail" },
+    //     { key: "g2", label: "Sơn nail đẹp" },
+    //     { key: "g3", label: "Sơn nail đơn giản" },
+    //     { key: "g4", label: "Sơn nail thạch" },
+    //     { key: "g5", label: "Sơn nail cá tính" },
+    //     { key: "g6", label: "Sơn nail màu pastel" }
+    // ];
+    useEffect(() => {
+        getCategory().then((res) => {
+            setCategories(res.result);
+        });
+    }, []);
 
     const handleCheckboxChange = (key) => {
         const newCheckedKeys = checkedKeys.includes(key)
@@ -49,14 +55,12 @@ function CateFilter({ handleChoose, checkedKeys }) {
             >
                 {/* Render các mục con với Checkbox */}
                 {categories.slice(0, visibleItems).map((category) => (
-                    <Menu.Item key={category.key}>
+                    <Menu.Item key={category.id}>
                         <Checkbox
-                            checked={checkedKeys.includes(category.label)}
-                            onChange={() =>
-                                handleCheckboxChange(category.label)
-                            }
+                            checked={checkedKeys.includes(category.id)}
+                            onChange={() => handleCheckboxChange(category.id)}
                         >
-                            {category.label}
+                            {category.name}
                         </Checkbox>
                     </Menu.Item>
                 ))}
