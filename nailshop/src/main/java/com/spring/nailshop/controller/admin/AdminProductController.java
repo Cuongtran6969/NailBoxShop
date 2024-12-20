@@ -5,19 +5,27 @@ import com.spring.nailshop.dto.request.ProductStatusRequest;
 import com.spring.nailshop.dto.response.ApiResponse;
 import com.spring.nailshop.dto.response.PageResponse;
 import com.spring.nailshop.dto.response.ProductResponse;
+import com.spring.nailshop.dto.response.admin.Admin_ProductResponse;
+import com.spring.nailshop.entity.Product;
 import com.spring.nailshop.service.AdminProductService;
+import com.turkraft.springfilter.boot.Filter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 @RestController
 @RequestMapping("/admin/products")
 @RequiredArgsConstructor
@@ -30,12 +38,12 @@ public class AdminProductController {
             @RequestPart("product") @Valid ProductRequest productRequest,
             @RequestPart(value = "productImages", required = false) List<MultipartFile> productImages,
             @RequestPart(value = "designImages", required = false) List<MultipartFile> designImages
-            ) {
-         return ApiResponse.<ProductResponse>builder()
-                 .code(HttpStatus.CREATED.value())
-                 .message("Add product successfully")
-                 .result(adminProductService.createProduct(productRequest,productImages, designImages))
-                 .build();
+    ) {
+        return ApiResponse.<ProductResponse>builder()
+                .code(HttpStatus.CREATED.value())
+                .message("Add product successfully")
+                .result(adminProductService.createProduct(productRequest, productImages, designImages))
+                .build();
     }
 
     @DeleteMapping("/delete-design/{designId}")
@@ -59,5 +67,31 @@ public class AdminProductController {
                 .build();
     }
 
+    @GetMapping("/get-product")
+    public ApiResponse<PageResponse<List<Admin_ProductResponse>>> getAllProduct(
+            @Filter Specification<Product> spec,
+            @RequestParam(defaultValue = "createAt:desc") String[] sort,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page - 1, size, getSortOrder(sort));
+        return ApiResponse.<PageResponse<List<Admin_ProductResponse>>>builder()
+                .code(HttpStatus.OK.value())
+                .result(adminProductService.getAllProduct(spec, pageable))
+                .build();
+    }
+    private Sort getSortOrder(String[] sort) {
+        List<Sort.Order> orders = new ArrayList<>();
+        for (String s : sort) {
+            String[] sortDetails = s.split(":");
+            String sortBy = sortDetails[0];
+            String sortDir = sortDetails.length > 1 ? sortDetails[1] : "asc";
+            log.info("sortBy: {}, sortDir: {}", sortBy, sortDir);
+
+            Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+            orders.add(new Sort.Order(direction, sortBy));
+        }
+        return Sort.by(orders);
+    }
 
 }

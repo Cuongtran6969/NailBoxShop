@@ -3,7 +3,10 @@ package com.spring.nailshop.service.impl;
 import com.spring.nailshop.dto.request.DesignRequest;
 import com.spring.nailshop.dto.request.ProductRequest;
 import com.spring.nailshop.dto.request.ProductStatusRequest;
+import com.spring.nailshop.dto.response.PageResponse;
+import com.spring.nailshop.dto.response.ProductDetailResponse;
 import com.spring.nailshop.dto.response.ProductResponse;
+import com.spring.nailshop.dto.response.admin.Admin_ProductResponse;
 import com.spring.nailshop.entity.Category;
 import com.spring.nailshop.entity.Design;
 import com.spring.nailshop.entity.Product;
@@ -17,6 +20,11 @@ import com.spring.nailshop.service.AdminProductService;
 import com.spring.nailshop.service.CategoryService;
 import com.spring.nailshop.service.CloudinaryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,7 +49,6 @@ public class AdminProductServiceImpl implements AdminProductService {
     private final ProductMapper productMapper;
 
     private final CategoryService categoryService;
-
 
     @Override
     @Transactional
@@ -100,5 +107,20 @@ public class AdminProductServiceImpl implements AdminProductService {
         productRepository.save(product);
     }
 
+    @Override
+    public PageResponse<List<Admin_ProductResponse>> getAllProduct(Specification<Product> spec, Pageable pageable) {
+        Page<Product> products = productRepository.findAll(spec, pageable);
 
+        List<Admin_ProductResponse> productResponse = products.getContent()
+                .stream().map(productMapper::toAdminProductResponse)
+                .toList();
+
+        return PageResponse.<List<Admin_ProductResponse>>builder()
+                .page(pageable.getPageNumber() + 1)
+                .totalPages(products.getTotalPages())
+                .size(pageable.getPageSize())
+                .total(products.getTotalElements())
+                .items(productResponse)
+                .build();
+    }
 }
