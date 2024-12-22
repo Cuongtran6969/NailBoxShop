@@ -1,8 +1,8 @@
 package com.spring.nailshop.controller.admin;
 
-import com.spring.nailshop.dto.request.ProductRequest;
-import com.spring.nailshop.dto.request.ProductStatusRequest;
+import com.spring.nailshop.dto.request.*;
 import com.spring.nailshop.dto.response.ApiResponse;
+import com.spring.nailshop.dto.response.DesignResponse;
 import com.spring.nailshop.dto.response.PageResponse;
 import com.spring.nailshop.dto.response.ProductResponse;
 import com.spring.nailshop.dto.response.admin.Admin_ProductResponse;
@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,14 +46,26 @@ public class AdminProductController {
                 .result(adminProductService.createProduct(productRequest, productImages, designImages))
                 .build();
     }
+    @PutMapping("/update-product/{id}")
+    public ApiResponse<Void> updateProduct(
+            @PathVariable Long id,
+            @ModelAttribute ProductUpdateRequest request) {
+        adminProductService.updateProduct(id, request);
+        return ApiResponse.<Void>builder()
+                .code(HttpStatus.OK.value())
+                .message("Update product successfully")
+                .build();
+    }
+
 
     @DeleteMapping("/delete-design/{designId}")
-    public ApiResponse<Void> DeleteDesign(@PathVariable Long designId
+    public ApiResponse<Void> DeleteDesign(
+            @PathVariable(value = "designId") Long designId
     ) {
         String designName = adminProductService.deleteProductDesign(designId);
         return ApiResponse.<Void>builder()
                 .code(HttpStatus.CREATED.value())
-                .message(String.format("Delete design \"%s\" successfully", designName))
+                .message(String.format("Delete design %s successfully", designName))
                 .build();
     }
 
@@ -64,6 +77,33 @@ public class AdminProductController {
         return ApiResponse.<ProductResponse>builder()
                 .code(HttpStatus.CREATED.value())
                 .message("Update product status successfully")
+                .build();
+    }
+
+    @PostMapping("/create-design/{id}")
+    public ApiResponse<DesignResponse> createProductDesign(
+            @PathVariable(value = "id") Long id,
+            @RequestPart(value = "image", required = false) MultipartFile designImage,
+            @RequestPart("design") @Valid DesignRequest request
+    ) {
+        ;
+        return ApiResponse.<DesignResponse>builder()
+                .code(HttpStatus.CREATED.value())
+                .result(adminProductService.createProductDesign(id, designImage, request))
+                .message("Create design for product successfully")
+                .build();
+    }
+
+    @PutMapping("/update-design")
+    public ApiResponse<DesignResponse> updateProductDesign(
+            @RequestPart(value = "image", required = false) MultipartFile designImage,
+            @RequestPart("design") @Valid DesignUpdateRequest request
+    ) {
+        ;
+        return ApiResponse.<DesignResponse>builder()
+                .code(HttpStatus.CREATED.value())
+                .result(adminProductService.updateProductDesign(designImage, request))
+                .message("Update design successfully")
                 .build();
     }
 
@@ -80,6 +120,18 @@ public class AdminProductController {
                 .result(adminProductService.getAllProduct(spec, pageable))
                 .build();
     }
+
+    @GetMapping("/{id}")
+    public ApiResponse<ProductResponse> getProductDetail(
+            @PathVariable Long id
+    ) {
+        return ApiResponse.<ProductResponse>builder()
+                .code(HttpStatus.OK.value())
+                .result(adminProductService.getProductDetail(id))
+                .build();
+    }
+
+
     private Sort getSortOrder(String[] sort) {
         List<Sort.Order> orders = new ArrayList<>();
         for (String s : sort) {

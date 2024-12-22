@@ -6,7 +6,7 @@ import SearchPage from "@pages/SearchPage/SearchPage";
 import AdminLayout from "@components/AdminLayout/AdminLayout";
 import ProductManage from "@pages/ProductManage/ProductManage";
 import ProductCreatePage from "@pages/ProductCreatePage/ProductCreatePage";
-
+import ProductAdminDetail from "@pages/ProductAdminDetail/ProductAdminDetail";
 const routers = [
     { path: "/", component: HomePage, layout: DefaultLayout },
     { path: "/detail", component: ProductDetailPage, layout: DefaultLayout },
@@ -16,6 +16,11 @@ const routers = [
     {
         path: "admin/product/create",
         component: ProductCreatePage,
+        layout: AdminLayout
+    },
+    {
+        path: "admin/product/detail/:id",
+        component: ProductAdminDetail,
         layout: AdminLayout
     }
 ];

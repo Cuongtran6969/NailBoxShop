@@ -17,9 +17,11 @@ public interface ProductMapper {
 
     @Mapping(target = "pictures", source = "pictures")
     @Mapping(target = "categories", source = "categories")
+    @Mapping(target = "designs", source = "designs") // Sử dụng DesignMapper
     ProductResponse toProductResponse(Product product);
 
     @Mapping(target = "pictures", source = "pictures")
     @Mapping(target = "categories", source = "categories")
+    @Mapping(source = "createAt", target = "createAt")
     Admin_ProductResponse toAdminProductResponse(Product product);
 }

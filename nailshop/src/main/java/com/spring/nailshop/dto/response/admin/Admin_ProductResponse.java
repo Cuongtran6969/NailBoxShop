@@ -1,10 +1,13 @@
 package com.spring.nailshop.dto.response.admin;
 
 import com.spring.nailshop.dto.response.CategoryResponse;
+import jakarta.persistence.Column;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
@@ -20,5 +23,6 @@ public class Admin_ProductResponse {
     Integer discount;
     Boolean isActive;
     String pictures;
+    LocalDateTime createAt;
     Set<CategoryResponse> categories;
 }

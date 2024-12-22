@@ -1,7 +1,7 @@
 package com.spring.nailshop.service;
 
-import com.spring.nailshop.dto.request.ProductRequest;
-import com.spring.nailshop.dto.request.ProductStatusRequest;
+import com.spring.nailshop.dto.request.*;
+import com.spring.nailshop.dto.response.DesignResponse;
 import com.spring.nailshop.dto.response.PageResponse;
 import com.spring.nailshop.dto.response.ProductResponse;
 import com.spring.nailshop.dto.response.admin.Admin_ProductResponse;
@@ -17,7 +17,16 @@ public interface AdminProductService {
 
    String deleteProductDesign(long designId);
 
+   DesignResponse updateProductDesign(MultipartFile image, DesignUpdateRequest request);
+
+   DesignResponse createProductDesign(Long proId, MultipartFile image, DesignRequest request);
+
    void updateProductStatus(ProductStatusRequest request);
 
    PageResponse<List<Admin_ProductResponse>> getAllProduct(Specification<Product> spec, Pageable pageable);
+
+   ProductResponse getProductDetail(long productId);
+
+   void updateProduct(Long id, ProductUpdateRequest request);
+
 }

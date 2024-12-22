@@ -1,8 +1,7 @@
 package com.spring.nailshop.service.impl;
 
-import com.spring.nailshop.dto.request.DesignRequest;
-import com.spring.nailshop.dto.request.ProductRequest;
-import com.spring.nailshop.dto.request.ProductStatusRequest;
+import com.spring.nailshop.dto.request.*;
+import com.spring.nailshop.dto.response.DesignResponse;
 import com.spring.nailshop.dto.response.PageResponse;
 import com.spring.nailshop.dto.response.ProductDetailResponse;
 import com.spring.nailshop.dto.response.ProductResponse;
@@ -20,6 +19,7 @@ import com.spring.nailshop.service.AdminProductService;
 import com.spring.nailshop.service.CategoryService;
 import com.spring.nailshop.service.CloudinaryService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,11 +29,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AdminProductServiceImpl implements AdminProductService {
@@ -53,11 +55,11 @@ public class AdminProductServiceImpl implements AdminProductService {
     @Override
     @Transactional
     public ProductResponse createProduct(ProductRequest productRequest, List<MultipartFile> productImages, List<MultipartFile> designImages) {
-        if (designImages != null && productRequest.getDesigns().size() != designImages.size()) {
-            throw new AppException(ErrorCode.INVALID_DESIGN);
-        }
+//        if (designImages != null && productRequest.getDesigns().size() != designImages.size()) {
+//            throw new AppException(ErrorCode.INVALID_DESIGN);
+//        }
         Product product = productMapper.toProduct(productRequest);
-
+        log.info("have {} design and {} image", productRequest.getDesigns().size(), designImages.size());
         //set Design for product
         if (!productRequest.getDesigns().isEmpty()) {
             int i = 0;
@@ -65,6 +67,7 @@ public class AdminProductServiceImpl implements AdminProductService {
             for (DesignRequest designRequest : productRequest.getDesigns()) {
                 String picture = cloudinaryService.uploadImage(designImages.get(i));
                 Design design = designMapper.toDesign(designRequest);
+                design.setName(designRequest.getName());
                 design.setPicture(picture);
                 design.setProduct(product);
                 designs.add(design);
@@ -95,8 +98,35 @@ public class AdminProductServiceImpl implements AdminProductService {
     public String deleteProductDesign(long designId) {
         var design = designRepository.findById(designId).orElseThrow(() -> new AppException(ErrorCode.DESIGN_NOT_EXISTED));
         designRepository.delete(design);
-        cloudinaryService.deleteImage(design.getPicture());
+//        cloudinaryService.deleteImage(design.getPicture());
         return design.getName();
+    }
+
+    @Override
+    public DesignResponse updateProductDesign(MultipartFile image, DesignUpdateRequest request) {
+        Design design = designRepository.findById(request.getId()).orElseThrow(() -> new AppException(ErrorCode.DESIGN_NOT_EXISTED));
+        if(image != null) {
+            String picture = cloudinaryService.uploadImage(image);
+            design.setPicture(picture);
+        }
+        design.setName(request.getName());
+        designRepository.save(design);
+        return designMapper.toDesignResponse(design);
+    }
+
+    @Override
+    public DesignResponse createProductDesign(Long proId, MultipartFile image, DesignRequest request) {
+        Product product = productRepository.findById(proId)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_ID_INVALID));
+        Design design = new Design();
+        if(image != null) {
+            String picture = cloudinaryService.uploadImage(image);
+            design.setPicture(picture);
+        }
+        design.setName(request.getName());
+        design.setProduct(product);
+        designRepository.save(design);
+        return designMapper.toDesignResponse(design);
     }
 
     @Override
@@ -123,4 +153,18 @@ public class AdminProductServiceImpl implements AdminProductService {
                 .items(productResponse)
                 .build();
     }
+
+    @Override
+    public ProductResponse getProductDetail(long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_ID_INVALID));
+        return productMapper.toProductResponse(product);
+    }
+
+    @Override
+    public void updateProduct(Long id, ProductUpdateRequest request) {
+
+    }
+
+
+
 }

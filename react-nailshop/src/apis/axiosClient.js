@@ -11,7 +11,7 @@ axiosClient.interceptors.request.use(
     async (config) => {
         console.log(config);
         const token =
-            "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MzQ3MzMwNDEsImV4cCI6MTczNDczNjY0MX0.dN5RhnTmJzmliMeLMYUZRf8g2wAYuC5LOw5MUoTtJng";
+            "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MzQ4ODk0ODYsImV4cCI6MTczNDg5MzA4Nn0.GMpR8_oX0wCyDbHLUonojnfSyXa7dPf1MjaX04Sd1lM";
 
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;

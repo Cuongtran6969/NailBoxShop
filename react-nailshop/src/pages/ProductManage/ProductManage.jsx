@@ -17,7 +17,7 @@ import { TiArrowUnsorted } from "react-icons/ti";
 import { TiArrowSortedUp } from "react-icons/ti";
 import { TiArrowSortedDown } from "react-icons/ti";
 import CateFilter from "@components/CateFilter/CateFilter";
-
+import { useNavigate } from "react-router-dom";
 // api
 import { getProduct } from "@/apis/productService";
 
@@ -28,6 +28,7 @@ const sortOptions = [
 ];
 
 function ProductManage() {
+    const navigate = useNavigate();
     const [filters, setFilters] = useState({
         searchName: "",
         inputName: "",
@@ -98,26 +99,6 @@ function ProductManage() {
         filters.sortStock,
         pagination.currentPage
     ]);
-
-    // const items = [
-    //     {
-    //         key: "1",
-    //         label: (
-    //             <div onClick={(e) => e.stopPropagation()}>
-    //                 <Input
-    //                     value={currentInputName}
-    //                     onChange={(e) => setCurrentInputName(e.target.value)}
-    //                 />
-    //                 <div className="mt-2">
-    //                     <Button onClick={hanleSearchName}>Search</Button>
-    //                     <Button onClick={hanleClearSearchName} className="ms-2">
-    //                         Reset
-    //                     </Button>
-    //                 </div>
-    //             </div>
-    //         )
-    //     }
-    // ];
     const columns = useMemo(
         () => [
             {
@@ -187,7 +168,11 @@ function ProductManage() {
                         </div>
                         <div className="ms-2">
                             <div className="fw-medium">{r.name}</div>
-                            <p className="text-secondary">{r.createAt}</p>
+                            <p className="text-secondary">
+                                {r.createAt
+                                    ? new Date(r.createAt).toLocaleString()
+                                    : "N/A"}
+                            </p>
                         </div>
                     </div>
                 )
@@ -264,7 +249,7 @@ function ProductManage() {
                             <GoPencil
                                 className="fs-5"
                                 onClick={() =>
-                                    console.log("Delete product: ", record.id)
+                                    navigate(`/admin/product/detail/${r.id}`)
                                 }
                             />
                         </div>

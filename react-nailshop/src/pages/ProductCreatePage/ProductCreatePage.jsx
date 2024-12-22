@@ -13,7 +13,8 @@ import {
     Switch,
     Upload
 } from "antd";
-
+// api
+import { createProduct } from "@/apis/productService";
 const { TextArea } = Input;
 const normFile = (e) => {
     if (Array.isArray(e)) {
@@ -21,17 +22,6 @@ const normFile = (e) => {
     }
     return e?.fileList;
 };
-const options = [];
-for (let i = 10; i < 36; i++) {
-    options.push({
-        label: i.toString(36) + i,
-        value: i.toString(36) + i
-    });
-}
-const handleChange = (value) => {
-    console.log(`selected ${value}`);
-};
-
 const ProductCreatePage = () => {
     const [form] = Form.useForm();
     const [categories, setCategories] = useState([]);
@@ -46,6 +36,51 @@ const ProductCreatePage = () => {
         });
     }, []);
 
+    const handleSubmit = async (values) => {
+        const formData = new FormData();
+        console.log(
+            "Design names:",
+            values.designs.map((design) => design.designName)
+        );
+
+        formData.append(
+            "product",
+            new Blob(
+                [
+                    JSON.stringify({
+                        name: values.name,
+                        price: values.price,
+                        stock: values.stock,
+                        description: values.description,
+                        discount: values.discount,
+                        isActive: values.isActive,
+                        designs: values.designs?.map((design) => ({
+                            name: design.designName
+                        })),
+                        categoryIds: values.categories
+                    })
+                ],
+                { type: "application/json" }
+            )
+        );
+
+        values.productImages?.forEach((file) => {
+            formData.append("productImages", file.originFileObj);
+        });
+
+        values.designs?.forEach((design) => {
+            if (design.image?.[0]) {
+                formData.append("designImages", design.image[0].originFileObj);
+            }
+        });
+        try {
+            // const response = await createProduct(formData);
+            // console.log("Product created successfully:", response.data);
+        } catch (error) {
+            console.error("Error creating product:", error);
+        }
+    };
+
     return (
         <div>
             <Form
@@ -55,16 +90,18 @@ const ProductCreatePage = () => {
                 form={form}
                 style={{ maxWidth: 800 }}
                 autoComplete="off"
+                onFinish={handleSubmit}
             >
                 <Form.Item
-                    label="Picture"
+                    name="productImages"
+                    label="Product Picture"
                     valuePropName="fileList"
                     getValueFromEvent={normFile}
                 >
                     <Upload
-                        action="/upload.do"
                         listType="picture-card"
                         multiple={true}
+                        beforeUpload={() => false}
                     >
                         <button
                             style={{
@@ -84,91 +121,86 @@ const ProductCreatePage = () => {
                         </button>
                     </Upload>
                 </Form.Item>
-                <Form.Item label="Name">
+                <Form.Item
+                    name="name"
+                    label="Name"
+                    rules={[{ required: true }]}
+                >
                     <Input />
                 </Form.Item>
-                <Form.Item label="Price">
+                <Form.Item
+                    name="price"
+                    label="Price"
+                    rules={[{ required: true }]}
+                >
                     <InputNumber min={1} defaultValue={100000} />
                 </Form.Item>
-                <Form.Item label="Stock">
+                <Form.Item
+                    name="stock"
+                    label="Stock"
+                    rules={[{ required: true }]}
+                >
                     <InputNumber min={1} defaultValue={10} />
                 </Form.Item>
-                <Form.Item label="Select">
+                <Form.Item
+                    name="categories"
+                    label="Categories"
+                    rules={[{ required: true }]}
+                >
                     <Select
                         mode="multiple"
                         allowClear
                         style={{
                             width: "100%"
                         }}
-                        placeholder="Please select"
-                        defaultValue={[]}
-                        // onChange={handleChange}
+                        placeholder="Select categories"
                         options={categories}
                     />
-                    {/* <Select>
-                    {categories.map((option) => (
-                        <Select.Option value={option.id} key={option.id}>
-                            {option.name}
-                        </Select.Option>
-                    ))}
-                </Select> */}
                 </Form.Item>
-                {/* New Design Field Section */}
                 <Form.Item label="Designs">
                     <Form.List name="designs">
                         {(fields, { add, remove }) => (
                             <>
-                                {fields.map(
-                                    ({
-                                        key,
-                                        name,
-                                        fieldKey,
-                                        fieldData,
-                                        ...restField
-                                    }) => (
-                                        <Card
-                                            size="small"
-                                            title={`Design ${name + 1}`}
-                                            key={key}
-                                            extra={
-                                                <CloseOutlined
-                                                    onClick={() => remove(name)}
-                                                />
-                                            }
+                                {fields.map(({ key, name, ...restField }) => (
+                                    <Card
+                                        size="small"
+                                        title={`Design ${key + 1}`}
+                                        key={key}
+                                        extra={
+                                            <CloseOutlined
+                                                onClick={() => remove(name)}
+                                            />
+                                        }
+                                    >
+                                        <Form.Item
+                                            {...restField}
+                                            name={[name, "image"]}
+                                            label="Design Image"
+                                            valuePropName="fileList"
+                                            getValueFromEvent={normFile}
                                         >
-                                            {/* Image Upload */}
-                                            <Form.Item
-                                                {...restField}
-                                                name={[name, "image"]}
-                                                label="Design Image"
-                                                valuePropName="fileList"
-                                                getValueFromEvent={normFile}
+                                            <Upload
+                                                listType="picture-card"
+                                                beforeUpload={() => false}
                                             >
-                                                <Upload
-                                                    action="/upload.do"
-                                                    listType="picture-card"
-                                                    multiple={false}
-                                                >
-                                                    <PlusOutlined />
-                                                    <div>Upload</div>
-                                                </Upload>
-                                            </Form.Item>
-                                            {/* Design Name */}
-                                            <Form.Item
-                                                {...restField}
-                                                name={[name, "designName"]}
-                                                label="Design Name"
-                                            >
-                                                <Input />
-                                            </Form.Item>
-                                        </Card>
-                                    )
-                                )}
+                                                <PlusOutlined />
+                                                <div>Upload</div>
+                                            </Upload>
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            {...restField}
+                                            name={[name, "designName"]}
+                                            label="Design Name"
+                                        >
+                                            <Input />
+                                        </Form.Item>
+                                    </Card>
+                                ))}
                                 <Button
                                     type="dashed"
                                     onClick={() => add()}
                                     block
-                                    icon={<PlusOutlined />}
                                 >
                                     Add Design
                                 </Button>
@@ -176,13 +208,21 @@ const ProductCreatePage = () => {
                         )}
                     </Form.List>
                 </Form.Item>
-                <Form.Item label="TextArea">
+                <Form.Item name="description" label="Description">
                     <TextArea rows={4} />
                 </Form.Item>
-                <Form.Item label="Discount">
+                <Form.Item
+                    name="discount"
+                    label="Discount"
+                    rules={[{ required: true }]}
+                >
                     <InputNumber min={0} defaultValue={0} />
                 </Form.Item>
-                <Form.Item label="IsActive" valuePropName="checked">
+                <Form.Item
+                    name="isActive"
+                    label="Is Active"
+                    valuePropName="checked"
+                >
                     <Switch />
                 </Form.Item>
 
@@ -191,17 +231,6 @@ const ProductCreatePage = () => {
                     <Button type="primary" htmlType="submit">
                         Submit
                     </Button>
-                </Form.Item>
-
-                {/* Debug: Display form values */}
-                <Form.Item noStyle shouldUpdate>
-                    {() => (
-                        <Typography>
-                            <pre>
-                                {JSON.stringify(form.getFieldsValue(), null, 2)}
-                            </pre>
-                        </Typography>
-                    )}
                 </Form.Item>
             </Form>
         </div>
