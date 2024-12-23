@@ -46,13 +46,15 @@ public class AdminProductController {
                 .result(adminProductService.createProduct(productRequest, productImages, designImages))
                 .build();
     }
-    @PutMapping("/update-product/{id}")
-    public ApiResponse<Void> updateProduct(
-            @PathVariable Long id,
-            @ModelAttribute ProductUpdateRequest request) {
-        adminProductService.updateProduct(id, request);
-        return ApiResponse.<Void>builder()
+
+    @PutMapping("/update-product")
+    public ApiResponse<ProductResponse> updateProduct(
+            @RequestPart(value = "productImages", required = false) List<MultipartFile> productImages,
+            @RequestPart(value = "product") ProductUpdateRequest request) {
+       ;
+        return ApiResponse.<ProductResponse>builder()
                 .code(HttpStatus.OK.value())
+                .result(adminProductService.updateProduct(request, productImages))
                 .message("Update product successfully")
                 .build();
     }
@@ -86,7 +88,6 @@ public class AdminProductController {
             @RequestPart(value = "image", required = false) MultipartFile designImage,
             @RequestPart("design") @Valid DesignRequest request
     ) {
-        ;
         return ApiResponse.<DesignResponse>builder()
                 .code(HttpStatus.CREATED.value())
                 .result(adminProductService.createProductDesign(id, designImage, request))

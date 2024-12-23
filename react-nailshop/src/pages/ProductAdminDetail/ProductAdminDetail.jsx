@@ -18,7 +18,6 @@ import {
     message
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import ProductDesign from "./ProductDesign"; // Import the new DesignManagement component
 import DesignAdmin from "./DesignAdmin";
 import { Row, Col } from "react-bootstrap";
 
@@ -33,6 +32,7 @@ const ProductAdminDetail = () => {
     const [loading, setLoading] = useState(true);
     const [designs, setDesigns] = useState([]);
     const [designList, setDesignList] = useState([]);
+    const [oldImages, setOldImages] = useState([]);
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
@@ -43,10 +43,14 @@ const ProductAdminDetail = () => {
                 ]);
 
                 const pictures = productRes.result.pictures || "";
+                const formattedOldImages = pictures
+                    .split(",")
+                    .map((url) => url.trim());
+                setOldImages(formattedOldImages);
                 const formattedFileList = pictures
                     .split(",")
                     .map((url, index) => ({
-                        uid: index.toString(),
+                        uid: `old-${index}`,
                         url: url.trim(),
                         name: `Image-${index + 1}`
                     }));
@@ -85,11 +89,65 @@ const ProductAdminDetail = () => {
     const updateDesign = async (updatedDesign) => {};
 
     const handleSubmit = async (values) => {
-        console.log("Product Data Submitted:", values);
+        setLoading(true);
+        const formData = new FormData();
+        formData.append(
+            "product",
+            new Blob(
+                [
+                    JSON.stringify({
+                        id: id,
+                        name: values.name,
+                        price: values.price,
+                        stock: values.stock,
+                        description: values.description,
+                        discount: values.discount,
+                        isActive: values.isActive,
+                        categoryIds: values.categories,
+                        oldImages
+                    })
+                ],
+                { type: "application/json" }
+            )
+        );
+        console.log({
+            id: id,
+            name: values.name,
+            price: values.price,
+            stock: values.stock,
+            description: values.description,
+            discount: values.discount,
+            isActive: values.isActive,
+            categoryIds: values.categories,
+            oldImages
+        });
+
+        fileList.forEach((file) => {
+            console.log(file.originFileObj);
+
+            formData.append("productImages", file.originFileObj);
+        });
+        try {
+            const response = await updateProduct(formData);
+            console.log("Product created successfully:", response);
+            message.success("Product created successfully");
+        } catch (error) {
+            console.error("Error creating product:", error);
+            message.success("Error creating product");
+        }
+        setLoading(false);
     };
+    const handleRemoveImage = (file) => {
+        console.log("delete id: " + file.uid);
+
+        if (file.uid.startsWith("old-")) {
+            setOldImages((prev) => prev.filter((url) => url !== file.url));
+        }
+        setFileList((prev) => prev.filter((item) => item.uid !== file.uid));
+    };
+
     const handleRemove = async (id, oldId) => {
         console.log(`deleteId: ${(id, oldId)}`);
-
         if (!(id + "").startsWith("newDesign-count")) {
             setLoading(true);
             try {
@@ -126,6 +184,7 @@ const ProductAdminDetail = () => {
     if (loading) {
         return <Spin tip="Loading..." />;
     }
+    console.log("old image: " + oldImages);
 
     return (
         <Row>
@@ -134,15 +193,15 @@ const ProductAdminDetail = () => {
                     form={form}
                     labelCol={{ span: 6 }}
                     wrapperCol={{ span: 18 }}
-                    layout="horizontal"
                     style={{ flex: 1 }}
                     onFinish={handleSubmit}
                 >
-                    <Form.Item label="Product Images">
+                    <Form.Item label="Product Images" name="productImages">
                         <Upload
                             listType="picture-card"
                             fileList={fileList}
                             onChange={({ fileList }) => setFileList(fileList)}
+                            onRemove={handleRemoveImage}
                             beforeUpload={() => false}
                         >
                             <div>
@@ -190,7 +249,7 @@ const ProductAdminDetail = () => {
                     </Form.Item>
                     <Form.Item>
                         <Button type="primary" htmlType="submit">
-                            Submit
+                            Update info
                         </Button>
                     </Form.Item>
                 </Form>

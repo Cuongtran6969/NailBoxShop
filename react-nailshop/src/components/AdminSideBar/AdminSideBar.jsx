@@ -5,6 +5,7 @@ import Logo from "@icons/images/nailLaBoxLogo.png";
 import { MdOutlineMenu } from "react-icons/md";
 import { useState } from "react";
 import classNames from "classnames";
+import { Link } from "react-router-dom";
 
 function AdminSideBar() {
     const [openNavMenu, setOpenNavMenu] = useState(true);
@@ -49,16 +50,18 @@ function AdminSideBar() {
                                 {item.subMenu.map((menu) => {
                                     let Icon = menu.icon;
                                     return (
-                                        <li
-                                            className={menuItem}
-                                            key={menu.label}
-                                        >
-                                            <div className={menuIcon}>
-                                                <Icon />
-                                            </div>
-                                            <div className={menuLabel}>
-                                                {menu.label}
-                                            </div>
+                                        <li key={menu.label}>
+                                            <Link
+                                                to={menu.path}
+                                                className={menuItem}
+                                            >
+                                                <div className={menuIcon}>
+                                                    <Icon />
+                                                </div>
+                                                <div className={menuLabel}>
+                                                    {menu.label}
+                                                </div>
+                                            </Link>
                                         </li>
                                     );
                                 })}

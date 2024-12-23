@@ -130,7 +130,7 @@ function DesignAdmin({ design, productId, handleRemove }) {
                 layout="vertical"
                 onFinish={handleSubmit}
             >
-                <Form.Item label="Design Id" name="id">
+                <Form.Item label="Design Id" name="id" hidden>
                     <Input readOnly /> {/* Để ID không thể chỉnh sửa */}
                 </Form.Item>
                 <Form.Item label="Design Image" name="image">

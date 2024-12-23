@@ -15,28 +15,28 @@ export const adminMenu = [
         subMenu: [
             {
                 label: "Home",
-                icon: GoHomeFill, // Reference the component
-                component: ""
+                icon: GoHomeFill, // Reference the path
+                path: ""
             },
             {
                 label: "Customer",
-                icon: HiOutlineUsers, // Reference the component
-                component: ""
+                icon: HiOutlineUsers, // Reference the path
+                path: "/admin/customer"
             },
             {
                 label: "Orders",
                 icon: BsCart3,
-                component: ""
+                path: "/admin/orders"
             },
             {
                 label: "Analytics",
                 icon: GrAnalytics,
-                component: ""
+                path: "/admin/analytics"
             },
             {
                 label: "Product",
                 icon: FiBox,
-                component: ""
+                path: "/admin"
             }
         ]
     },
@@ -46,17 +46,17 @@ export const adminMenu = [
             {
                 label: "My Store",
                 icon: IoStorefrontOutline,
-                component: ""
+                path: ""
             },
             {
                 label: "Discounts",
                 icon: LuTicketPercent,
-                component: ""
+                path: ""
             },
             {
                 label: "Shipment",
                 icon: MdOutlineLocalShipping,
-                component: ""
+                path: ""
             }
         ]
     },
@@ -66,12 +66,12 @@ export const adminMenu = [
             {
                 label: "Settings",
                 icon: IoSettingsOutline,
-                component: ""
+                path: ""
             },
             {
                 label: "Logout",
                 icon: CiLogout,
-                component: ""
+                path: ""
             }
         ]
     }

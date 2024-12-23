@@ -17,9 +17,9 @@ const createProduct = async (formData) => {
     });
     return res.data;
 };
-const updateProduct = async (id, formData) => {
+const updateProduct = async (formData) => {
     const response = await axiosClient.put(
-        `/admin/products/update-product/${id}`,
+        `/admin/products/update-product`,
         formData,
         {
             headers: {

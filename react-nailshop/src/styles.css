@@ -2,6 +2,9 @@ body {
     background-color: #3f435715;
     height: 1000px;
 }
+li {
+    list-style: none;
+}
 .swiper-button-next,
 .swiper-button-prev {
     width: 40px;

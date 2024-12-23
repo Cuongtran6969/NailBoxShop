@@ -29,10 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -161,10 +158,50 @@ public class AdminProductServiceImpl implements AdminProductService {
     }
 
     @Override
-    public void updateProduct(Long id, ProductUpdateRequest request) {
+    public ProductResponse updateProduct(ProductUpdateRequest request, List<MultipartFile> productImages) {
+        Product product = productRepository.findById(request.getId()).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_ID_INVALID));
+        productMapper.updateProduct(request, product);
 
+        Set<String> currentPictures = new HashSet<>();
+        if (product.getPictures() != null && !product.getPictures().isEmpty()) {
+            currentPictures.addAll(Arrays.asList(product.getPictures().split(",")));
+        }
+
+        if (request.getOldImages() != null && !request.getOldImages().isEmpty()) {
+            currentPictures.retainAll(request.getOldImages());
+        } else {
+            currentPictures.clear();
+        }
+
+        if (productImages != null && !productImages.isEmpty()) {
+            List<String> newImageUrls = productImages.stream()
+                    .map(cloudinaryService::uploadImage)
+                    .collect(Collectors.toList());
+            currentPictures.addAll(newImageUrls);
+        }
+
+        product.setPictures(String.join(",", currentPictures));
+
+        if (!request.getCategoryIds().isEmpty()) {
+            Set<Category> categories = categoryService.getCategoriesByIds(request.getCategoryIds());
+            product.setCategories(categories);
+        }
+
+        productRepository.save(product);
+        log.info("Product info updated successfully");
+        return productMapper.toProductResponse(product);
     }
 
+    @Override
+    public List<Product> getProductsByIds(List<Long> ids) {
+        List<Product> products = new ArrayList<>();
+        for (Long proId : ids) {
+            Product product = productRepository.findById(proId)
+                    .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_ID_INVALID));
+            products.add(product);
+        }
+        return products;
+    }
 
 
 }

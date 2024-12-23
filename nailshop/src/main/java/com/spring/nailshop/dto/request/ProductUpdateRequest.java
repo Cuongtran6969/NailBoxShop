@@ -14,14 +14,13 @@ import java.util.Set;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductUpdateRequest {
+    Long id;
     String name;
     BigDecimal price;
     Integer stock;
     String description;
     Integer discount;
     Boolean isActive;
-//    Set<Integer> deleteIndexPicture;
-    List<MultipartFile> pictures;
-    Set<DesignUpdateRequest> designs;
+    Set<String> oldImages;
     Set<Long> categoryIds;
 }

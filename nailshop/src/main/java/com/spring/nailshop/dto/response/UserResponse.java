@@ -18,10 +18,10 @@ public class UserResponse {
     Long id;
     String email;
     String name;
+    String avatar;
     String firstName;
     String lastName;
     String phone;
-    String status;
+    Boolean enabled;
     String role;
-    List<AddressResponse> addresses;
 }
