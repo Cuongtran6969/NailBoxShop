@@ -1,6 +1,7 @@
 import ProductItem from "@productManagePages/productItem/ProductItem";
 import {
     Button,
+    Checkbox,
     Dropdown,
     Form,
     Input,
@@ -26,8 +27,7 @@ const sortOptions = [
     { id: 2, type: "asc", icon: TiArrowSortedUp },
     { id: 3, type: "desc", icon: TiArrowSortedDown }
 ];
-
-function ProductManage() {
+function ProductManage({ onProductSelection = () => {} }) {
     const navigate = useNavigate();
     const [filters, setFilters] = useState({
         searchName: "",
@@ -41,8 +41,7 @@ function ProductManage() {
         currentPage: 1,
         totalItems: 0
     });
-
-    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const [checkedList, setCheckedList] = useState([]);
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState([]);
 
@@ -53,9 +52,11 @@ function ProductManage() {
         });
     };
     const handleSearch = () => {
+        setPagination((prev) => ({ ...prev, currentPage: 1 }));
         setFilters((prev) => ({ ...prev, searchName: prev.inputName }));
     };
     const clearSearch = () => {
+        setPagination((prev) => ({ ...prev, currentPage: 1 }));
         setFilters((prev) => ({ ...prev, searchName: "", inputName: "" }));
     };
 
@@ -78,7 +79,14 @@ function ProductManage() {
             if (sortStock.type) query += `&sort=stock:${sortStock.type}`;
             await new Promise((resolve) => setTimeout(resolve, 2000)); // Delay 2 giây
             const response = await getProduct(currentPage, query);
-            setProducts(response.result.items);
+            setProducts(
+                response.result.items.map((item) => {
+                    return {
+                        key: item.id,
+                        ...item
+                    };
+                })
+            );
             setPagination((prev) => ({
                 ...prev,
                 totalItems: response.result.total
@@ -99,8 +107,78 @@ function ProductManage() {
         filters.sortStock,
         pagination.currentPage
     ]);
+    useEffect(() => {
+        onProductSelection(checkedList); // Send selected product IDs back to parent
+    }, [checkedList]);
+    const onCheckChange = (e, id) => {
+        console.log(e.target.checked);
+        if (e.target.checked) {
+            setCheckedList((prev) => [...prev, id]);
+        } else {
+            setCheckedList((prev) => prev.filter((item) => item != id));
+        }
+    };
+    const checkAll = () => {
+        console.log("Aaaaa");
+        console.log("in checkAll = checkedList: " + checkedList);
+        if (checkedList.length === 0) return false;
+        return products.every((product) => checkedList.includes(product.id));
+    };
+    const haveCheck = () => {
+        console.log("Bbbbb");
+        console.log("in haveCheck = checkedList: " + checkedList);
+
+        if (checkedList.length === 0) return false;
+        return products.some((product) => checkedList.includes(product.id));
+    };
+
+    const onCheckAllChange = (e) => {
+        console.log("select change to: " + e.target.checked);
+        if (e.target.checked) {
+            //da check full
+            console.log("herere 1");
+
+            setCheckedList((prev) => [
+                ...prev,
+                ...products
+                    .map((product) => product.id)
+                    .filter((id) => !prev.includes(id))
+            ]);
+        } else {
+            console.log("here 2");
+            setCheckedList((prev) =>
+                prev.filter(
+                    (id) => !products.some((product) => product.id === id)
+                )
+            );
+        }
+    };
+
+    console.log("checkedList.length" + checkedList.length);
+    console.log("checkAll()" + checkAll());
+    console.log("indeterminate()" + haveCheck());
     const columns = useMemo(
         () => [
+            {
+                title: (
+                    <div className="d-flex">
+                        <Checkbox
+                            indeterminate={haveCheck() && !checkAll()}
+                            onChange={(e) => onCheckAllChange(e)}
+                            checked={checkAll()}
+                        />
+                    </div>
+                ),
+                dataIndex: "",
+                render: (t, r) => (
+                    <div className="d-flex">
+                        <Checkbox
+                            onChange={(e) => onCheckChange(e, r.id)}
+                            checked={checkedList.includes(r.id)}
+                        />
+                    </div>
+                )
+            },
             {
                 title: "Id",
                 dataIndex: "id"
@@ -257,18 +335,14 @@ function ProductManage() {
                 )
             }
         ],
-        [filters]
+        [filters, checkedList, pagination.currentPage, products]
     );
-
-    const rowSelection = {
-        selectedRowKeys,
-        onChange: setSelectedRowKeys
-    };
 
     return (
         <div>
+            <h5> {checkedList.length} Sản phẩm được chọn cho chiến dịch này</h5>
             <Table
-                rowSelection={rowSelection}
+                // rowSelection={rowSelection}
                 columns={columns}
                 dataSource={products}
                 pagination={false}

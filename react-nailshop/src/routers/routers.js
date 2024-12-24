@@ -8,9 +8,8 @@ import ProductManage from "@pages/ProductManage/ProductManage";
 import ProductCreatePage from "@pages/ProductCreatePage/ProductCreatePage";
 import ProductAdminDetail from "@pages/ProductAdminDetail/ProductAdminDetail";
 import UserManagerPage from "@pages/UserManagerPage/UserManagerPage";
-import LoginPage from "@pages/LoginPage/LoginPage";
+import CampaignPage from "@pages/CampaignPage/CampaignPage";
 const routers = [
-    { path: "/login", component: LoginPage, layout: DefaultLayout },
     { path: "/", component: HomePage, layout: DefaultLayout },
     { path: "/detail", component: ProductDetailPage, layout: DefaultLayout },
     { path: "/cart", component: CartPage, layout: DefaultLayout },
@@ -29,6 +28,11 @@ const routers = [
     {
         path: "admin/users",
         component: UserManagerPage,
+        layout: AdminLayout
+    },
+    {
+        path: "admin/campaign",
+        component: CampaignPage,
         layout: AdminLayout
     }
 ];

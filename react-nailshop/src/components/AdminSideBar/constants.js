@@ -49,9 +49,9 @@ export const adminMenu = [
                 path: ""
             },
             {
-                label: "Discounts",
+                label: "Campaign",
                 icon: LuTicketPercent,
-                path: ""
+                path: "/admin/campaign"
             },
             {
                 label: "Shipment",
