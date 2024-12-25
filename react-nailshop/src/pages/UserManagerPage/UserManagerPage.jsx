@@ -21,6 +21,10 @@ function UserManagerPage() {
     const [filters, setFilters] = useState({
         keyword: ""
     });
+    const [pagination, setPagination] = useState({
+        currentPage: 1,
+        totalItems: 0
+    });
     const EnableUser = async (id, checked) => {
         setLoading(true);
         try {
@@ -43,11 +47,6 @@ function UserManagerPage() {
             setLoading(false); // Dừng trạng thái loading
         }
     };
-
-    const [pagination, setPagination] = useState({
-        currentPage: 1,
-        totalItems: 0
-    });
 
     const columns = useMemo(
         () => [

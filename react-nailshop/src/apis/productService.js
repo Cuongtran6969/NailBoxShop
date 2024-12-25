@@ -65,6 +65,11 @@ const createDesign = async (productId, formData) => {
     return res.data;
 };
 
+const productCampaign = async () => {
+    let urlApi = `/api/v1/product/campaign`;
+    const res = await axiosClient.get(urlApi);
+    return res.data;
+};
 export {
     getProduct,
     createProduct,
@@ -72,5 +77,6 @@ export {
     getProductDetail,
     updateDesign,
     deleteDesign,
-    createDesign
+    createDesign,
+    productCampaign
 };

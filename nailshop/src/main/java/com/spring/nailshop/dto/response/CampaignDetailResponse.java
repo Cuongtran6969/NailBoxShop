@@ -1,6 +1,5 @@
 package com.spring.nailshop.dto.response;
 
-import com.spring.nailshop.entity.Product;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,12 +11,11 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CampaignResponse {
-    Long id;
+public class CampaignDetailResponse {
     String name;
     String description;
     LocalDateTime startTime;
     LocalDateTime endTime;
     Boolean status;
-    Integer numberProduct;
+    List<ProductResponse> products;
 }

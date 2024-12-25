@@ -1,16 +1,10 @@
 package com.spring.nailshop.mapper;
 
-import com.spring.nailshop.dto.request.DesignRequest;
 import com.spring.nailshop.dto.request.ProductRequest;
 import com.spring.nailshop.dto.request.ProductUpdateRequest;
-import com.spring.nailshop.dto.request.UserUpdateRequest;
-import com.spring.nailshop.dto.response.ProductDetailResponse;
 import com.spring.nailshop.dto.response.ProductResponse;
-import com.spring.nailshop.dto.response.UserResponse;
 import com.spring.nailshop.dto.response.admin.Admin_ProductResponse;
-import com.spring.nailshop.entity.Design;
 import com.spring.nailshop.entity.Product;
-import com.spring.nailshop.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

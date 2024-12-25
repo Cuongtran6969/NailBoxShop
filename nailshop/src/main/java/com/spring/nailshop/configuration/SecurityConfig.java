@@ -21,7 +21,7 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
 
     private final String[] PUBLIC_ENDPOINT = {
-            "/auth/**"
+            "/api/v1/**", "/auth/**"
     };
 
     @Bean

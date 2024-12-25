@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import dayjs from "dayjs";
 import {
     Button,
     DatePicker,
@@ -6,10 +7,9 @@ import {
     Input,
     Spin,
     Switch,
-    Alert,
+    message,
     notification
 } from "antd";
-import Marquee from "react-fast-marquee";
 import {
     RadiusBottomleftOutlined,
     RadiusBottomrightOutlined,
@@ -19,7 +19,8 @@ import {
 import { Col, Row } from "react-bootstrap";
 import ProductManage from "@pages/ProductManage/ProductManage";
 const { RangePicker } = DatePicker;
-import { createCampaign } from "@/apis/campaignService";
+import { getCampaignDetail, updateCampaign } from "@/apis/campaignService";
+import { useParams } from "react-router-dom";
 
 const formItemLayout = {
     labelCol: {
@@ -39,19 +40,44 @@ const formItemLayout = {
         }
     }
 };
-const CampaignPage = () => {
+const CampaignUpdate = () => {
+    const { id } = useParams();
     const [form] = Form.useForm();
     const [productIds, setProductIds] = useState([]);
     const [loading, setLoading] = useState(false);
     const variant = Form.useWatch("variant", form);
     const [api, contextHolder] = notification.useNotification();
-
     const openNotificationWithIcon = (type, mess, desc) => {
         api[type]({
             message: mess,
             description: desc
         });
     };
+    useEffect(() => {
+        const fetchInitialData = async () => {
+            try {
+                setLoading(true);
+                const campainRes = await getCampaignDetail(id);
+
+                form.setFieldsValue({
+                    name: campainRes.result.name,
+                    description: campainRes.result.description,
+                    dateTime: [
+                        dayjs(campainRes.result.startTime),
+                        dayjs(campainRes.result.endTime)
+                    ],
+                    status: campainRes.result.status
+                });
+                setProductIds(campainRes.result.products.map((p) => p.id));
+            } catch (error) {
+                console.error("Error fetching initial data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchInitialData();
+    }, [id]);
+
     const handleSubmit = async (values) => {
         if (productIds.length == 0) {
             openNotificationWithIcon(
@@ -70,11 +96,12 @@ const CampaignPage = () => {
             status: values.status,
             productIds: productIds
         };
+
         try {
-            const response = await createCampaign(data);
+            const response = await updateCampaign(id, data);
             openNotificationWithIcon(
                 "success",
-                "Tạo thành công",
+                "Cập nhật thành công",
                 response.message
             );
         } catch (error) {
@@ -85,30 +112,23 @@ const CampaignPage = () => {
     const handleProductSelection = (selectedProductIds) => {
         setProductIds(selectedProductIds); // Update the productIds state
     };
+
     return (
         <Row>
             {contextHolder}
             <Col sm={12}>
-                <Alert
-                    banner
-                    message={
-                        <Marquee pauseOnHover gradient={false}>
-                            CHÚ Ý: Tạo chiến dịch để hiện thị ở trang chính, mục
-                            đích làm nổi bật các sản phẩm cần bán ra.
-                        </Marquee>
-                    }
-                />
+                <h6 className="text-center">Tạo chiến dịch mới</h6>
             </Col>
             <Col sm={12} className="mt-5">
                 <Form
-                    size="large"
                     {...formItemLayout}
+                    size="large"
                     form={form}
                     variant={"outlined"}
                     onFinish={handleSubmit}
                 >
                     <Form.Item
-                        label="Tên chiến dịch"
+                        label="Name"
                         name="name"
                         rules={[
                             {
@@ -120,7 +140,7 @@ const CampaignPage = () => {
                         <Input />
                     </Form.Item>
                     <Form.Item
-                        label="Mô tả"
+                        label="Description"
                         name="description"
                         rules={[
                             {
@@ -132,7 +152,7 @@ const CampaignPage = () => {
                         <Input />
                     </Form.Item>
                     <Form.Item
-                        label="Thời gian diễn ra"
+                        label="RangePicker"
                         name="dateTime"
                         rules={[
                             {
@@ -144,22 +164,8 @@ const CampaignPage = () => {
                         <RangePicker showTime />
                     </Form.Item>
                     <Form.Item
-                        label="Số lượng"
-                        rules={[
-                            {
-                                required: false
-                            }
-                        ]}
-                    >
-                        <span className="fs-6">
-                            {" "}
-                            <strong>{productIds.length}</strong> Sản phẩm được
-                            chọn cho chiến dịch này
-                        </span>
-                    </Form.Item>
-                    <Form.Item
                         name="status"
-                        label="Trạng thái hoạt động"
+                        label="Is Active"
                         valuePropName="checked"
                     >
                         <Switch />
@@ -171,15 +177,18 @@ const CampaignPage = () => {
                         }}
                     >
                         <Button type="primary" htmlType="submit">
-                            Thêm
+                            Cập nhật
                         </Button>
                     </Form.Item>
                 </Form>
             </Col>
             <Col sm={12}>
-                <ProductManage onProductSelection={handleProductSelection} />
+                <ProductManage
+                    onProductSelection={handleProductSelection}
+                    initCheckList={productIds}
+                />
             </Col>
         </Row>
     );
 };
-export default CampaignPage;
+export default CampaignUpdate;

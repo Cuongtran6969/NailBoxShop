@@ -36,6 +36,4 @@ public class Campaign extends AbstractEntity<Long>{
 
     @Column(name = "status")
     private Boolean status;
-
-
 }

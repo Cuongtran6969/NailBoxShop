@@ -27,7 +27,7 @@ const sortOptions = [
     { id: 2, type: "asc", icon: TiArrowSortedUp },
     { id: 3, type: "desc", icon: TiArrowSortedDown }
 ];
-function ProductManage({ onProductSelection = () => {} }) {
+function ProductManage({ onProductSelection = () => {}, initCheckList = [] }) {
     const navigate = useNavigate();
     const [filters, setFilters] = useState({
         searchName: "",
@@ -41,6 +41,8 @@ function ProductManage({ onProductSelection = () => {} }) {
         currentPage: 1,
         totalItems: 0
     });
+    console.log("initCheckList: " + initCheckList);
+
     const [checkedList, setCheckedList] = useState([]);
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState([]);
@@ -110,6 +112,11 @@ function ProductManage({ onProductSelection = () => {} }) {
     useEffect(() => {
         onProductSelection(checkedList); // Send selected product IDs back to parent
     }, [checkedList]);
+    useEffect(() => {
+        if (initCheckList && initCheckList.length > 0) {
+            setCheckedList(initCheckList);
+        }
+    }, [initCheckList]);
     const onCheckChange = (e, id) => {
         console.log(e.target.checked);
         if (e.target.checked) {
@@ -180,13 +187,13 @@ function ProductManage({ onProductSelection = () => {} }) {
                 )
             },
             {
-                title: "Id",
+                title: "Mã",
                 dataIndex: "id"
             },
             {
                 title: (
                     <div className="d-flex justify-content-between align-items-center">
-                        <span>Name</span>
+                        <span>Tên</span>
                         <span>
                             <Tooltip title="search">
                                 <Dropdown
@@ -269,13 +276,13 @@ function ProductManage({ onProductSelection = () => {} }) {
             {
                 title: (
                     <div className="d-flex justify-content-between align-items-center">
-                        <span>Category</span>
-                        <span>
+                        <span>Thể loại</span>
+                        {/* <span>
                             <CateFilter
                                 handleChoose={updateTags}
                                 checkedKeys={filters.tags}
                             />
-                        </span>
+                        </span> */}
                     </div>
                 ),
                 dataIndex: "categories",
@@ -298,8 +305,8 @@ function ProductManage({ onProductSelection = () => {} }) {
             },
             {
                 title: (
-                    <div className="d-flex justify-content-between">
-                        <span>Sold</span>
+                    <div className="d-flex justify-content-between align-items-center">
+                        <span>Đã bán</span>
                         <filters.sortSold.icon
                             onClick={() => handleSortChange("sortSold")}
                         />
@@ -310,7 +317,7 @@ function ProductManage({ onProductSelection = () => {} }) {
             {
                 title: (
                     <div className="d-flex justify-content-between align-items-center">
-                        <span>Stock</span>
+                        <span>Còn hàng</span>
                         <filters.sortStock.icon
                             onClick={() => handleSortChange("sortStock")}
                         />
@@ -319,7 +326,7 @@ function ProductManage({ onProductSelection = () => {} }) {
                 dataIndex: "stock"
             },
             {
-                title: "Setting",
+                title: "Cài đặt",
                 dataIndex: "stock",
                 render: (t, r) => (
                     <div className="d-flex">
@@ -340,7 +347,6 @@ function ProductManage({ onProductSelection = () => {} }) {
 
     return (
         <div>
-            <h5> {checkedList.length} Sản phẩm được chọn cho chiến dịch này</h5>
             <Table
                 // rowSelection={rowSelection}
                 columns={columns}

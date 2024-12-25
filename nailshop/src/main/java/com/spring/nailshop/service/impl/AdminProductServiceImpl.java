@@ -3,7 +3,6 @@ package com.spring.nailshop.service.impl;
 import com.spring.nailshop.dto.request.*;
 import com.spring.nailshop.dto.response.DesignResponse;
 import com.spring.nailshop.dto.response.PageResponse;
-import com.spring.nailshop.dto.response.ProductDetailResponse;
 import com.spring.nailshop.dto.response.ProductResponse;
 import com.spring.nailshop.dto.response.admin.Admin_ProductResponse;
 import com.spring.nailshop.entity.Category;
