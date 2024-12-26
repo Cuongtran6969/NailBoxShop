@@ -10,11 +10,12 @@ const axiosClient = axios.create({
 axiosClient.interceptors.request.use(
     async (config) => {
         console.log(config);
-        const token =
-            "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MzUxNTUyMzYsImV4cCI6MTczNTE1ODgzNn0.16BM4JjcSbV1bg0xr1nzmCb9z2kX757HsHdkqbCVIfE";
+        const accessToken = Cookies.get("token");
+        // const accessToken =
+        //     "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MzUyMjYzNDUsImV4cCI6MTczNTIyOTk0NX0.UH8N2kL5QRMlo9GjfMTV4UAhktjqI8Z_TSn47F7_Cmo";
 
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+        if (accessToken) {
+            config.headers.Authorization = `Bearer ${accessToken}`;
         }
 
         return config;

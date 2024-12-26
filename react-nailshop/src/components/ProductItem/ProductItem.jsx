@@ -2,9 +2,15 @@ import ProgressBar from "@components/ProgressBar/ProgressBar";
 import styles from "./styles.module.scss";
 import DiscountTicket from "@components/DiscountTicket/DiscountTicket";
 import classNames from "classnames";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 function ProductItem(props) {
+    const navigate = useNavigate();
+
     const {
+        id,
         name,
+        pictures,
         desc,
         categories,
         price,
@@ -29,22 +35,18 @@ function ProductItem(props) {
     } = styles;
     return (
         <div
+            onClick={() => navigate(`/detail/${id}`)}
             className={classNames(productBox, {
                 [forItemDisplay]: numberDisplay == 4
             })}
         >
             <div className={productItem}>
                 <div>
-                    <a href="#">
-                        <img
-                            src="https://nailboxxinh.com/wp-content/uploads/2024/12/combo-nail-box-xinh-5-300x300.webp"
-                            alt=""
-                        />
-                    </a>
+                    <img src={pictures.split(",")[0]} alt="" />
                 </div>
                 <div className={productContent}>
                     <div>
-                        <ProgressBar sold={sold} total={stock} />
+                        <ProgressBar sold={sold} total={sold + stock} />
                     </div>
                     <a href="#" className={productCate}>
                         {categories && categories.length > 0
@@ -56,7 +58,7 @@ function ProductItem(props) {
                         <span className={productPrice}>
                             {new Intl.NumberFormat("vi-VN").format(
                                 price - price * 0.01 * discount
-                            )}{" "}
+                            )}
                             <span>₫</span>
                         </span>
                         <p className={productPriceRoot}>

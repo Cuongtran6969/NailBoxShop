@@ -13,9 +13,8 @@ import org.mapstruct.MappingTarget;
 public interface ProductMapper {
     Product toProduct(ProductRequest request);
 
-    @Mapping(target = "pictures", source = "pictures")
-    @Mapping(target = "categories", source = "categories")
-    @Mapping(target = "designs", source = "designs") // Sử dụng DesignMapper
+//    @Mapping(target = "categories", source = "categories")
+//    @Mapping(target = "designs", source = "designs")
     ProductResponse toProductResponse(Product product);
 
     @Mapping(target = "pictures", source = "pictures")

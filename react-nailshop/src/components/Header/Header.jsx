@@ -31,9 +31,10 @@ function Header() {
                                 // style={{ display: "flex", textAlign: "start" }}
                             >
                                 <div className={conatinerBoxIcon}>
-                                    {dataBoxIcon.map((item) => {
+                                    {dataBoxIcon.map((item, index) => {
                                         return (
                                             <BoxIcon
+                                                key={index}
                                                 type={item.type}
                                                 href={item.href}
                                             />
@@ -52,9 +53,10 @@ function Header() {
                                 // style={{ display: "flex", textAlign: "start" }}
                             >
                                 <div className={conatinerBoxIcon}>
-                                    {dataBoxIcon.map((item) => {
+                                    {dataBoxIcon.map((item, index) => {
                                         return (
                                             <BoxIcon
+                                                key={index}
                                                 type={item.type}
                                                 href={item.href}
                                             />

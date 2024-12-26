@@ -1,5 +1,5 @@
 import axiosClient from "./axiosClient";
-//api product
+//api product admin
 const getProduct = async (currentPage, filterQuery) => {
     let urlApi = `/admin/products/get-product?page=${currentPage}`;
     if (filterQuery) {
@@ -64,9 +64,32 @@ const createDesign = async (productId, formData) => {
     });
     return res.data;
 };
-
+//api product public
 const productCampaign = async () => {
     let urlApi = `/api/v1/product/campaign`;
+    const res = await axiosClient.get(urlApi);
+    return res.data;
+};
+
+const getProductPublic = async (
+    currentPage,
+    pageSize,
+    filterQuery,
+    orderBy
+) => {
+    let urlApi = `/api/v1/products?page=${currentPage}&size=${pageSize}`;
+    if (filterQuery) {
+        urlApi += `&filter=${filterQuery}`;
+    }
+    if (orderBy) {
+        urlApi += `&sort=${orderBy}`;
+    }
+    const res = await axiosClient.get(urlApi);
+    return res.data;
+};
+
+const getProductById = async (id) => {
+    let urlApi = `/api/v1/product/${id}`;
     const res = await axiosClient.get(urlApi);
     return res.data;
 };
@@ -78,5 +101,7 @@ export {
     updateDesign,
     deleteDesign,
     createDesign,
-    productCampaign
+    productCampaign,
+    getProductPublic,
+    getProductById
 };

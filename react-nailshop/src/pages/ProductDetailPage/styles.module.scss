@@ -8,12 +8,17 @@
 .mainProductImg {
     img {
         border-radius: 10px;
+        height: 400px !important;
     }
 }
 .imageSlider {
     margin-top: 20px;
+    .activeImg {
+        border: 1px solid $primary_color;
+    }
     img {
         border-radius: 10px;
+        height: 80px !important;
         cursor: pointer;
     }
 }

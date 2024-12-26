@@ -1,6 +1,6 @@
 import axiosClient from "./axiosClient";
 const getCategory = async () => {
-    let urlApi = "/category/list";
+    let urlApi = "/api/v1/categories";
     const res = await axiosClient.get(urlApi);
     return res.data;
 };

@@ -1,0 +1,40 @@
+@import "@styles/mixin.module.scss";
+@import "@styles/variables.module.scss";
+.container {
+    padding: 30px 20px 0 20px;
+    .title {
+        font-size: 18px;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .boxRememberMe {
+        @include flex_box_custom(start, center, 0px);
+        margin-bottom: 10px;
+        input {
+            margin-right: 10px;
+        }
+        span {
+            font-size: 14px;
+        }
+    }
+    .lostPassword {
+        margin-top: 20px;
+        font-size: 14px;
+        text-align: center;
+        &:hover {
+            cursor: pointer;
+        }
+    }
+    .sendMailBtn {
+        margin-bottom: 0;
+        position: absolute;
+        color: red;
+        cursor: pointer;
+        bottom: -30px;
+        font-size: 14px;
+        left: 0;
+        &:hover {
+            opacity: 0.6;
+        }
+    }
+}

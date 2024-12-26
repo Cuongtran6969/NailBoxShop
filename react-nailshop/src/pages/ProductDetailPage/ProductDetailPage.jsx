@@ -11,7 +11,7 @@ import "swiper/css/navigation";
 
 // import required modules
 import { Navigation } from "swiper/modules";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DiscountTicket from "@components/DiscountTicket/DiscountTicket";
 
 import {
@@ -29,8 +29,12 @@ import CateFilter from "@components/CateFilter/CateFilter";
 import ProductSuggest from "@components/ProductSuggest/ProductSuggest";
 import Description from "@productPages/CollapseDesc/Description";
 import ProductItem from "@components/ProductItem/ProductItem";
-import Footer from "@components/Footer/Footer";
-function ProductDetailPage() {
+import { useParams } from "react-router-dom";
+import { getProductById } from "@/apis/productService";
+const ProductDetailPage = () => {
+    const { id } = useParams();
+    const [product, setProduct] = useState(null);
+    const [loading, setLoading] = useState(true);
     const {
         navPage,
         mainProductImg,
@@ -49,19 +53,50 @@ function ProductDetailPage() {
         addToCartBtn,
         buyNowBtn,
         productRelation,
-        relationTitle
+        relationTitle,
+        activeImg
     } = styles;
-    const [currentImage, setCurrentImage] = useState(
-        "https://nailboxxinh.com/wp-content/uploads/2024/12/set-qua-tang-combo-300x300.webp"
-    );
+    const [currentImage, setCurrentImage] = useState("");
+    const [images, setImages] = useState([]);
     const [currentSize, setCurrentSize] = useState("S");
+
+    useEffect(() => {
+        const fetchInitialData = async () => {
+            try {
+                setLoading(true);
+                console.log("Fetching product data for id:", id);
+                const data = await getProductById(id);
+                console.log(data);
+
+                let pictures = data.result.pictures
+                    ? data.result.pictures.split(",")
+                    : [];
+                let designs = data.result.designs ? data.result.designs : [];
+                designs.forEach((design) => {
+                    if (design.picture) {
+                        pictures.push(design.picture);
+                    }
+                });
+                setProduct(data.result);
+                setImages(pictures);
+                setCurrentImage(pictures[0]);
+            } catch (error) {
+                console.error("Error fetching initial data:", error);
+            }
+            setLoading(false);
+        };
+        fetchInitialData();
+    }, [id]);
 
     const handleChangeImage = (src) => {
         setCurrentImage(src);
     };
 
     const handleChangeOption = (value) => {
-        console.log(`selected ${value}`);
+        const picture =
+            product.designs.find((design) => design.id === value)?.picture ||
+            null;
+        setCurrentImage(picture);
     };
     const handleChooseSize = (value) => {
         setCurrentSize(value);
@@ -69,7 +104,8 @@ function ProductDetailPage() {
     const isCurrentSize = (size) => {
         return currentSize === size;
     };
-
+    if (loading) return <div>Loading...</div>;
+    console.log("Images:", images);
     return (
         <div>
             <ConfigProvider
@@ -132,72 +168,33 @@ function ProductDetailPage() {
                                                     navigation={true}
                                                     modules={[Navigation]}
                                                 >
-                                                    <SwiperSlide>
-                                                        <div
-                                                            onClick={() =>
-                                                                handleChangeImage(
-                                                                    "https://nailboxxinh.com/wp-content/uploads/2024/12/hinh-nail-box-trang-gao-300x300.webp"
-                                                                )
-                                                            }
-                                                        >
-                                                            <img
-                                                                src="https://nailboxxinh.com/wp-content/uploads/2024/12/hinh-nail-box-trang-gao-300x300.webp"
-                                                                alt=""
-                                                            />
-                                                        </div>
-                                                    </SwiperSlide>
-                                                    <SwiperSlide>
-                                                        <div
-                                                            onClick={() =>
-                                                                handleChangeImage(
-                                                                    "https://nailboxxinh.com/wp-content/uploads/2024/12/huong-dan-do-mong-combo-300x300.webp"
-                                                                )
-                                                            }
-                                                        >
-                                                            <img
-                                                                src="https://nailboxxinh.com/wp-content/uploads/2024/12/huong-dan-do-mong-combo-300x300.webp"
-                                                                alt=""
-                                                            />
-                                                        </div>
-                                                    </SwiperSlide>
-                                                    <SwiperSlide>
-                                                        <div
-                                                            onClick={() =>
-                                                                handleChangeImage(
-                                                                    "https://nailboxxinh.com/wp-content/uploads/2024/12/huong-dan-do-mong-combo-300x300.webp"
-                                                                )
-                                                            }
-                                                        >
-                                                            <img
-                                                                src="https://nailboxxinh.com/wp-content/uploads/2024/12/huong-dan-do-mong-combo-300x300.webp"
-                                                                alt=""
-                                                            />
-                                                        </div>
-                                                    </SwiperSlide>
-                                                    <SwiperSlide>
-                                                        <div>
-                                                            <img
-                                                                src="https://nailboxxinh.com/wp-content/uploads/2024/12/hinh-nail-box-trang-gao-300x300.webp"
-                                                                alt=""
-                                                            />
-                                                        </div>
-                                                    </SwiperSlide>
-                                                    <SwiperSlide>
-                                                        <div>
-                                                            <img
-                                                                src="https://nailboxxinh.com/wp-content/uploads/2024/12/huong-dan-do-mong-combo-300x300.webp"
-                                                                alt=""
-                                                            />
-                                                        </div>
-                                                    </SwiperSlide>
-                                                    <SwiperSlide>
-                                                        <div>
-                                                            <img
-                                                                src="https://nailboxxinh.com/wp-content/uploads/2024/12/huong-dan-do-mong-combo-300x300.webp"
-                                                                alt=""
-                                                            />
-                                                        </div>
-                                                    </SwiperSlide>
+                                                    {images.map((image) => {
+                                                        return (
+                                                            <SwiperSlide>
+                                                                <div
+                                                                    onClick={() =>
+                                                                        handleChangeImage(
+                                                                            image
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    <img
+                                                                        className={classNames(
+                                                                            {
+                                                                                [activeImg]:
+                                                                                    image ===
+                                                                                    currentImage
+                                                                            }
+                                                                        )}
+                                                                        src={
+                                                                            image
+                                                                        }
+                                                                        alt=""
+                                                                    />
+                                                                </div>
+                                                            </SwiperSlide>
+                                                        );
+                                                    })}
                                                 </Swiper>
                                             </div>
                                         </Col>
@@ -207,11 +204,10 @@ function ProductDetailPage() {
                                                     className={productType}
                                                     href=""
                                                 >
-                                                    Nail Box Xinh
+                                                    {/* {product.categories} */}
                                                 </a>
                                                 <h3 className={productTitle}>
-                                                    Combo 2 bộ Nail box Trắng
-                                                    gạo + Cute trendy mắt mèo
+                                                    {product.name}
                                                 </h3>
                                                 <div
                                                     className={productPriceBox}
@@ -219,7 +215,14 @@ function ProductDetailPage() {
                                                     <span
                                                         className={currentPrice}
                                                     >
-                                                        119.000{" "}
+                                                        {new Intl.NumberFormat(
+                                                            "vi-VN"
+                                                        ).format(
+                                                            product.price -
+                                                                product.price *
+                                                                    0.01 *
+                                                                    product.discount
+                                                        )}
                                                         <span
                                                             className={
                                                                 priceSymbol
@@ -229,7 +232,9 @@ function ProductDetailPage() {
                                                         </span>
                                                     </span>
                                                     <p className={rootPrice}>
-                                                        200.000
+                                                        {new Intl.NumberFormat(
+                                                            "vi-VN"
+                                                        ).format(product.price)}
                                                         <span
                                                             className={
                                                                 priceSymbol
@@ -239,52 +244,53 @@ function ProductDetailPage() {
                                                         </span>
                                                     </p>
                                                     <DiscountTicket
-                                                        value={50}
+                                                        value={product.discount}
                                                         isAnimation={false}
                                                     />
                                                 </div>
-                                                <div className={productOptions}>
-                                                    <p
-                                                        style={{
-                                                            marginBottom: 3
-                                                        }}
+                                                {product.designs.length > 0 && (
+                                                    <div
+                                                        className={
+                                                            productOptions
+                                                        }
                                                     >
-                                                        Chọn mẫu:{" "}
-                                                    </p>
-
-                                                    <Space>
-                                                        <Select
-                                                            size={"large"}
-                                                            defaultValue="lucy"
+                                                        <p
                                                             style={{
-                                                                width: 360,
-                                                                height: 40
+                                                                marginBottom: 3
                                                             }}
-                                                            onChange={
-                                                                handleChangeOption
-                                                            }
-                                                            options={[
-                                                                {
-                                                                    value: "jack",
-                                                                    label: "Mẫu 1"
-                                                                },
-                                                                {
-                                                                    value: "lucy",
-                                                                    label: "Mẫu 2"
-                                                                },
-                                                                {
-                                                                    value: "Yiminghe",
-                                                                    label: "Mẫu 3"
-                                                                },
-                                                                {
-                                                                    value: "disabled",
-                                                                    label: "Mẫu 4",
-                                                                    disabled: true
+                                                        >
+                                                            Chọn mẫu:{" "}
+                                                        </p>
+
+                                                        <Space>
+                                                            <Select
+                                                                size={"large"}
+                                                                defaultValue={
+                                                                    product
+                                                                        .designs[0]
+                                                                        .name
                                                                 }
-                                                            ]}
-                                                        />
-                                                    </Space>
-                                                </div>
+                                                                style={{
+                                                                    width: 353,
+                                                                    height: 40
+                                                                }}
+                                                                onChange={
+                                                                    handleChangeOption
+                                                                }
+                                                                options={[
+                                                                    ...product.designs.map(
+                                                                        (
+                                                                            design
+                                                                        ) => ({
+                                                                            value: design.id,
+                                                                            label: design.name
+                                                                        })
+                                                                    )
+                                                                ]}
+                                                            />
+                                                        </Space>
+                                                    </div>
+                                                )}
                                                 <div className={productSize}>
                                                     <p
                                                         style={{
@@ -450,14 +456,14 @@ function ProductDetailPage() {
                                             Sản phẩm tương tự
                                         </h4>
                                         <Row className="gx-3 gy-5">
+                                            {/* <ProductItem numberDisplay={4} />
                                             <ProductItem numberDisplay={4} />
                                             <ProductItem numberDisplay={4} />
                                             <ProductItem numberDisplay={4} />
                                             <ProductItem numberDisplay={4} />
                                             <ProductItem numberDisplay={4} />
                                             <ProductItem numberDisplay={4} />
-                                            <ProductItem numberDisplay={4} />
-                                            <ProductItem numberDisplay={4} />
+                                            <ProductItem numberDisplay={4} /> */}
                                         </Row>
                                     </div>
                                 </Col>
@@ -474,6 +480,6 @@ function ProductDetailPage() {
             </ConfigProvider>
         </div>
     );
-}
+};
 
 export default ProductDetailPage;

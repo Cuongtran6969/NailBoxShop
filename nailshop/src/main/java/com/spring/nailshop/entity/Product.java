@@ -24,6 +24,9 @@ public class Product extends AbstractEntity<Long> {
     @Column(name = "stock")// Số lượng sản phẩm trong kho
     private Integer stock;
 
+    @Column(name = "sold")// Số lượng sản phẩm đã bán
+    private Integer sold;
+
     @Column(name = "description")
     private String description;
 

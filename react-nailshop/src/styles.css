@@ -222,7 +222,6 @@ a {
     border-color: #ff90bc;
     color: #fff;
 }
-.ant-menu-item-selected {
-    background-color: #1890ff !important;
-    color: #fff !important;
+.ant-input {
+    padding: 5px !important;
 }

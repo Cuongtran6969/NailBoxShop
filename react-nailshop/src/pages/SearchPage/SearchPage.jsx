@@ -80,14 +80,7 @@ function SearchPage() {
                 </Col>
                 <Col sm={9} className="mx-auto">
                     <Row className="gx-2 gx-sm-3 gy-5">
-                        <ProductItem numberDisplay={4} />
-                        <ProductItem numberDisplay={4} />
-                        <ProductItem numberDisplay={4} />
-                        <ProductItem numberDisplay={4} />
-                        <ProductItem numberDisplay={4} />
-                        <ProductItem numberDisplay={4} />
-                        <ProductItem numberDisplay={4} />
-                        <ProductItem numberDisplay={4} />
+                        {/* <ProductItem numberDisplay={4} /> */}
                     </Row>
                     <Row className="mt-4">
                         <Pagination

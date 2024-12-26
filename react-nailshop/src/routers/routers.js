@@ -13,7 +13,11 @@ import CampaignManage from "@pages/CampaignManage/CampaignManage";
 import CampaignUpdate from "@pages/CampaignUpdate/CampaignUpdate";
 const routers = [
     { path: "/", component: HomePage, layout: DefaultLayout },
-    { path: "/detail", component: ProductDetailPage, layout: DefaultLayout },
+    {
+        path: "/detail/:id",
+        component: ProductDetailPage,
+        layout: DefaultLayout
+    },
     { path: "/cart", component: CartPage, layout: DefaultLayout },
     { path: "/search", component: SearchPage, layout: DefaultLayout },
     { path: "/admin/products", component: ProductManage, layout: AdminLayout },

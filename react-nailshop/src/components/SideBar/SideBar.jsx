@@ -1,9 +1,10 @@
 import { useState } from "react";
 import styles from "./styles.module.scss";
 import classNames from "classnames";
+import Login from "@components/ContentSideBar/Login/Login";
 function SideBar() {
     const { container, sideBar, overlay, slideSideBar } = styles;
-    const [isopen, setOpen] = useState(false);
+    const [isopen, setOpen] = useState(true);
     //dang de true de code template login/signup
 
     const handleToggle = () => {
@@ -23,7 +24,9 @@ function SideBar() {
                 className={classNames(sideBar, {
                     [slideSideBar]: isopen
                 })}
-            ></div>
+            >
+                <Login />
+            </div>
         </div>
     );
 }

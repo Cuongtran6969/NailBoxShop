@@ -4,20 +4,11 @@ import { BiSolidCategory } from "react-icons/bi";
 import styles from "./styles.module.scss";
 const { SubMenu } = Menu;
 import { getCategory } from "@/apis/categoryService";
-function CateFilter({ handleChoose = () => {}, checkedKeys = [] }) {
+function CateFilter({ checkedKeys = [] }) {
     const { cateViewBtn } = styles;
     const [visibleItems, setVisibleItems] = useState(4);
     const [categories, setCategories] = useState([]);
-
-    // Danh sách danh mục
-    // const categories = [
-    //     { key: "g1", label: "Sơn nail" },
-    //     { key: "g2", label: "Sơn nail đẹp" },
-    //     { key: "g3", label: "Sơn nail đơn giản" },
-    //     { key: "g4", label: "Sơn nail thạch" },
-    //     { key: "g5", label: "Sơn nail cá tính" },
-    //     { key: "g6", label: "Sơn nail màu pastel" }
-    // ];
+    const [checkedList, setCheckedList] = useState(checkedKeys);
     useEffect(() => {
         getCategory().then((res) => {
             setCategories(res.result);
@@ -29,15 +20,15 @@ function CateFilter({ handleChoose = () => {}, checkedKeys = [] }) {
             ? checkedKeys.filter((item) => item !== key)
             : [...checkedKeys, key];
 
-        handleChoose(newCheckedKeys); // Gửi danh sách mới lên cha
+        setCheckedList(newCheckedKeys); // Gửi danh sách mới lên cha
     };
     //
     // Xử lý khi nhấn "Load More"
     const handleLoadMore = () => {
         if (visibleItems >= categories.length) {
-            setVisibleItems(4); // Reset về ban đầu nếu nhấn "Hide"
+            setVisibleItems(4);
         } else {
-            setVisibleItems((prev) => Math.min(prev + 2, categories.length)); // Hiển thị thêm 2 danh mục
+            setVisibleItems((prev) => Math.min(prev + 2, categories.length));
         }
     };
 
@@ -57,7 +48,7 @@ function CateFilter({ handleChoose = () => {}, checkedKeys = [] }) {
                 {categories.slice(0, visibleItems).map((category) => (
                     <Menu.Item key={category.id}>
                         <Checkbox
-                            checked={checkedKeys.includes(category.id)}
+                            checked={checkedList.includes(category.id)}
                             onChange={() => handleCheckboxChange(category.id)}
                         >
                             {category.name}
