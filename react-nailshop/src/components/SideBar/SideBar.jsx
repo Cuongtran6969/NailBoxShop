@@ -1,31 +1,52 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import styles from "./styles.module.scss";
 import classNames from "classnames";
-import Login from "@components/ContentSideBar/Login/Login";
+import { SideBarContext } from "@contexts/SideBarProvider";
+import Login from "@components/ContentSideBar/Auth/Login";
+import Register from "@components/ContentSideBar/Auth/Register";
+import ForgetPassword from "@components/ContentSideBar/Auth/ForgetPassword";
+import { TfiClose } from "react-icons/tfi";
 function SideBar() {
-    const { container, sideBar, overlay, slideSideBar } = styles;
-    const [isopen, setOpen] = useState(true);
-    //dang de true de code template login/signup
+    const { container, sideBar, overlay, slideSideBar, boxIcon } = styles;
+    const { isOpen, setIsOpen, type } = useContext(SideBarContext);
+
+    const handleRenderContent = () => {
+        switch (type) {
+            case "login":
+                return <Login />;
+            case "register":
+                return <Register />;
+            case "forgetPassword":
+                return <ForgetPassword />;
+            // case "cart":
+            //     return <Cart />;
+            default:
+                return <Login />;
+        }
+    };
 
     const handleToggle = () => {
-        setOpen(!isopen);
+        setIsOpen(!isOpen);
     };
-    console.log(isopen);
 
     return (
         <div className={container}>
             <div
                 className={classNames({
-                    [overlay]: isopen
+                    [overlay]: isOpen
                 })}
-                onClick={handleToggle}
             />
             <div
                 className={classNames(sideBar, {
-                    [slideSideBar]: isopen
+                    [slideSideBar]: isOpen
                 })}
             >
-                <Login />
+                {isOpen && (
+                    <div className={boxIcon} onClick={handleToggle}>
+                        <TfiClose />
+                    </div>
+                )}
+                {handleRenderContent()}
             </div>
         </div>
     );

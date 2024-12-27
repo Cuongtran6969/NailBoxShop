@@ -7,6 +7,8 @@ import { BiFontSize } from "react-icons/bi";
 import { FaUser } from "react-icons/fa";
 import { IoCart } from "react-icons/io5";
 import { Container, Row, Col } from "react-bootstrap";
+import { SideBarContext } from "@contexts/SideBarProvider";
+import { useContext } from "react";
 function Header() {
     const {
         headerText,
@@ -16,6 +18,14 @@ function Header() {
         headerNavUser,
         headerNavCart
     } = styles;
+    const { setIsOpen, setType } = useContext(SideBarContext);
+
+    const hanleOpenSideBar = (type) => {
+        console.log("hell");
+
+        setIsOpen(true);
+        setType(type);
+    };
     return (
         <>
             <div className={headerText}>
@@ -70,7 +80,12 @@ function Header() {
                                 className="col-4 justify-content-end d-md-none d-flex"
                             >
                                 <div className={conatinerBoxIcon}>
-                                    <FaUser className={headerNavUser} />
+                                    <FaUser
+                                        className={headerNavUser}
+                                        onClick={() =>
+                                            hanleOpenSideBar("login")
+                                        }
+                                    />
                                     <IoCart className={headerNavCart} />
                                 </div>
                             </Col>
@@ -94,7 +109,10 @@ function Header() {
                         className="justify-content-end d-lg-flex d-none"
                     >
                         <div className={conatinerBoxIcon}>
-                            <FaUser className={headerNavUser} />
+                            <FaUser
+                                className={headerNavUser}
+                                onClick={() => hanleOpenSideBar("login")}
+                            />
                             <IoCart className={headerNavCart} />
                         </div>
                     </Col>
