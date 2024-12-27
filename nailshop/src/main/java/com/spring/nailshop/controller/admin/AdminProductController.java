@@ -144,6 +144,4 @@ public class AdminProductController {
             orders.add(new Sort.Order(direction, sortBy));
         }
         return Sort.by(orders);
-    }
-
 }

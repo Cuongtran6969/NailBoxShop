@@ -32,6 +32,4 @@ public interface AdminProductService {
    ProductResponse updateProduct(ProductUpdateRequest request, List<MultipartFile> productImages);
 
    List<Product> getProductsByIds(List<Long> ids);
-
-
 }
