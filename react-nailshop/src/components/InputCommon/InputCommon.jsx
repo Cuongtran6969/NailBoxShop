@@ -15,8 +15,8 @@ function InputCommon({
     const isPassword = type === "password";
     const { formik, id } = props;
     const [showPassword, setShowPassword] = useState(false);
-    // const isError = formik.errors[id] && formik.touched[id];
-    // const messageErr = formik.errors[id];
+    const isError = formik.errors[id] && formik.touched[id];
+    const messageErr = formik.errors[id];
 
     const isShowTextPassword =
         type === "password" && showPassword ? "text" : type;
@@ -33,16 +33,27 @@ function InputCommon({
             </div>
             <div className={boxInput}>
                 {isOtp ? (
-                    <Input.OTP formatter={(str) => str.toUpperCase()} />
+                    <Input.OTP
+                        formatter={(str) => str.toUpperCase()}
+                        onBlur={formik.handleBlur}
+                        onChange={formik.handleChange}
+                        value={formik.values[id]}
+                    />
                 ) : (
-                    <input type={isShowTextPassword} />
+                    <input
+                        type={isShowTextPassword}
+                        {...props}
+                        onBlur={formik.handleBlur}
+                        onChange={formik.handleChange}
+                        value={formik.values[id]}
+                    />
                 )}
                 {isPassword && (
                     <div className={showIcon} onClick={handleShowPassword}>
                         {showPassword ? <IoMdEyeOff /> : <TiEye />}
                     </div>
                 )}
-                {/* {isError && <div className={errMsg}>{messageErr}</div>} */}
+                {isError && <div className={errMsg}>{messageErr}</div>}
             </div>
         </div>
     );

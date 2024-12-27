@@ -28,7 +28,7 @@
     .sendMailBtn {
         margin-bottom: 0;
         position: absolute;
-        color: red;
+        color: $color_line;
         cursor: pointer;
         bottom: -30px;
         font-size: 14px;
@@ -36,5 +36,12 @@
         &:hover {
             opacity: 0.6;
         }
+    }
+    .disableSend {
+        opacity: 0.6;
+    }
+    .errorText {
+        font-size: 12px;
+        color: red;
     }
 }
