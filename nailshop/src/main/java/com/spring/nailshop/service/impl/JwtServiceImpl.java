@@ -9,6 +9,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.security.Key;
@@ -16,6 +17,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtServiceImpl implements JwtService {
@@ -30,7 +32,13 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        Map<String, Object> claims = new HashMap<>();
+        // Thêm role vào claims
+        String roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+        claims.put("role", roles);
+        return generateToken(claims, userDetails);
     }
 
     @Override
@@ -41,6 +49,11 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String extractUsername(String token, TokenType type) {
         return extractClaims(token, type, Claims::getSubject);
+    }
+
+    @Override
+    public String extractRole(String token, TokenType type) {
+        return extractClaims(token, type, claims -> claims.get("role", String.class));
     }
 
     @Override

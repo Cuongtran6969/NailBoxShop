@@ -39,6 +39,12 @@
             .productTitle {
                 font-size: 14px;
                 font-weight: 400;
+                display: -webkit-box;
+                -webkit-line-clamp: 2; /* Giới hạn số dòng của tiêu đề */
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                height: 40px; /* Chiều cao cố định */
             }
             .productContentPrice {
                 @include flex_box_custom(space-between, center, 0px);

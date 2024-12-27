@@ -23,6 +23,7 @@ public enum ErrorCode {
     DESIGN_NOT_EXISTED(400, "Design not exist", HttpStatus.BAD_REQUEST),
     FAIL_DELETE_CLOUDINARY(400, "Fail to delete file", HttpStatus.BAD_REQUEST),
     PRODUCT_ID_INVALID(404, "Product not found", HttpStatus.NOT_FOUND),
+    CAMPAIGN_ID_INVALID(404, "Campaign not found", HttpStatus.NOT_FOUND),
     USER_ALREADY_BANNED(400, "User is already banned", HttpStatus.BAD_REQUEST),
     ;
     private int code;

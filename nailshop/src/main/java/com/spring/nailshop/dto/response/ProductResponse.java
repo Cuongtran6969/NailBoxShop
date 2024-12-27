@@ -21,6 +21,7 @@ public class ProductResponse {
     Integer discount;
     Boolean isActive;
     String pictures;
+    Integer sold;
     Set<DesignResponse> designs;
     Set<CategoryResponse> categories;
 }

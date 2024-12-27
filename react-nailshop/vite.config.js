@@ -11,9 +11,18 @@ export default defineConfig({
             "@styles": path.resolve(__dirname, "src/assets/styles"),
             "@icons": path.resolve(__dirname, "src/assets/icons"),
             "@pages": path.resolve(__dirname, "src/pages"),
+            "@contexts": path.resolve(__dirname, "src/contexts"),
             "@productPages": path.resolve(
                 __dirname,
                 "src/pages/ProductDetailPage/components"
+            ),
+            "@cartPages": path.resolve(
+                __dirname,
+                "src/pages/CartPage/components"
+            ),
+            "@productManagePages": path.resolve(
+                __dirname,
+                "src/pages/ProductManage/components"
             )
         }
     }

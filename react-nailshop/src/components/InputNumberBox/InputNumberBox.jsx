@@ -3,8 +3,9 @@ import { useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { FiMinus } from "react-icons/fi";
 import styles from "./styles.module.scss";
-function InputNumberBox() {
-    const { btn, inputNumber } = styles;
+import classNames from "classnames";
+function InputNumberBox({ type = "large" }) {
+    const { container, btnLef, btnRight, small, medium, large } = styles;
     const [quantity, setQuantity] = useState(1);
 
     const handleDecrease = () => {
@@ -18,39 +19,19 @@ function InputNumberBox() {
     };
     return (
         <div
-            style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0"
-            }}
+            className={classNames(container, {
+                [small]: type == "small",
+                [medium]: type == "medium",
+                [large]: type == "large"
+            })}
         >
-            <Button
-                style={{
-                    borderTopLeftRadius: "5px",
-                    borderBottomLeftRadius: "5px"
-                }}
-                className={btn}
-                onClick={handleDecrease}
-                disabled={quantity <= 1}
-            >
+            <button className={btnLef}>
                 <FiMinus />
-            </Button>
-            <InputNumber
-                min={1}
-                value={quantity}
-                onChange={setQuantity}
-                className={inputNumber}
-            />
-            <Button
-                style={{
-                    borderTopRightRadius: "5px",
-                    borderBottomRightRadius: "5px"
-                }}
-                className={btn}
-                onClick={handleIncrease}
-            >
+            </button>
+            <input />
+            <button className={btnRight}>
                 <FaPlus />
-            </Button>
+            </button>
         </div>
     );
 }

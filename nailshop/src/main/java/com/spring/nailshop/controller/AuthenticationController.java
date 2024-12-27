@@ -3,6 +3,7 @@ package com.spring.nailshop.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.spring.nailshop.dto.request.*;
 import com.spring.nailshop.dto.response.ApiResponse;
+import com.spring.nailshop.dto.response.IntrospectResponse;
 import com.spring.nailshop.dto.response.TokenResponse;
 import com.spring.nailshop.dto.response.UserResponse;
 import com.spring.nailshop.service.UserService;
@@ -21,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
 
 @RestController
 @RequiredArgsConstructor
@@ -78,6 +80,15 @@ public class AuthenticationController {
         return ApiResponse.<Void>builder()
                 .code(HttpStatus.OK.value())
                 .message("Send Otp Successfully")
+                .build();
+    }
+
+    @PostMapping("/introspect")
+    public ApiResponse<IntrospectResponse> introspect(@RequestBody IntrospectRequest request) {
+        var result = authenticationService.introspect(request);
+        return ApiResponse.<IntrospectResponse>builder()
+                .code(HttpStatus.OK.value())
+                .result(result)
                 .build();
     }
 }

@@ -1,10 +1,8 @@
 package com.spring.nailshop.repository.specification;
 
+import com.spring.nailshop.entity.Role;
 import com.spring.nailshop.entity.User;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,21 +11,22 @@ import org.springframework.data.jpa.domain.Specification;
 
 @Getter
 @AllArgsConstructor
-public class UserSpecification implements Specification<User> {
+public class UserSpecification {
 
-    private SpecSearchCriteria criteria;
+    public static Specification<User> containsKeyword(String keyword) {
+        return (root, query, builder) -> {
+            String likePattern = "%" + keyword.toLowerCase() + "%";
 
-    @Override
-    public Predicate toPredicate(@NonNull final Root<User> root, @NonNull final CriteriaQuery<?> query, @NonNull final CriteriaBuilder builder) {
-        return switch (criteria.getOperation()) {
-            case EQUALITY -> builder.equal(root.get(criteria.getKey()), criteria.getValue());
-            case NEGATION -> builder.notEqual(root.get(criteria.getKey()), criteria.getValue());
-            case GREATER_THAN -> builder.greaterThan(root.get(criteria.getKey()), criteria.getValue().toString());
-            case LESS_THAN -> builder.lessThan(root.get(criteria.getKey()), criteria.getValue().toString());
-            case LIKE -> builder.like(root.get(criteria.getKey()), "%" + criteria.getValue().toString() + "%");
-            case STARTS_WITH -> builder.like(root.get(criteria.getKey()), criteria.getValue() + "%");
-            case ENDS_WITH -> builder.like(root.get(criteria.getKey()), "%" + criteria.getValue());
-            case CONTAINS -> builder.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%");
+            // Thực hiện JOIN bảng Role
+            Join<User, Role> roleJoin = root.join("role", JoinType.LEFT);
+
+            return builder.or(
+                    builder.like(builder.lower(root.get("name")), likePattern),
+                    builder.like(builder.lower(root.get("email")), likePattern),
+                    builder.like(builder.lower(root.get("phone")), likePattern),
+                    builder.like(builder.lower(roleJoin.get("name")), likePattern) // Tìm theo tên Role
+            );
         };
     }
+
 }

@@ -1,10 +1,8 @@
 package com.spring.nailshop.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.spring.nailshop.dto.request.AuthenticationRequest;
-import com.spring.nailshop.dto.request.EmailRequest;
-import com.spring.nailshop.dto.request.LogoutRequest;
-import com.spring.nailshop.dto.request.RefreshTokenRequest;
+import com.spring.nailshop.dto.request.*;
+import com.spring.nailshop.dto.response.IntrospectResponse;
 import com.spring.nailshop.dto.response.TokenResponse;
 import com.spring.nailshop.entity.Token;
 import com.spring.nailshop.entity.User;
@@ -29,6 +27,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.util.Optional;
 
 @Service
@@ -113,5 +112,33 @@ public class AuthenticationService {
 
     public String getOtp(EmailRequest request) {
         return redisTokenService.getById(request.getEmail()).getAccessToken();
+    }
+
+    public IntrospectResponse introspect(IntrospectRequest request) {
+        var token = request.getToken();
+        boolean isValid = true;
+        String scope =  null;
+        try {
+            if(StringUtils.isBlank(token)) {
+                throw new AppException(ErrorCode.INVALID_TOKEN);
+            }
+
+            final String userName = jwtService.extractUsername(token, TokenType.ACCESS_TOKEN);
+
+            User user = userRepository.findByEmail(userName)
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+            UserSecurity userSecurity = new UserSecurity(user);
+
+            if(!jwtService.isValid(token, TokenType.ACCESS_TOKEN, userSecurity)) {
+                throw new InvalidTokenException();
+            }
+            scope = jwtService.extractRole(token, TokenType.ACCESS_TOKEN);
+        } catch (Exception e ) {
+            isValid = false;
+        }
+        return IntrospectResponse.builder()
+                .valid(isValid)
+                .role(scope)
+                .build();
     }
 }

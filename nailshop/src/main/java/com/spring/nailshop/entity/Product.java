@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -23,6 +24,9 @@ public class Product extends AbstractEntity<Long> {
     @Column(name = "stock")// Số lượng sản phẩm trong kho
     private Integer stock;
 
+    @Column(name = "sold")// Số lượng sản phẩm đã bán
+    private Integer sold;
+
     @Column(name = "description")
     private String description;
 
@@ -32,7 +36,7 @@ public class Product extends AbstractEntity<Long> {
     @Column(name = "isActive", nullable = false)
     private Boolean isActive = true;
 
-    @Column(name = "pictures")
+    @Column(name = "pictures", columnDefinition = "TEXT")
     private String pictures;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -44,4 +48,7 @@ public class Product extends AbstractEntity<Long> {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "product")
     private Set<Design> designs;
+
+    @ManyToMany(mappedBy = "products")
+    private List<Campaign> campaigns;
 }

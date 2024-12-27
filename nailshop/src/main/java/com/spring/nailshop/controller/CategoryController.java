@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequestMapping("/category")
+@RequestMapping("/api/v1")
 @Tag(name = "User Controller")
 @Slf4j
 @Validated
@@ -28,7 +28,7 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @PostMapping("/create")
+    @PostMapping("/create-categories")
     public ApiResponse<Void> createCategory(@RequestBody @Valid CategoryRequest request) {
         categoryService.addCategories(request);
         ApiResponse<Void> apiResponse = new ApiResponse<>();
@@ -37,7 +37,7 @@ public class CategoryController {
         return apiResponse;
     }
 
-    @GetMapping("/list")
+    @GetMapping("/categories")
     public ApiResponse<List<CategoryResponse>> getAllCategory() {
         return ApiResponse.<List<CategoryResponse>>builder()
                 .code(HttpStatus.OK.value())

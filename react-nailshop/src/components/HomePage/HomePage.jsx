@@ -11,7 +11,6 @@ import Footer from "@components/Footer/Footer";
 function HomePage() {
     return (
         <>
-            <Header />
             <SideBar />
             <Banner />
             <Info />
@@ -19,7 +18,6 @@ function HomePage() {
             <SaleHomePage />
             <ProductTrend />
             <ListNews />
-            <Footer />
         </>
     );
 }

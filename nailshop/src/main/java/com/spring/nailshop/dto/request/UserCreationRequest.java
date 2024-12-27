@@ -25,7 +25,4 @@ public class UserCreationRequest {
 
     @NotBlank(message = "LAST_NAME_NOT_BLANK")
     String lastName;
-
-    @PhoneNumber
-    String phone;
 }

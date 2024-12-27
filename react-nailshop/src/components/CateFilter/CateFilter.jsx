@@ -1,39 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Menu, Checkbox, Button } from "antd";
 import { BiSolidCategory } from "react-icons/bi";
 import styles from "./styles.module.scss";
 const { SubMenu } = Menu;
-
-function CateFilter() {
+import { getCategory } from "@/apis/categoryService";
+function CateFilter({ checkedKeys = [] }) {
     const { cateViewBtn } = styles;
-    const [checkedKeys, setCheckedKeys] = useState([]);
-    const [visibleItems, setVisibleItems] = useState(4); // Số lượng danh mục hiển thị ban đầu
+    const [visibleItems, setVisibleItems] = useState(4);
+    const [categories, setCategories] = useState([]);
+    const [checkedList, setCheckedList] = useState(checkedKeys);
+    useEffect(() => {
+        getCategory().then((res) => {
+            setCategories(res.result);
+        });
+    }, []);
 
-    // Danh sách danh mục
-    const categories = [
-        { key: "g1", label: "Sơn nail" },
-        { key: "g2", label: "Sơn nail đẹp" },
-        { key: "g3", label: "Sơn nail đơn giản" },
-        { key: "g4", label: "Sơn nail thạch" },
-        { key: "g5", label: "Sơn nail cá tính" },
-        { key: "g6", label: "Sơn nail màu pastel" }
-    ];
-
-    // Toggle trạng thái checkbox
     const handleCheckboxChange = (key) => {
-        setCheckedKeys((prev) =>
-            prev.includes(key)
-                ? prev.filter((item) => item !== key)
-                : [...prev, key]
-        );
-    };
+        const newCheckedKeys = checkedKeys.includes(key)
+            ? checkedKeys.filter((item) => item !== key)
+            : [...checkedKeys, key];
 
+        setCheckedList(newCheckedKeys); // Gửi danh sách mới lên cha
+    };
+    //
     // Xử lý khi nhấn "Load More"
     const handleLoadMore = () => {
         if (visibleItems >= categories.length) {
-            setVisibleItems(4); // Reset về ban đầu nếu nhấn "Hide"
+            setVisibleItems(4);
         } else {
-            setVisibleItems((prev) => Math.min(prev + 2, categories.length)); // Hiển thị thêm 2 danh mục
+            setVisibleItems((prev) => Math.min(prev + 2, categories.length));
         }
     };
 
@@ -51,12 +46,12 @@ function CateFilter() {
             >
                 {/* Render các mục con với Checkbox */}
                 {categories.slice(0, visibleItems).map((category) => (
-                    <Menu.Item key={category.key}>
+                    <Menu.Item key={category.id}>
                         <Checkbox
-                            checked={checkedKeys.includes(category.key)}
-                            onChange={() => handleCheckboxChange(category.key)}
+                            checked={checkedList.includes(category.id)}
+                            onChange={() => handleCheckboxChange(category.id)}
                         >
-                            {category.label}
+                            {category.name}
                         </Checkbox>
                     </Menu.Item>
                 ))}

@@ -1,18 +1,63 @@
-.btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 0;
-    font-size: 16px;
-}
-.inputNumber {
-    padding: 3px 0;
-    width: 40px;
-    font-size: 15.5px;
+.container {
     display: flex;
-    text-align: center;
-    border-left: 0;
-    border-right: 0;
-    border-radius: 0;
-    align-items: center;
-    justify-content: center;
+    input {
+        width: 50px;
+        border-left: 0;
+        border-right: 0;
+        border-top: 1px solid #f0f0f0;
+        border-bottom: 1px solid #f0f0f0;
+        text-align: center;
+        outline: none;
+    }
+    button {
+        font-size: 15px;
+    }
+    .btnLef {
+        width: 40px;
+        height: 40px;
+        border: 0;
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+    }
+    .btnRight {
+        width: 40px;
+        height: 40px;
+        border: 0;
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+}
+.container.small {
+    input {
+        height: 25px;
+        width: 30px;
+    }
+    button {
+        font-size: 10px;
+    }
+    .btnLef {
+        width: 25px;
+        height: 25px;
+    }
+    .btnRight {
+        width: 25px;
+        height: 25px;
+    }
+}
+.container.large {
+    input {
+        height: 35px;
+        width: 45px;
+    }
+    button {
+        font-size: 12px;
+    }
+    .btnLef {
+        width: 35px;
+        height: 35px;
+    }
+    .btnRight {
+        width: 35px;
+        height: 35px;
+    }
 }

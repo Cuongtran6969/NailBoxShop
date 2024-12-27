@@ -7,9 +7,10 @@ function Info() {
     return (
         <Container style={{ marginTop: "20px" }}>
             <div className={cardList}>
-                {dataInfo.map((item) => {
+                {dataInfo.map((item, index) => {
                     return (
                         <CardInfo
+                            key={index}
                             title={item.title}
                             desc={item.description}
                             icon={item.icon}
