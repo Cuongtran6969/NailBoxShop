@@ -4,6 +4,7 @@ import com.spring.nailshop.constant.PredefinedRole;
 import com.spring.nailshop.dto.request.EmailRequest;
 import com.spring.nailshop.dto.request.UserCreationRequest;
 import com.spring.nailshop.dto.request.UserUpdateRequest;
+import com.spring.nailshop.dto.response.UserProfileResponse;
 import com.spring.nailshop.dto.response.UserResponse;
 import com.spring.nailshop.dto.response.UserUpdateResponse;
 import com.spring.nailshop.entity.Role;
@@ -83,9 +84,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getUserInfo(Long userId) {
-        return userMapper.toUserResponse(userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+    public UserProfileResponse getInfoProfile() {
+        var context = SecurityContextHolder.getContext();
+        String email = context.getAuthentication().getName();
+
+        User user = userRepository.findByEmail(email).orElseThrow(()
+                -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        return userMapper.toProfileResponse(user);
     }
+
 
     @Override
     public void sendOtpRegister(EmailRequest request)

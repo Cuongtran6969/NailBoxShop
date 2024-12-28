@@ -14,4 +14,6 @@ public interface AdminUserService {
     void banUser(Long userId);
 
     void unBanUser(Long userId);
+
+    UserResponse getUserInfo(Long userId);
 }

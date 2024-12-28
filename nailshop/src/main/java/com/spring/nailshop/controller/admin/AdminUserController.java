@@ -78,4 +78,13 @@ public class AdminUserController {
         adminUserService.unBanUser(userId);
         return ResponseEntity.ok("User unbanned successfully");
     }
+
+    @GetMapping("/info/{userId}")
+    public ApiResponse<UserResponse> getUserInfo(@PathVariable Long userId) {
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setCode(HttpStatus.OK.value());
+        apiResponse.setResult(adminUserService.getUserInfo(userId));
+        return apiResponse;
+    }
+
 }

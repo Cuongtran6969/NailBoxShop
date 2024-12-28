@@ -3,10 +3,8 @@ import { BsCart4 } from "react-icons/bs";
 import { BsPinMap } from "react-icons/bs";
 import { MdLogout } from "react-icons/md";
 import styles from "../styles.module.scss";
-import { Menu } from "antd";
-import { Divider } from "antd";
+import { Menu, Divider } from "antd";
 import { LuMoveLeft } from "react-icons/lu";
-
 const items = [
     {
         key: "key1",
@@ -14,7 +12,7 @@ const items = [
         type: "group",
         children: [
             {
-                key: "sub1",
+                key: "myInfo",
                 label: "Thông tin",
                 icon: <FaRegCircleUser />
             }
@@ -26,26 +24,27 @@ const items = [
         type: "group",
         children: [
             {
-                key: "sub2",
+                key: "myOrder",
                 label: "Đơn hàng",
                 icon: <BsCart4 />
             },
             {
-                key: "sub3",
+                key: "myAddress",
                 label: "Địa chỉ",
                 icon: <BsPinMap />
             },
             {
-                key: "sub4",
+                key: "logout",
                 label: "Thoát",
                 icon: <MdLogout />
             }
         ]
     }
 ];
-const SideBar = ({ toggleNav }) => {
+
+const SideBar = ({ toggleNav, setType, type }) => {
     const onClick = (e) => {
-        console.log("click ", e);
+        setType(e.key);
     };
     const { headerMenu } = styles;
     return (
@@ -59,8 +58,7 @@ const SideBar = ({ toggleNav }) => {
             <Divider className="m-0" />
             <Menu
                 onClick={onClick}
-                defaultSelectedKeys={["1"]}
-                defaultOpenKeys={["sub1"]}
+                defaultSelectedKeys={[type ? type : "sub1"]}
                 mode="inline"
                 items={items}
                 style={{

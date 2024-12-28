@@ -74,6 +74,11 @@ public class AdminUserServiceImpl implements AdminUserService {
         userRepository.save(user);
     }
 
+    @Override
+    public UserResponse getUserInfo(Long userId) {
+        return userMapper.toUserResponse(userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+    }
+
     private PageResponse<?> convertToPageResponse(Page<User> users, Pageable pageable) {
         List<UserResponse> response = users.stream().map(userMapper::toUserResponse).toList();
         return PageResponse.builder()

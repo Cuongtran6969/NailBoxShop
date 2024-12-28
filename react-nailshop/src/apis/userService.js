@@ -16,5 +16,19 @@ const unBanUser = async (id) => {
     const res = await axiosClient.put(urlApi);
     return res.data;
 };
+const getProfile = async (id) => {
+    let urlApi = `/users/get-info`;
+    const res = await axiosClient.get(urlApi);
+    return res.data;
+};
+const updateInfo = async (formData) => {
+    let urlApi = "/users/update-profile";
+    const res = await axiosClient.put(urlApi, formData, {
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    });
+    return res.data;
+};
 
-export { getUsers, banUser, unBanUser };
+export { getUsers, banUser, unBanUser, updateInfo, getProfile };

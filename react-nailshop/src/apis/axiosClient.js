@@ -3,13 +3,12 @@ import Cookies from "js-cookie";
 
 const axiosClient = axios.create({
     baseURL: "http://localhost:8080",
-    timeout: 20000,
+    timeout: 60000,
     headers: { "content-type": "application/json" }
 });
 
 axiosClient.interceptors.request.use(
     async (config) => {
-        console.log(config);
         const accessToken = Cookies.get("accessToken");
 
         if (accessToken) {
@@ -45,10 +44,11 @@ axiosClient.interceptors.response.use(
                 Cookies.remove("refreshToken");
                 return Promise.reject(error);
             }
-        } else {
-            Cookies.remove("accessToken");
-            Cookies.remove("refreshToken");
         }
+        // else {
+        //     Cookies.remove("accessToken");
+        //     Cookies.remove("refreshToken");
+        // }
         console.log(err);
     }
 );
