@@ -12,7 +12,7 @@ import CampaignPage from "@pages/CampaignPage/CampaignPage";
 import CampaignManage from "@pages/CampaignManage/CampaignManage";
 import CampaignUpdate from "@pages/CampaignUpdate/CampaignUpdate";
 import AccessDeniedPage from "@pages/ErrorPage/AccessDeniedPage";
-
+import ProfilePage from "@pages/ProfilePage/ProfilePage";
 import { ROLE } from "@/constants";
 const routers = [
     {
@@ -23,6 +23,11 @@ const routers = [
     {
         path: "/",
         component: HomePage,
+        layout: DefaultLayout
+    },
+    {
+        path: "/profile",
+        component: ProfilePage,
         layout: DefaultLayout
     },
     {

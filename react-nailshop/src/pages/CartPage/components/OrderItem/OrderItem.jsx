@@ -95,11 +95,10 @@ function OrderItem() {
                                         <MdDelete />
                                     </div>
                                 </div>
-                                <div
-                                    className={removeBtn}
-                                    onClick={showDeleteConfirm}
-                                >
-                                    <span>Remove</span>
+                                <div className={removeBtn}>
+                                    <span onClick={showDeleteConfirm}>
+                                        Remove
+                                    </span>
                                 </div>
                                 <div className={itemPriceBox}>
                                     <span className={itemPrice}>122.000₫</span>

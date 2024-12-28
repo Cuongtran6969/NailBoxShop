@@ -45,6 +45,9 @@ axiosClient.interceptors.response.use(
                 Cookies.remove("refreshToken");
                 return Promise.reject(error);
             }
+        } else {
+            Cookies.remove("accessToken");
+            Cookies.remove("refreshToken");
         }
         console.log(err);
     }

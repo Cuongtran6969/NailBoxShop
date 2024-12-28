@@ -2,17 +2,19 @@ import InputCommon from "@components/InputCommon/InputCommon";
 import styles from "./styles.module.scss";
 import { useContext, useState } from "react";
 import Button from "@components/Button/Button";
-import { Typography, notification } from "antd";
+import { notification } from "antd";
 import { login } from "@/apis/authService";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { SideBarContext } from "@contexts/SideBarProvider";
+import { AuthContext } from "@contexts/AuthContext";
 import Cookies from "js-cookie";
 function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const [isSendingOtp, setIsSendingOtp] = useState(false);
     const [api, contextHolder] = notification.useNotification();
-    const { setType } = useContext(SideBarContext);
+    const { setType, setIsOpen } = useContext(SideBarContext);
+    const { authenticated, refresh } = useContext(AuthContext);
     const openNotificationWithIcon = (type, mess, desc) => {
         api[type]({
             message: mess,
@@ -55,10 +57,12 @@ function Login() {
             password: values.password
         })
             .then((res) => {
+                console.log(res);
+
                 openNotificationWithIcon(
                     "success",
                     "Đăng nhập thành công",
-                    res.message
+                    "Chào bạn đến với website NailLabox"
                 );
 
                 const { userId, accessToken, refreshToken } = res.result;
@@ -66,6 +70,8 @@ function Login() {
                 Cookies.set("refreshToken", refreshToken);
                 Cookies.set("userId", userId);
                 setIsLoading(false);
+                setIsOpen(false);
+                refresh();
             })
             .catch((err) => {
                 console.log(err);

@@ -8,8 +8,11 @@ import { FaUser } from "react-icons/fa";
 import { IoCart } from "react-icons/io5";
 import { Container, Row, Col } from "react-bootstrap";
 import { SideBarContext } from "@contexts/SideBarProvider";
+import { AuthContext } from "@contexts/AuthContext";
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 function Header() {
+    const navigate = useNavigate();
     const {
         headerText,
         headerLogo,
@@ -19,12 +22,15 @@ function Header() {
         headerNavCart
     } = styles;
     const { setIsOpen, setType } = useContext(SideBarContext);
-
+    const { authenticated } = useContext(AuthContext);
     const hanleOpenSideBar = (type) => {
         console.log("hell");
-
-        setIsOpen(true);
-        setType(type);
+        if (type === "login" && authenticated) {
+            navigate("/profile");
+        } else {
+            setIsOpen(true);
+            setType(type);
+        }
     };
     return (
         <>

@@ -52,10 +52,20 @@ function CartPage() {
 
     return (
         <>
-            <Container>
+            <Container
+                style={{
+                    background: "#ffff",
+                    paddingTop: "20px",
+                    borderRadius: "10px",
+                    paddingBottom: "20px"
+                }}
+            >
                 <Steps
                     current={current}
-                    style={{ marginBottom: "40px", marginTop: "40px" }}
+                    style={{
+                        marginBottom: "40px",
+                        marginTop: "40px"
+                    }}
                     items={items}
                 />
                 <div>{steps[current].content}</div>

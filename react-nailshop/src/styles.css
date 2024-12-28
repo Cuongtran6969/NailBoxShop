@@ -225,3 +225,9 @@ a {
 .ant-input {
     padding: 5px !important;
 }
+.ant-menu-inline {
+    border-right: none !important;
+}
+.ant-menu-item {
+    margin: 0 auto !important;
+}
