@@ -1,15 +1,12 @@
-package com.spring.nailshop.dto.response;
+package com.spring.nailshop.dto.request;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
-@Setter
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AddressResponse {
-    Long id;
+public class AddressRequest {
     String province;
     String district;
     String ward;

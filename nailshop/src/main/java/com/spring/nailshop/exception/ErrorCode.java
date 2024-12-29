@@ -25,6 +25,10 @@ public enum ErrorCode {
     PRODUCT_ID_INVALID(404, "Product not found", HttpStatus.NOT_FOUND),
     CAMPAIGN_ID_INVALID(404, "Campaign not found", HttpStatus.NOT_FOUND),
     USER_ALREADY_BANNED(400, "User is already banned", HttpStatus.BAD_REQUEST),
+    ADDRESS_ID_INVALID(400, "Address invalid", HttpStatus.BAD_REQUEST),
+    ADDRESS_MIN_REACH(400, "Limit min is one address", HttpStatus.BAD_REQUEST),
+    ADDRESS_MAX_REACH(400, "Limit nax is three address", HttpStatus.BAD_REQUEST),
+    ADDRESS_INVALID(400, "Address must be your own.", HttpStatus.BAD_REQUEST),
     ;
     private int code;
     private String message;

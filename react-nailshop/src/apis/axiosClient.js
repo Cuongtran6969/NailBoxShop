@@ -44,33 +44,11 @@ axiosClient.interceptors.response.use(
                 Cookies.remove("refreshToken");
                 return Promise.reject(error);
             }
+        } else {
+            Cookies.remove("accessToken");
+            Cookies.remove("refreshToken");
         }
-        // else {
-        //     Cookies.remove("accessToken");
-        //     Cookies.remove("refreshToken");
-        // }
         console.log(err);
     }
 );
 export default axiosClient;
-
-// const originalRequest = err.config;
-// if ((err.response.status = 401 && !originalRequest._retry)) {
-//     originalRequest._retry = true;
-//     const refreshToken = Cookies.get("refreshToken");
-//     if (!refreshToken) return Promise.reject(err);
-//     try {
-//         const res = await axiosClient.post("/refresh-token", {
-//             token: refreshToken
-//         });
-//         const newAccessToken = res.data.accessToken;
-//         Cookies.set("token", newAccessToken);
-//         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-//         return axiosClient(originalRequest);
-//         console.log(res);
-//     } catch (error) {
-//         Cookies.remove("token");
-//         Cookies.remove("refreshToken");
-//         return Promise.reject(error);
-//     }
-// }

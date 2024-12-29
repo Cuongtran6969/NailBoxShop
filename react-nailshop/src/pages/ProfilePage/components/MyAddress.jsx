@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { Select, Input, Button } from "antd";
 const { TextArea } = Input;
 import styles from "../styles.module.scss";
+
+import ListAddress from "./ListAddress";
 function MyAddress() {
     const {
         addressForm,
@@ -23,6 +25,12 @@ function MyAddress() {
     const [currentDistrictId, setCurrentDistrictId] = useState(null);
     const [currentWardId, setCurrentWardId] = useState(null);
     const [detailAddress, setDetailAddress] = useState("");
+    const [formData, setFormData] = useState({
+        province: "",
+        district: "",
+        ward: "",
+        detail: ""
+    });
 
     useEffect(() => {
         const fetchApiProvince = async () => {
@@ -83,14 +91,26 @@ function MyAddress() {
     }, [currentDistrictId]);
 
     const handleChangeProvince = (value) => {
+        const provinceChoose = province.find((item) => item.value === value);
+        setFormData((prev) => {
+            return { ...prev, province: provinceName?.label ?? "" };
+        });
         setCurrentProvinceId(value);
     };
 
     const handleChangeDistrict = (value) => {
+        const districtChoose = district.find((item) => item.value === value);
+        setFormData((prev) => {
+            return { ...prev, district: districtChoose?.label ?? "" };
+        });
         setCurrentDistrictId(value);
     };
 
     const handleChangeWard = (value) => {
+        const ward = district.find((item) => item.value === value);
+        setFormData((prev) => {
+            return { ...prev, district: wardChoose?.label ?? "" };
+        });
         setCurrentWardId(value);
     };
 
@@ -99,42 +119,19 @@ function MyAddress() {
     };
 
     return (
-        <div className={addressForm}>
-            {/* Province Select */}
-            <div className={formGroup}>
-                <label htmlFor="province-select" className={provinceSelect}>
-                    Tỉnh/Thành phố
-                </label>
-                <Select
-                    id="province-select"
-                    showSearch
-                    style={{ width: "100%" }}
-                    size="large"
-                    placeholder="Chọn tỉnh/thành phố"
-                    optionFilterProp="label"
-                    filterSort={(optionA, optionB) =>
-                        (optionA?.label ?? "")
-                            .toLowerCase()
-                            .localeCompare((optionB?.label ?? "").toLowerCase())
-                    }
-                    onChange={handleChangeProvince}
-                    options={province}
-                    value={currentProvinceId}
-                />
-            </div>
-
-            <div className="d-flex justify-content-between mt-5">
-                {/* District Select */}
-                <div className="w-50 me-2">
-                    <label htmlFor="district-select" className={districtSelect}>
-                        Quận/Huyện
+        <>
+            <div className={addressForm}>
+                {/* Province Select */}
+                <div className={formGroup}>
+                    <label htmlFor="province-select" className={provinceSelect}>
+                        Tỉnh/Thành phố
                     </label>
                     <Select
-                        id="district-select"
+                        id="province-select"
                         showSearch
                         style={{ width: "100%" }}
                         size="large"
-                        placeholder="Chọn quận/huyện"
+                        placeholder="Chọn tỉnh/thành phố"
                         optionFilterProp="label"
                         filterSort={(optionA, optionB) =>
                             (optionA?.label ?? "")
@@ -143,58 +140,91 @@ function MyAddress() {
                                     (optionB?.label ?? "").toLowerCase()
                                 )
                         }
-                        onChange={handleChangeDistrict}
-                        options={district}
-                        value={currentDistrictId}
-                        disabled={!currentProvinceId}
+                        onChange={handleChangeProvince}
+                        options={province}
+                        value={currentProvinceId}
                     />
                 </div>
 
-                {/* Ward Select */}
-                <div className="w-50 ms-2">
-                    <label htmlFor="ward-select" className={wardSelect}>
-                        Xã/Phường
+                <div className="d-flex justify-content-between mt-4">
+                    {/* District Select */}
+                    <div className="w-50 me-2">
+                        <label
+                            htmlFor="district-select"
+                            className={districtSelect}
+                        >
+                            Quận/Huyện
+                        </label>
+                        <Select
+                            id="district-select"
+                            showSearch
+                            style={{ width: "100%" }}
+                            size="large"
+                            placeholder="Chọn quận/huyện"
+                            optionFilterProp="label"
+                            filterSort={(optionA, optionB) =>
+                                (optionA?.label ?? "")
+                                    .toLowerCase()
+                                    .localeCompare(
+                                        (optionB?.label ?? "").toLowerCase()
+                                    )
+                            }
+                            onChange={handleChangeDistrict}
+                            options={district}
+                            value={currentDistrictId}
+                            disabled={!currentProvinceId}
+                        />
+                    </div>
+
+                    {/* Ward Select */}
+                    <div className="w-50 ms-2">
+                        <label htmlFor="ward-select" className={wardSelect}>
+                            Xã/Phường
+                        </label>
+                        <Select
+                            id="ward-select"
+                            showSearch
+                            style={{ width: "100%" }}
+                            size="large"
+                            placeholder="Chọn xã/phường"
+                            optionFilterProp="label"
+                            filterSort={(optionA, optionB) =>
+                                (optionA?.label ?? "")
+                                    .toLowerCase()
+                                    .localeCompare(
+                                        (optionB?.label ?? "").toLowerCase()
+                                    )
+                            }
+                            onChange={handleChangeWard}
+                            options={ward}
+                            value={currentWardId}
+                            disabled={!currentDistrictId}
+                        />
+                    </div>
+                </div>
+
+                {/* Detail Address */}
+                <div className="mt-4">
+                    <label htmlFor="detail-address" className={detailAdd}>
+                        Địa chỉ chi tiết
                     </label>
-                    <Select
-                        id="ward-select"
-                        showSearch
-                        style={{ width: "100%" }}
+                    <TextArea
+                        id="detail-address"
                         size="large"
-                        placeholder="Chọn xã/phường"
-                        optionFilterProp="label"
-                        filterSort={(optionA, optionB) =>
-                            (optionA?.label ?? "")
-                                .toLowerCase()
-                                .localeCompare(
-                                    (optionB?.label ?? "").toLowerCase()
-                                )
-                        }
-                        onChange={handleChangeWard}
-                        options={ward}
-                        value={currentWardId}
-                        disabled={!currentDistrictId}
+                        rows={4}
+                        placeholder="Nhập địa chỉ cụ thể (số nhà, đường, thôn/xóm, ...)"
+                        value={detailAddress}
+                        onChange={handleDetailAddressChange}
                     />
                 </div>
+                <div className="mt-3 mb-5">
+                    <Button type="primary" htmlType="submit">
+                        Thay địa chỉ
+                    </Button>
+                </div>
             </div>
-
-            {/* Detail Address */}
-            <div className="mt-5">
-                <label htmlFor="detail-address" className={detailAdd}>
-                    Địa chỉ chi tiết
-                </label>
-                <TextArea
-                    id="detail-address"
-                    size="large"
-                    rows={4}
-                    placeholder="Nhập địa chỉ cụ thể (số nhà, đường, thôn/xóm, ...)"
-                    value={detailAddress}
-                    onChange={handleDetailAddressChange}
-                />
-            </div>
-            <div className="mt-5">
-                <Button type="primary">Thay địa chỉ</Button>
-            </div>
-        </div>
+            <ListAddress />
+        </>
     );
 }
 
