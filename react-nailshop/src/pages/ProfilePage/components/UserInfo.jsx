@@ -110,16 +110,24 @@ function UserInfo() {
                     ...res.result,
                     avatar: res.result.avatar || defaultAvatar
                 };
-                setUserInfo(updateData);
-                setAvatarUpdate({
-                    avatar: null,
-                    file: null
-                });
-                openNotificationWithIcon(
-                    "success",
-                    "Thành công",
-                    "Cập nhật thông tin thành công"
-                );
+                if (res.code == 201) {
+                    setUserInfo(updateData);
+                    openNotificationWithIcon(
+                        "success",
+                        "Thành công",
+                        res.message
+                    );
+                    setAvatarUpdate({
+                        avatar: null,
+                        file: null
+                    });
+                } else {
+                    openNotificationWithIcon(
+                        "error",
+                        "Thất bại",
+                        "Cập nhật thông tin thất bại"
+                    );
+                }
             })
             .catch((error) => {
                 openNotificationWithIcon(

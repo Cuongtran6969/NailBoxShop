@@ -9,11 +9,12 @@ import { MdOutlineModeEditOutline } from "react-icons/md";
 import { IoTrashOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
 
-function ListAddress() {
+function ListAddress({ isChange, displayMess, setUpdateData }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedAddressId, setSelectedAddressId] = useState(null);
     const [addresses, setAddresses] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [isDelete, setIsDelete] = useState(false);
 
     useEffect(() => {
         setLoading(true);
@@ -25,13 +26,29 @@ function ListAddress() {
                 console.log(err);
             });
         setLoading(false);
-    }, []);
+    }, [isChange, isDelete]);
     const showModal = (id) => {
         setIsModalOpen(true);
         setSelectedAddressId(id);
     };
-    const handleOk = () => {
+    const handleOk = async () => {
+        const res = await deleteAddress(selectedAddressId)
+            .then((res) => {
+                if (res.code == 200) {
+                    displayMess("success", "Thành công", res.message);
+                    setIsDelete(!isDelete);
+                    setUpdateData({ id: "", index: "" });
+                } else {
+                    displayMess("error", "Thất bại", res.message);
+                }
+            })
+            .catch((err) => {
+                displayMess("error", "Thất bại", "Xóa địa chỉ thất bại");
+            });
         setIsModalOpen(false);
+    };
+    const handleOpenEdit = (id, index) => {
+        setUpdateData({ id, index });
     };
     const handleCancel = () => {
         setIsModalOpen(false);
@@ -85,6 +102,9 @@ function ListAddress() {
                                 <MdOutlineModeEditOutline
                                     size={18}
                                     style={{ cursor: "pointer" }}
+                                    onClick={() =>
+                                        handleOpenEdit(address.id, index)
+                                    }
                                 />
 
                                 <IoTrashOutline

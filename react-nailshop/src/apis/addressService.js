@@ -11,22 +11,16 @@ export const getMyAddress = async () => {
 
 export const createAddress = async (formData) => {
     let urlApi = "/address/create";
-    try {
-        const response = await axiosClient.post(urlApi, formData);
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
+    const response = await axiosClient.post(urlApi, formData);
+    console.log(response);
+
+    return response.data;
 };
 
 export const updateAddress = async (addressId, formData) => {
     let urlApi = `/address/update/${addressId}`;
-    try {
-        const response = await axiosClient.put(urlApi, formData);
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
+    const response = await axiosClient.put(urlApi, formData);
+    return response.data;
 };
 
 export const deleteAddress = async (addressId) => {

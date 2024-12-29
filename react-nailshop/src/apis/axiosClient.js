@@ -1,54 +1,75 @@
 import axios from "axios";
+
+let refreshingFunc = undefined;
 import Cookies from "js-cookie";
 
-const axiosClient = axios.create({
-    baseURL: "http://localhost:8080",
-    timeout: 60000,
-    headers: { "content-type": "application/json" }
+const instance = axios.create({
+    baseURL: "http://localhost:8080/"
 });
 
-axiosClient.interceptors.request.use(
-    async (config) => {
-        const accessToken = Cookies.get("accessToken");
-
-        if (accessToken) {
-            config.headers.Authorization = `Bearer ${accessToken}`;
+const refreshToken = async () => {
+    try {
+        const response = await instance.post("/auth/refresh", {
+            token: Cookies.get("accessToken")
+        });
+        if (response.status === 200) {
+            const refreshToken = response.data.result.token;
+            Cookies.set("accessToken", refreshToken);
+            return refreshToken;
+        } else {
+            throw new Error("Failed to refresh token");
         }
+    } catch (error) {
+        console.error("Error refreshing token: ", error);
+        throw error;
+    }
+};
 
+instance.interceptors.request.use(
+    (config) => {
+        const token = Cookies.get("accessToken");
+        if (token && config.url !== "/auth/refresh") {
+            config.headers["Authorization"] = `Bearer ${token}`;
+        }
         return config;
     },
-    (err) => {
-        return Promise.reject(err);
+    (error) => {
+        return error && error.response && error.response
+            ? error.response
+            : Promise.reject(error);
     }
 );
-axiosClient.interceptors.response.use(
-    (res) => {
-        return res;
-    },
-    async (err) => {
-        const originalRequest = err.config;
-        if (err.response.status === 401 && !originalRequest._retry) {
-            const refreshToken = Cookies.get("refreshToken");
-            if (!refreshToken) return Promise.reject(err);
-            try {
-                const res = await axiosClient.post("/auth/refresh", {
-                    token: refreshToken
-                });
-                const newAccessToken = res.result.accessToken;
 
-                Cookies.set("accessToken", newAccessToken);
-                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-                return axiosClient(originalRequest);
-            } catch (error) {
-                Cookies.remove("accessToken");
-                Cookies.remove("refreshToken");
-                return Promise.reject(error);
+instance.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    async (error) => {
+        const originalRequest = error.config;
+        if (
+            error.response &&
+            error.response.status === 401 &&
+            !originalRequest._retry
+        ) {
+            originalRequest._retry = true;
+            if (!refreshingFunc) {
+                refreshingFunc = refreshToken();
             }
-        } else {
-            Cookies.remove("accessToken");
-            Cookies.remove("refreshToken");
+            try {
+                const newToken = await refreshingFunc;
+                originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+                refreshingFunc = undefined;
+
+                return instance(originalRequest);
+            } catch (refreshError) {
+                refreshingFunc = undefined;
+                Cookies.remove("accessToken");
+                window.location = `/`;
+                return Promise.reject(refreshError);
+            }
         }
-        console.log(err);
+        return error && error.response ? error.response : Promise.reject(error);
     }
 );
-export default axiosClient;
+
+export default instance;

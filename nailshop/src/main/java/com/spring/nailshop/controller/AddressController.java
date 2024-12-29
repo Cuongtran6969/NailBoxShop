@@ -51,7 +51,7 @@ public class AddressController {
             @PathVariable(value = "addressId") Long addressId) {
         addressService.deleteAddress(addressId);
         return ApiResponse.<AddressResponse>builder()
-                .code(HttpStatus.CREATED.value())
+                .code(HttpStatus.OK.value())
                 .message("Address delete successfully")
                 .build();
     }

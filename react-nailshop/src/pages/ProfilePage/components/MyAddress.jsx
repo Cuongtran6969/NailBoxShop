@@ -7,8 +7,14 @@ import { useEffect, useState } from "react";
 import { Select, Input, Button } from "antd";
 const { TextArea } = Input;
 import styles from "../styles.module.scss";
-
 import ListAddress from "./ListAddress";
+import { notification } from "antd";
+import {
+    getMyAddress,
+    createAddress,
+    updateAddress,
+    deleteAddress
+} from "@/apis/addressService";
 function MyAddress() {
     const {
         addressForm,
@@ -16,7 +22,8 @@ function MyAddress() {
         provinceSelect,
         districtSelect,
         wardSelect,
-        detailAdd
+        detailAdd,
+        formMess
     } = styles;
     const [province, setProvince] = useState([]);
     const [district, setDistrict] = useState([]);
@@ -24,13 +31,35 @@ function MyAddress() {
     const [currentProvinceId, setCurrentProvinceId] = useState(null);
     const [currentDistrictId, setCurrentDistrictId] = useState(null);
     const [currentWardId, setCurrentWardId] = useState(null);
-    const [detailAddress, setDetailAddress] = useState("");
+    const [detail, setDetail] = useState("");
     const [formData, setFormData] = useState({
         province: "",
         district: "",
         ward: "",
         detail: ""
     });
+    const [api, contextHolder] = notification.useNotification();
+    const [isUpdate, setIsUpdate] = useState(false);
+    const [isChange, setIsChange] = useState(false);
+    const openNotificationWithIcon = (type, mess, desc) => {
+        api[type]({
+            message: mess,
+            description: desc,
+            duration: 3
+        });
+    };
+    const [updateData, setUpdateData] = useState({
+        id: "",
+        index: ""
+    });
+
+    useEffect(() => {
+        if (updateData.id && updateData.index) {
+            setIsUpdate(true);
+        } else {
+            setIsUpdate(false);
+        }
+    }, [updateData]);
 
     useEffect(() => {
         const fetchApiProvince = async () => {
@@ -62,12 +91,14 @@ function MyAddress() {
                 console.error(error);
             }
         };
+        if (!isUpdate) {
+            setWard([]);
+            setDistrict([]);
+            setCurrentDistrictId(null);
+            setCurrentWardId(null);
+        }
 
         fetchApiDistrict();
-        setDistrict([]);
-        setWard([]);
-        setCurrentDistrictId(null);
-        setCurrentWardId(null);
     }, [currentProvinceId]);
 
     useEffect(() => {
@@ -84,50 +115,106 @@ function MyAddress() {
                 console.error(error);
             }
         };
+        if (!isUpdate) {
+            setWard([]);
+            setCurrentWardId(null);
+        }
 
         fetchApiWard();
-        setWard([]);
-        setCurrentWardId(null);
     }, [currentDistrictId]);
 
     const handleChangeProvince = (value) => {
         const provinceChoose = province.find((item) => item.value === value);
+        let data = provinceChoose?.label ?? "";
         setFormData((prev) => {
-            return { ...prev, province: provinceName?.label ?? "" };
+            return { ...prev, province: data, district: "", ward: "" };
         });
         setCurrentProvinceId(value);
     };
 
     const handleChangeDistrict = (value) => {
         const districtChoose = district.find((item) => item.value === value);
+        let data = districtChoose?.label ?? "";
         setFormData((prev) => {
-            return { ...prev, district: districtChoose?.label ?? "" };
+            return { ...prev, district: data, ward: "" };
         });
         setCurrentDistrictId(value);
     };
 
     const handleChangeWard = (value) => {
-        const ward = district.find((item) => item.value === value);
+        const wardChoose = ward.find((item) => item.value === value);
+        let data = wardChoose?.label ?? "";
         setFormData((prev) => {
-            return { ...prev, district: wardChoose?.label ?? "" };
+            return { ...prev, ward: data };
         });
         setCurrentWardId(value);
     };
 
-    const handleDetailAddressChange = (e) => {
-        setDetailAddress(e.target.value);
+    const handleChangeDetail = (value) => {
+        setFormData((prev) => {
+            return { ...prev, detail: value };
+        });
+        setDetail(value);
+    };
+
+    const handleSubmitForm = async () => {
+        console.log("herr");
+        try {
+            const response = await createAddress(formData);
+            if (response.code == 201) {
+                openNotificationWithIcon(
+                    "success",
+                    "Thành công",
+                    "Thêm địa chỉ mới thành công"
+                );
+                setIsChange(!isChange);
+            } else {
+                openNotificationWithIcon("error", "Thất bại", response.message);
+            }
+        } catch (error) {
+            const errorMessage =
+                error.response?.data?.message ||
+                error.message ||
+                "Đã xảy ra lỗi không xác định.";
+            openNotificationWithIcon("error", "Thất bại", errorMessage);
+        }
+    };
+
+    const handleSubmitFormUpdate = async () => {
+        console.log("herr");
+        try {
+            const response = await updateAddress(updateData.id, formData);
+            if (response.code == 201) {
+                openNotificationWithIcon(
+                    "success",
+                    "Thành công",
+                    "Cập nhật địa chỉ thành công"
+                );
+                setIsChange(!isChange);
+                setUpdateData({ id: "", index: "" });
+            } else {
+                openNotificationWithIcon("error", "Thất bại", response.message);
+            }
+        } catch (error) {
+            const errorMessage =
+                error.response?.data?.message ||
+                error.message ||
+                "Đã xảy ra lỗi không xác định.";
+            openNotificationWithIcon("error", "Thất bại", errorMessage);
+        }
     };
 
     return (
         <>
+            {contextHolder}
             <div className={addressForm}>
                 {/* Province Select */}
                 <div className={formGroup}>
-                    <label htmlFor="province-select" className={provinceSelect}>
+                    <label htmlFor="province" className={provinceSelect}>
                         Tỉnh/Thành phố
                     </label>
                     <Select
-                        id="province-select"
+                        id="province"
                         showSearch
                         style={{ width: "100%" }}
                         size="large"
@@ -149,14 +236,11 @@ function MyAddress() {
                 <div className="d-flex justify-content-between mt-4">
                     {/* District Select */}
                     <div className="w-50 me-2">
-                        <label
-                            htmlFor="district-select"
-                            className={districtSelect}
-                        >
+                        <label htmlFor="district" className={districtSelect}>
                             Quận/Huyện
                         </label>
                         <Select
-                            id="district-select"
+                            id="district"
                             showSearch
                             style={{ width: "100%" }}
                             size="large"
@@ -178,11 +262,11 @@ function MyAddress() {
 
                     {/* Ward Select */}
                     <div className="w-50 ms-2">
-                        <label htmlFor="ward-select" className={wardSelect}>
+                        <label htmlFor="ward" className={wardSelect}>
                             Xã/Phường
                         </label>
                         <Select
-                            id="ward-select"
+                            id="ward"
                             showSearch
                             style={{ width: "100%" }}
                             size="large"
@@ -205,25 +289,57 @@ function MyAddress() {
 
                 {/* Detail Address */}
                 <div className="mt-4">
-                    <label htmlFor="detail-address" className={detailAdd}>
+                    <label htmlFor="detail" className={detailAdd}>
                         Địa chỉ chi tiết
                     </label>
                     <TextArea
-                        id="detail-address"
+                        id="detail"
                         size="large"
                         rows={4}
+                        value={detail}
+                        onChange={(e) => handleChangeDetail(e.target.value)}
                         placeholder="Nhập địa chỉ cụ thể (số nhà, đường, thôn/xóm, ...)"
-                        value={detailAddress}
-                        onChange={handleDetailAddressChange}
                     />
                 </div>
                 <div className="mt-3 mb-5">
-                    <Button type="primary" htmlType="submit">
-                        Thay địa chỉ
+                    <Button
+                        type="primary"
+                        onClick={() => handleSubmitForm()}
+                        disabled={
+                            !(
+                                formData.district &&
+                                formData.province &&
+                                formData.ward &&
+                                formData.detail
+                            )
+                        }
+                    >
+                        Thêm địa chỉ
                     </Button>
+                    {updateData.id && updateData.index + 1 && (
+                        <Button
+                            className="ms-3"
+                            type="primary"
+                            onClick={() => handleSubmitFormUpdate()}
+                            disabled={
+                                !(
+                                    formData.district &&
+                                    formData.province &&
+                                    formData.ward &&
+                                    formData.detail
+                                )
+                            }
+                        >
+                            Thay địa chỉ {updateData.index + 1}
+                        </Button>
+                    )}
                 </div>
             </div>
-            <ListAddress />
+            <ListAddress
+                isChange={isChange}
+                displayMess={openNotificationWithIcon}
+                setUpdateData={setUpdateData}
+            />
         </>
     );
 }
