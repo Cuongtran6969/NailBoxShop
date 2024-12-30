@@ -7,9 +7,26 @@ import { BiSolidDiscount } from "react-icons/bi";
 import InputNumberBox from "@components/InputNumberBox/InputNumberBox";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { MdDelete } from "react-icons/md";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { updateQuantity } from "@redux/slice/cartSlice";
 
 const { confirm } = Modal;
-function OrderItem() {
+function OrderItem({ data }) {
+    const [quantity, setQuantity] = useState(data.quantity);
+
+    useEffect(() => {
+        //change in redux
+        console.log("run heeee");
+        dispatch(
+            updateQuantity({
+                key: data.key,
+                quantity
+            })
+        );
+    }, [quantity]);
+
+    const dispatch = useDispatch();
     const showDeleteConfirm = () => {
         confirm({
             title: "Are you sure delete this task?",
@@ -36,7 +53,6 @@ function OrderItem() {
         iconDot,
         iconSize,
         removeBtn,
-        cateName,
         price,
         itemPrice,
         originPrice,
@@ -61,7 +77,7 @@ function OrderItem() {
                 </Col>
                 <Col sm={3} md={2} className="col-3 ps-0">
                     <div className={itemImage}>
-                        <img src="https://nailboxxinh.com/wp-content/uploads/2024/12/combo-nail-box-xinh-4-300x300.webp" />
+                        <img src={data.pciture} />
                     </div>
                 </Col>
                 <Col sm={8} md={9} className="col-8">
@@ -70,26 +86,17 @@ function OrderItem() {
                             <div>
                                 <h4 className={title}>
                                     <span className={titleValue}>
-                                        Combo 2 bộ Nail box Trắng gạo + Cute
-                                        đính bướm
-                                    </span>
-                                    <span>
-                                        <Button
-                                            type="primary"
-                                            className={cateName}
-                                        >
-                                            Nail box xinh
-                                        </Button>
+                                        {data.productName}
                                     </span>
                                 </h4>
                                 <div className={categrory}>
                                     <div className={cateValue}>
                                         <GoDotFill className={iconDot} />
-                                        <span>Mẫu 1</span>
+                                        <span>{data.designName}</span>
                                     </div>
                                     <div className={cateValue}>
                                         <PiResizeFill className={iconSize} />
-                                        <span>Size S</span>
+                                        <span>Size {data.size}</span>
                                     </div>
                                     <div className={removeBtnHehind}>
                                         <MdDelete />
@@ -101,16 +108,20 @@ function OrderItem() {
                                     </span>
                                 </div>
                                 <div className={itemPriceBox}>
-                                    <span className={itemPrice}>122.000₫</span>
+                                    <span className={itemPrice}>
+                                        {data.price -
+                                            0.01 * data.discount * data.price}
+                                        ₫
+                                    </span>
                                     <span className={originPrice}>
-                                        222.000₫
+                                        {data.price}₫
                                     </span>
                                     <Button
                                         type="primary"
                                         icon={<BiSolidDiscount />}
                                         className={discount}
                                     >
-                                        20%
+                                        {data.discount}%
                                     </Button>
                                 </div>
                             </div>
@@ -118,23 +129,34 @@ function OrderItem() {
                         <Col sm={3} className={totalItemBox}>
                             <div className={totalItemPrice}>
                                 <span className={totalItemPricevalue}>
-                                    388.000
+                                    {data.price -
+                                        0.01 * data.discount * data.price}
                                     <span class={priceSymbol}>₫</span>
                                 </span>
                             </div>
                             <div className={boxBehind}>
                                 <div>
                                     <span className={originPriceBehind}>
-                                        222.000₫
+                                        {data.price -
+                                            0.01 * data.discount * data.price}
+                                        ₫
                                     </span>
                                     <span className={itemPriceBehind}>
-                                        122.000₫
+                                        {data.price -
+                                            0.01 * data.discount * data.price}
+                                        ₫
                                     </span>
                                 </div>
-                                <p className={discountBehind}>Discount 5%</p>
+                                <p className={discountBehind}>
+                                    Discount {data.discount}%
+                                </p>
                             </div>
                             <div className={quantityBox}>
-                                <InputNumberBox type="small" />
+                                <InputNumberBox
+                                    type="small"
+                                    quantity={quantity}
+                                    setQuantity={setQuantity}
+                                />
                             </div>
                         </Col>
                     </Row>

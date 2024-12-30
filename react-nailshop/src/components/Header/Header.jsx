@@ -11,6 +11,8 @@ import { SideBarContext } from "@contexts/SideBarProvider";
 import { AuthContext } from "@contexts/AuthContext";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { Badge } from "antd";
+import { useSelector } from "react-redux";
 function Header() {
     const navigate = useNavigate();
     const {
@@ -23,6 +25,8 @@ function Header() {
     } = styles;
     const { setIsOpen, setType } = useContext(SideBarContext);
     const { authenticated } = useContext(AuthContext);
+    const { list } = useSelector((state) => state.cart);
+    const countCart = list.reduce((sum, item) => sum + item.quantity, 0);
     const hanleOpenSideBar = (type) => {
         if (type === "login" && authenticated) {
             navigate("/profile");
@@ -96,10 +100,14 @@ function Header() {
                                             hanleOpenSideBar("login")
                                         }
                                     />
-                                    <IoCart
-                                        className={headerNavCart}
-                                        onClick={() => hanleOpenSideBar("cart")}
-                                    />
+                                    <Badge count={countCart}>
+                                        <IoCart
+                                            className={headerNavCart}
+                                            onClick={() =>
+                                                hanleOpenSideBar("cart")
+                                            }
+                                        />
+                                    </Badge>
                                 </div>
                             </Col>
                         </Row>
@@ -126,10 +134,12 @@ function Header() {
                                 className={headerNavUser}
                                 onClick={() => hanleOpenSideBar("login")}
                             />
-                            <IoCart
-                                className={headerNavCart}
-                                onClick={() => hanleOpenSideBar("cart")}
-                            />
+                            <Badge count={countCart}>
+                                <IoCart
+                                    className={headerNavCart}
+                                    onClick={() => hanleOpenSideBar("cart")}
+                                />
+                            </Badge>
                         </div>
                     </Col>
                 </Row>

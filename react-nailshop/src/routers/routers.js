@@ -29,7 +29,7 @@ const routers = [
         path: "/profile",
         component: ProfilePage,
         layout: DefaultLayout,
-        roles: [ROLE.ADMIN, ROLE.ADMIN]
+        roles: [ROLE.USER, ROLE.ADMIN]
     },
     {
         path: "/detail/:id",

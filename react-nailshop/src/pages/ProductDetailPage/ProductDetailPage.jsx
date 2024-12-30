@@ -31,7 +31,19 @@ import Description from "@productPages/CollapseDesc/Description";
 import ProductItem from "@components/ProductItem/ProductItem";
 import { useParams } from "react-router-dom";
 import { getProductById } from "@/apis/productService";
+import { useDispatch } from "react-redux";
+import { addToCart } from "@redux/slice/cartSlice";
+import { notification } from "antd";
 const ProductDetailPage = () => {
+    const dispatch = useDispatch();
+    const [api, contextHolder] = notification.useNotification();
+    const openNotificationWithIcon = (type, mess, desc) => {
+        api[type]({
+            message: mess,
+            description: desc,
+            placement: "top"
+        });
+    };
     const { id } = useParams();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -59,7 +71,19 @@ const ProductDetailPage = () => {
     const [currentImage, setCurrentImage] = useState("");
     const [images, setImages] = useState([]);
     const [currentSize, setCurrentSize] = useState("S");
-
+    const [currentDesign, setCurrentDesign] = useState();
+    const [currentQuantity, setCurrentQuantity] = useState(1);
+    const [orderData, setOrderData] = useState({
+        productId: "",
+        productName: "",
+        size: "",
+        quantity: 1,
+        designId: "",
+        designName: "",
+        pciture: "",
+        price: "",
+        discount: ""
+    });
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
@@ -72,14 +96,29 @@ const ProductDetailPage = () => {
                     ? data.result.pictures.split(",")
                     : [];
                 let designs = data.result.designs ? data.result.designs : [];
-                designs.forEach((design) => {
+                let firstPicture = "";
+                designs.forEach((design, index) => {
                     if (design.picture) {
+                        if (index === 0) {
+                            firstPicture = design.picture;
+                        }
                         pictures.push(design.picture);
                     }
                 });
                 setProduct(data.result);
                 setImages(pictures);
-                setCurrentImage(pictures[0]);
+                setCurrentImage(firstPicture ?? pictures[0]);
+                setOrderData({
+                    ...orderData,
+                    productId: id,
+                    productName: data.result.name,
+                    size: "S",
+                    designId: designs[0]?.id,
+                    designName: designs[0]?.name,
+                    price: data.result.price,
+                    discount: data.result.discount,
+                    pciture: firstPicture ?? pictures[0]
+                });
             } catch (error) {
                 console.error("Error fetching initial data:", error);
             }
@@ -87,6 +126,14 @@ const ProductDetailPage = () => {
         };
         fetchInitialData();
     }, [id]);
+    useEffect(() => {
+        console.log("deeee");
+
+        setOrderData({
+            ...orderData,
+            quantity: currentQuantity
+        });
+    }, [currentQuantity]);
 
     const handleChangeImage = (src) => {
         setCurrentImage(src);
@@ -97,17 +144,42 @@ const ProductDetailPage = () => {
             product.designs.find((design) => design.id === value)?.picture ||
             null;
         setCurrentImage(picture);
+        console.log(value);
+        let design = product.designs.find((design) => design.id == value);
+        setOrderData({
+            ...orderData,
+            designId: design.id,
+            designName: design.name,
+            pciture: design.picture
+        });
+        // setCurrentDesign(value);
     };
     const handleChooseSize = (value) => {
-        setCurrentSize(value);
+        setOrderData({
+            ...orderData,
+            size: value
+        });
     };
     const isCurrentSize = (size) => {
-        return currentSize === size;
+        return orderData.size === size;
+    };
+    const addToCartHandle = () => {
+        dispatch(
+            addToCart({
+                ...orderData
+            })
+        );
+        openNotificationWithIcon(
+            "success",
+            "Thành công",
+            "Thêm vào giỏ hàng thành công"
+        );
+        console.log(orderData);
     };
     if (loading) return <div>Loading...</div>;
-    console.log("Images:", images);
     return (
         <div>
+            {contextHolder}
             <ConfigProvider
                 theme={{
                     components: {
@@ -277,6 +349,9 @@ const ProductDetailPage = () => {
                                                                 onChange={
                                                                     handleChangeOption
                                                                 }
+                                                                value={
+                                                                    orderData.designId
+                                                                }
                                                                 options={[
                                                                     ...product.designs.map(
                                                                         (
@@ -393,7 +468,15 @@ const ProductDetailPage = () => {
                                                         Kích cỡ:{" "}
                                                     </p>
                                                     <Space>
-                                                        <InputNumberBox type="large" />
+                                                        <InputNumberBox
+                                                            type="large"
+                                                            quantity={
+                                                                currentQuantity
+                                                            }
+                                                            setQuantity={
+                                                                setCurrentQuantity
+                                                            }
+                                                        />
                                                         <Button
                                                             type="primary"
                                                             shape="round"
@@ -404,6 +487,9 @@ const ProductDetailPage = () => {
                                                                 addToCartBtn
                                                             }
                                                             size={20}
+                                                            onClick={
+                                                                addToCartHandle
+                                                            }
                                                         >
                                                             Thêm vào giỏ hàng
                                                         </Button>

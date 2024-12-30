@@ -28,23 +28,6 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
-
-    .cateName {
-        background-color: rgba(255, 139, 193, 0.192);
-        color: $primary_color;
-        margin-top: 5px;
-        font-size: 9px;
-        height: 20px;
-        font-weight: 500;
-        display: none;
-        @media (min-width: 992px) {
-            margin-left: 30px;
-            margin-top: 0;
-            font-size: 14px;
-            height: 32px;
-            display: block;
-        }
-    }
 }
 .categrory {
     @include flex_box_custom(start, center, 0px);
