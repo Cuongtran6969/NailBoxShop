@@ -8,7 +8,6 @@ import { SidebarProvider } from "@contexts/SidebarProvider";
 import ProtectedRoute from "@/routers/ProtectedRoute";
 import { AuthProvider } from "@contexts/AuthContext";
 import NotFoundPage from "@pages/ErrorPage/NotFoundPage";
-
 function App() {
     return (
         <AuthProvider>

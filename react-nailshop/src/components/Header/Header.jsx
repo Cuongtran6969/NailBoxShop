@@ -24,10 +24,10 @@ function Header() {
     const { setIsOpen, setType } = useContext(SideBarContext);
     const { authenticated } = useContext(AuthContext);
     const hanleOpenSideBar = (type) => {
-        console.log("hell");
         if (type === "login" && authenticated) {
             navigate("/profile");
         } else {
+            console.log("hell");
             setIsOpen(true);
             setType(type);
         }
@@ -60,7 +60,11 @@ function Header() {
                             </Col>
                             <Col lg={4} sm={4} className="col-4">
                                 <div className="d-flex justify-content-center justify-content-md-start">
-                                    <img src={Logo} className={headerLogo} />
+                                    <img
+                                        src={Logo}
+                                        className={headerLogo}
+                                        onClick={() => navigate("/")}
+                                    />
                                 </div>
                             </Col>
                             <Col
@@ -92,7 +96,10 @@ function Header() {
                                             hanleOpenSideBar("login")
                                         }
                                     />
-                                    <IoCart className={headerNavCart} />
+                                    <IoCart
+                                        className={headerNavCart}
+                                        onClick={() => hanleOpenSideBar("cart")}
+                                    />
                                 </div>
                             </Col>
                         </Row>
@@ -119,7 +126,10 @@ function Header() {
                                 className={headerNavUser}
                                 onClick={() => hanleOpenSideBar("login")}
                             />
-                            <IoCart className={headerNavCart} />
+                            <IoCart
+                                className={headerNavCart}
+                                onClick={() => hanleOpenSideBar("cart")}
+                            />
                         </div>
                     </Col>
                 </Row>
