@@ -1,6 +1,7 @@
 import HomePage from "@components/HomePage/HomePage";
 import ProductDetailPage from "@pages/ProductDetailPage/ProductDetailPage";
 import CartPage from "@pages/CartPage/CartPage";
+import CheckoutPage from "@pages/CheckoutPage/CheckoutPage";
 import DefaultLayout from "@components/DefaultLayout/DefaultLayout";
 import SearchPage from "@pages/SearchPage/SearchPage";
 import AdminLayout from "@components/AdminLayout/AdminLayout";
@@ -39,6 +40,12 @@ const routers = [
     {
         path: "/cart",
         component: CartPage,
+        layout: DefaultLayout,
+        roles: [ROLE.USER]
+    },
+    {
+        path: "/checkout",
+        component: CheckoutPage,
         layout: DefaultLayout,
         roles: [ROLE.USER]
     },

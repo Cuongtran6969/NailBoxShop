@@ -96,6 +96,7 @@ const cartSlice = createSlice({
             }
         },
         changeListBuy(state, action) {
+            //handle click checkbox choose buy
             const check = state.listBuy.findIndex(
                 (order) =>
                     order.productId === action.payload.productId &&
@@ -117,11 +118,59 @@ const cartSlice = createSlice({
                     product.price - product.price * 0.01 * product.discount;
                 return sum + price * product.quantity;
             }, 0);
+        },
+        resetBuyOrder(state, action) {
+            if (state.listBuy.length < state.list.length) {
+                state.listBuy = state.list;
+                state.totalCheckout = state.total;
+            } else if (state.listBuy.length === state.list.length) {
+                state.listBuy = [];
+                state.totalCheckout = 0;
+            }
+        },
+        removeOrderCart(state, action) {
+            //remove cart order checkbox choose
+            state.list = state.list.filter(
+                (product) =>
+                    !state.listBuy.some(
+                        (selected) =>
+                            selected.productId === product.productId &&
+                            selected.size === product.size &&
+                            selected.designId === product.designId
+                    )
+            );
+
+            state.listBuy = [];
+            state.totalCheckout = 0;
+
+            state.total = state.list.reduce((sum, product) => {
+                let price =
+                    product.price - product.price * 0.01 * product.discount;
+                return sum + price * product.quantity;
+            }, 0);
+        },
+        buyNowToCart(state, action) {
+            //clic buy now so have a product buy
+            state.listBuy = [];
+            state.totalCheckout = 0;
+            state.listBuy.push(action.payload);
+            state.totalCheckout =
+                (action.payload.price -
+                    action.payload.price * 0.01 * action.payload.discount) *
+                action.payload.quantity;
         }
     }
 });
 const { actions, reducer } = cartSlice;
 
-export const { addToCart, updateQuantity, removeItem, changeListBuy } = actions;
+export const {
+    addToCart,
+    updateQuantity,
+    removeItem,
+    changeListBuy,
+    resetBuyOrder,
+    removeOrderCart,
+    buyNowToCart
+} = actions;
 
 export default reducer;

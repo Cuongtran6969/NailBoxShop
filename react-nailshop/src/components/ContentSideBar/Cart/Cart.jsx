@@ -8,6 +8,8 @@ import { HiOutlineShoppingBag } from "react-icons/hi2";
 import { useSelector } from "react-redux";
 import { Divider } from "antd";
 import { useNavigate } from "react-router-dom";
+import { SideBarContext } from "@contexts/SideBarProvider";
+import { useContext } from "react";
 function Cart() {
     const [api, contextHolder] = notification.useNotification();
     const navigate = useNavigate();
@@ -19,7 +21,12 @@ function Cart() {
     };
     const { container, title, cartContent, cartBody, cartFooter } = styles;
     const { list, total } = useSelector((state) => state.cart);
+    const { setIsOpen, setType } = useContext(SideBarContext);
 
+    const directToViewCart = () => {
+        setIsOpen(false);
+        navigate("/cart");
+    };
     return (
         <>
             {contextHolder}
@@ -39,6 +46,7 @@ function Cart() {
                             </div>
                             <div className="text-center mt-5">
                                 <Button
+                                    onClick={() => setIsOpen(false)}
                                     size="large"
                                     color="default"
                                     variant="solid"
@@ -65,7 +73,7 @@ function Cart() {
                             </div>
                             <div className={cartFooter}>
                                 <ButtonDefault
-                                    onClick={() => navigate("/cart")}
+                                    onClick={directToViewCart}
                                     content={"Xem giỏ hàng"}
                                     isPrimary={false}
                                 />

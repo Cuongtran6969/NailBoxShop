@@ -29,6 +29,8 @@ public enum ErrorCode {
     ADDRESS_MIN_REACH(400, "Limit min is one address", HttpStatus.BAD_REQUEST),
     ADDRESS_MAX_REACH(400, "Limit nax is three address", HttpStatus.BAD_REQUEST),
     ADDRESS_INVALID(400, "Address must be your own.", HttpStatus.BAD_REQUEST),
+    COUPON_ID_INVALID(400, "Coupon id not found.", HttpStatus.BAD_REQUEST),
+    COUPON_CODE_INVALID(400, "Coupon code not found.", HttpStatus.BAD_REQUEST),
     ;
     private int code;
     private String message;

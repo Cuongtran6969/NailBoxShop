@@ -29,13 +29,14 @@ import CateFilter from "@components/CateFilter/CateFilter";
 import ProductSuggest from "@components/ProductSuggest/ProductSuggest";
 import Description from "@productPages/CollapseDesc/Description";
 import ProductItem from "@components/ProductItem/ProductItem";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getProductById } from "@/apis/productService";
 import { useDispatch } from "react-redux";
-import { addToCart } from "@redux/slice/cartSlice";
+import { addToCart, buyNowToCart } from "@redux/slice/cartSlice";
 import { notification } from "antd";
 const ProductDetailPage = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [api, contextHolder] = notification.useNotification();
     const openNotificationWithIcon = (type, mess, desc) => {
         api[type]({
@@ -175,6 +176,20 @@ const ProductDetailPage = () => {
             "Thêm vào giỏ hàng thành công"
         );
         console.log(orderData);
+    };
+
+    const handleBuyNow = () => {
+        dispatch(
+            addToCart({
+                ...orderData
+            })
+        );
+        dispatch(
+            buyNowToCart({
+                ...orderData
+            })
+        );
+        navigate("/cart");
     };
     if (loading) return <div>Loading...</div>;
     return (
@@ -504,6 +519,7 @@ const ProductDetailPage = () => {
                                                         }
                                                         className={buyNowBtn}
                                                         size={20}
+                                                        onClick={handleBuyNow}
                                                     >
                                                         Mua ngay
                                                     </Button>

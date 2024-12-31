@@ -1,5 +1,6 @@
 package com.spring.nailshop.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -51,4 +52,8 @@ public class User extends AbstractEntity<Long>{
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
     private Set<Address> addresses;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private Set<Order> orders;
 }

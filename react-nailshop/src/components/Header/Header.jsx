@@ -30,6 +30,8 @@ function Header() {
     const hanleOpenSideBar = (type) => {
         if (type === "login" && authenticated) {
             navigate("/profile");
+        } else if (type == "cart" && location.pathname === "/cart") {
+            return;
         } else {
             console.log("hell");
             setIsOpen(true);

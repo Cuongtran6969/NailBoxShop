@@ -47,9 +47,11 @@ function ListAddress({ isChange, displayMess, setUpdateData }) {
             });
         setIsModalOpen(false);
     };
+
     const handleOpenEdit = (id, index) => {
         setUpdateData({ id, index });
     };
+
     const handleCancel = () => {
         setIsModalOpen(false);
         setSelectedAddressId(null);

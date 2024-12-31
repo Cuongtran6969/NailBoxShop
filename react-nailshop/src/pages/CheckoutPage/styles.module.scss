@@ -1,5 +1,4 @@
 .containerInput {
-    margin-bottom: 20px;
     .labelInput {
         font-size: 15px;
     }
@@ -13,7 +12,6 @@
     }
 }
 .containerSelect {
-    margin-bottom: 20px;
     .labelSelect {
         font-size: 15px;
     }
@@ -26,4 +24,7 @@
     &:hover {
         opacity: 0.9;
     }
+}
+.labelSelect {
+    font-size: 15px;
 }
