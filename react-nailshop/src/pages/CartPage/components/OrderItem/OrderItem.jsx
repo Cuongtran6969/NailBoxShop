@@ -9,41 +9,51 @@ import { ExclamationCircleFilled } from "@ant-design/icons";
 import { MdDelete } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { updateQuantity } from "@redux/slice/cartSlice";
-
+import {
+    updateQuantity,
+    removeItem,
+    changeListBuy
+} from "@redux/slice/cartSlice";
+import { useSelector } from "react-redux";
 const { confirm } = Modal;
 function OrderItem({ data }) {
-    const [quantity, setQuantity] = useState(data.quantity);
-
-    useEffect(() => {
-        //change in redux
-        console.log("run heeee");
+    const handleChangeQuantity = (quantity) => {
         dispatch(
             updateQuantity({
-                key: data.key,
+                ...data,
                 quantity
             })
         );
-    }, [quantity]);
+    };
+    const { listBuy } = useSelector((state) => state.cart);
 
-    const dispatch = useDispatch();
-    const showDeleteConfirm = () => {
-        confirm({
-            title: "Are you sure delete this task?",
-            icon: <ExclamationCircleFilled />,
-            content: "Some descriptions",
-            okText: "Yes",
-            okType: "danger",
-            cancelText: "No",
-            onOk() {
-                console.log("OK");
-            },
-            onCancel() {
-                console.log("Cancel");
-            }
-        });
+    const isChecked = listBuy.some(
+        (item) =>
+            item.productId === data.productId &&
+            item.size === data.size &&
+            item.designId === data.designId
+    );
+
+    const handleRemoveItem = () => {
+        dispatch(
+            removeItem({
+                ...data
+            })
+        );
     };
 
+    const dispatch = useDispatch();
+    const parseMoneyFormat = (price) => {
+        return new Intl.NumberFormat("vi-VN").format(price);
+    };
+
+    const handeCheckBox = () => {
+        dispatch(
+            changeListBuy({
+                ...data
+            })
+        );
+    };
     const {
         itemImage,
         title,
@@ -73,7 +83,7 @@ function OrderItem({ data }) {
         <div>
             <Row style={{ alignItems: "center" }}>
                 <Col sm={1} md={1} className="col-1 p-0 text-center">
-                    <Checkbox />
+                    <Checkbox checked={isChecked} onChange={handeCheckBox} />
                 </Col>
                 <Col sm={3} md={2} className="col-3 ps-0">
                     <div className={itemImage}>
@@ -90,32 +100,43 @@ function OrderItem({ data }) {
                                     </span>
                                 </h4>
                                 <div className={categrory}>
-                                    <div className={cateValue}>
-                                        <GoDotFill className={iconDot} />
-                                        <span>{data.designName}</span>
-                                    </div>
+                                    {data.designName && (
+                                        <>
+                                            <div className={cateValue}>
+                                                <GoDotFill
+                                                    className={iconDot}
+                                                />
+                                                <span>{data.designName}</span>
+                                            </div>
+                                        </>
+                                    )}
                                     <div className={cateValue}>
                                         <PiResizeFill className={iconSize} />
                                         <span>Size {data.size}</span>
                                     </div>
                                     <div className={removeBtnHehind}>
-                                        <MdDelete />
+                                        <MdDelete onClick={handleRemoveItem} />
                                     </div>
                                 </div>
                                 <div className={removeBtn}>
-                                    <span onClick={showDeleteConfirm}>
+                                    <span onClick={handleRemoveItem}>
                                         Remove
                                     </span>
                                 </div>
                                 <div className={itemPriceBox}>
+                                    <span className={originPrice}>
+                                        {parseMoneyFormat(data.price)}₫
+                                    </span>
                                     <span className={itemPrice}>
-                                        {data.price -
-                                            0.01 * data.discount * data.price}
+                                        {parseMoneyFormat(
+                                            data.price -
+                                                0.01 *
+                                                    data.discount *
+                                                    data.price
+                                        )}
                                         ₫
                                     </span>
-                                    <span className={originPrice}>
-                                        {data.price}₫
-                                    </span>
+
                                     <Button
                                         type="primary"
                                         icon={<BiSolidDiscount />}
@@ -129,21 +150,26 @@ function OrderItem({ data }) {
                         <Col sm={3} className={totalItemBox}>
                             <div className={totalItemPrice}>
                                 <span className={totalItemPricevalue}>
-                                    {data.price -
-                                        0.01 * data.discount * data.price}
+                                    {parseMoneyFormat(
+                                        (data.price -
+                                            0.01 * data.discount * data.price) *
+                                            data.quantity
+                                    )}
                                     <span class={priceSymbol}>₫</span>
                                 </span>
                             </div>
                             <div className={boxBehind}>
                                 <div>
                                     <span className={originPriceBehind}>
-                                        {data.price -
-                                            0.01 * data.discount * data.price}
-                                        ₫
+                                        {parseMoneyFormat(data.price)}₫
                                     </span>
                                     <span className={itemPriceBehind}>
-                                        {data.price -
-                                            0.01 * data.discount * data.price}
+                                        {parseMoneyFormat(
+                                            data.price -
+                                                0.01 *
+                                                    data.discount *
+                                                    data.price
+                                        )}
                                         ₫
                                     </span>
                                 </div>
@@ -154,8 +180,8 @@ function OrderItem({ data }) {
                             <div className={quantityBox}>
                                 <InputNumberBox
                                     type="small"
-                                    quantity={quantity}
-                                    setQuantity={setQuantity}
+                                    quantity={data.quantity}
+                                    changeQuantity={handleChangeQuantity}
                                 />
                             </div>
                         </Col>

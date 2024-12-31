@@ -473,7 +473,7 @@ const ProductDetailPage = () => {
                                                             quantity={
                                                                 currentQuantity
                                                             }
-                                                            setQuantity={
+                                                            changeQuantity={
                                                                 setCurrentQuantity
                                                             }
                                                         />

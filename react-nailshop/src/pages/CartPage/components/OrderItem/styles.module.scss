@@ -76,6 +76,9 @@
         text-align: end;
         margin-left: 32px;
         color: $color_alert;
+        svg {
+            cursor: pointer;
+        }
     }
 }
 .removeBtn {
@@ -108,13 +111,13 @@
         font-size: 12px;
         font-weight: 500;
         color: $four_color;
-        margin-right: 8px;
         @media (min-width: 992px) {
             font-size: 16px;
             margin-right: 20px;
         }
     }
     .originPrice {
+        margin-right: 8px;
         font-size: 12px;
         text-decoration: line-through;
         color: $thr_color;
