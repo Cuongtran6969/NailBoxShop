@@ -1,12 +1,14 @@
 import OrderItem from "@cartPages/OrderItem/OrderItem";
+import CartTotal from "@cartPages/CartTotal/CartTotal";
 import { Container, Row, Col } from "react-bootstrap";
 import { Divider } from "antd";
 import styles from "../../styles.module.scss";
 import { useSelector } from "react-redux";
+import { useState } from "react";
 function OrderProcess() {
     const { carts } = styles;
-    const { list, total } = useSelector((state) => state.cart);
-    console.log(list);
+    const { list, listBuy, totalCheckout } = useSelector((state) => state.cart);
+    console.log(totalCheckout);
 
     return (
         <div className={carts}>
@@ -22,6 +24,7 @@ function OrderProcess() {
                     );
                 })}
             </Row>
+            <CartTotal />
         </div>
     );
 }

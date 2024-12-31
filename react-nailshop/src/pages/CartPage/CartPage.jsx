@@ -2,7 +2,6 @@ import { Container, Row, Col } from "react-bootstrap";
 import OrderProcess from "@cartPages/OrderProcess/OrderProcess";
 import { useState } from "react";
 import { Button, message, Steps, theme } from "antd";
-import CartTotal from "@cartPages/CartTotal/CartTotal";
 import Purchase from "@cartPages/Purchase/Purchase";
 import PaymentResult from "@cartPages/PaymentResult/PaymentResult";
 import OrderResult from "@cartPages/OrderResult/OrderResult";
@@ -101,7 +100,6 @@ function CartPage() {
                     )}
                 </div>
             </Container>
-            <CartTotal />
         </>
     );
 }
