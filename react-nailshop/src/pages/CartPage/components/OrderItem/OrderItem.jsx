@@ -17,42 +17,35 @@ import {
 import { useSelector } from "react-redux";
 const { confirm } = Modal;
 function OrderItem({ data }) {
-    const dispatch = useDispatch();
-    const handleChangeQuantity = (quantity) => {
+    const [quantity, setQuantity] = useState(data.quantity);
+
+    useEffect(() => {
+        //change in redux
+        console.log("run heeee");
         dispatch(
             updateQuantity({
                 ...data,
                 quantity
             })
         );
-    };
-    const { listBuy } = useSelector((state) => state.cart);
+    }, [quantity]);
 
-    const isChecked = listBuy.some(
-        (item) =>
-            item.productId === data.productId &&
-            item.size === data.size &&
-            item.designId === data.designId
-    );
-
-    const handleRemoveItem = () => {
-        dispatch(
-            removeItem({
-                ...data
-            })
-        );
-    };
-
-    const parseMoneyFormat = (price) => {
-        return new Intl.NumberFormat("vi-VN").format(price);
-    };
-
-    const handeCheckBox = () => {
-        dispatch(
-            changeListBuy({
-                ...data
-            })
-        );
+    const dispatch = useDispatch();
+    const showDeleteConfirm = () => {
+        confirm({
+            title: "Are you sure delete this task?",
+            icon: <ExclamationCircleFilled />,
+            content: "Some descriptions",
+            okText: "Yes",
+            okType: "danger",
+            cancelText: "No",
+            onOk() {
+                console.log("OK");
+            },
+            onCancel() {
+                console.log("Cancel");
+            }
+        });
     };
     const {
         itemImage,

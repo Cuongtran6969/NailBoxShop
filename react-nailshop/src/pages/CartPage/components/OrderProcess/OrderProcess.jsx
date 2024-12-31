@@ -4,8 +4,6 @@ import { Container, Row, Col } from "react-bootstrap";
 import { Divider } from "antd";
 import styles from "../../styles.module.scss";
 import { useSelector } from "react-redux";
-import { useState } from "react";
-
 function OrderProcess() {
     const { carts } = styles;
     const { list, listBuy, totalCheckout } = useSelector((state) => state.cart);

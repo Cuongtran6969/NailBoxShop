@@ -6,6 +6,9 @@ const cartSlice = createSlice({
         total: 0,
         listBuy: [],
         totalCheckout: 0
+        total: 0,
+        listBuy: [],
+        totalCheckout: 0
     },
     reducers: {
         addToCart(state, action) {
@@ -23,6 +26,7 @@ const cartSlice = createSlice({
             state.total = state.list.reduce((sum, product) => {
                 let price =
                     product.price - product.price * 0.01 * product.discount;
+                return sum + price * product.quantity;
                 return sum + price * product.quantity;
             }, 0);
         },
