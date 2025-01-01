@@ -42,8 +42,8 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
-    public CouponAvailableResponse getCouponByCode(CouponCodeRequest request) {
-        Coupon coupon = couponRepository.findByCode(request.getCode())
+    public CouponAvailableResponse getCouponByCode(String code) {
+        Coupon coupon = couponRepository.findByCode(code)
                 .orElseThrow(() -> new AppException(ErrorCode.COUPON_CODE_INVALID));
 
         if (coupon.getStartTime().isAfter(LocalDateTime.now()) ||
@@ -53,6 +53,8 @@ public class CouponServiceImpl implements CouponService {
         }
 
         CouponAvailableResponse response = CouponAvailableResponse.builder()
+                .id(coupon.getId())
+                .code(coupon.getCode())
                 .type(coupon.getType().getName())
                 .amount(coupon.getAmount())
                 .isAvailable(true) // Coupon hợp lệ
@@ -71,6 +73,7 @@ public class CouponServiceImpl implements CouponService {
         Coupon coupon = couponRepository.findRandomValidCoupon()
                 .orElseThrow(() -> new AppException(ErrorCode.NO_COUPONS_AVAILABLE));
         return CouponResponse.builder()
+                .id(coupon.getId())
                 .code(coupon.getCode())
                 .type(coupon.getType().getName())
                 .startTime(coupon.getStartTime())

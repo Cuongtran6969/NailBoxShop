@@ -6,6 +6,7 @@ const cartSlice = createSlice({
         total: 0,
         listBuy: [],
         totalCheckout: 0,
+        totalAfterVoucher: 0,
         voucher: null
     },
     reducers: {
@@ -24,7 +25,6 @@ const cartSlice = createSlice({
             state.total = state.list.reduce((sum, product) => {
                 let price =
                     product.price - product.price * 0.01 * product.discount;
-                return sum + price * product.quantity;
                 return sum + price * product.quantity;
             }, 0);
         },
@@ -60,6 +60,13 @@ const cartSlice = createSlice({
                         product.price - product.price * 0.01 * product.discount;
                     return sum + price * product.quantity;
                 }, 0);
+                if (state.voucher) {
+                    state.totalAfterVoucher =
+                        state.totalCheckout -
+                        0.01 * state.voucher.amount * state.totalCheckout;
+                } else {
+                    state.totalAfterVoucher = state.totalCheckout;
+                }
             }
         },
         removeItem(state, action) {
@@ -95,6 +102,13 @@ const cartSlice = createSlice({
                         product.price - product.price * 0.01 * product.discount;
                     return sum + price * product.quantity;
                 }, 0);
+                if (state.voucher) {
+                    state.totalAfterVoucher =
+                        state.totalCheckout -
+                        0.01 * state.voucher.amount * state.totalCheckout;
+                } else {
+                    state.totalAfterVoucher = state.totalCheckout;
+                }
             }
         },
         changeListBuy(state, action) {
@@ -120,14 +134,29 @@ const cartSlice = createSlice({
                     product.price - product.price * 0.01 * product.discount;
                 return sum + price * product.quantity;
             }, 0);
+            if (state.voucher) {
+                state.totalAfterVoucher =
+                    state.totalCheckout -
+                    0.01 * state.voucher.amount * state.totalCheckout;
+            } else {
+                state.totalAfterVoucher = state.totalCheckout;
+            }
         },
         resetBuyOrder(state, action) {
             if (state.listBuy.length < state.list.length) {
                 state.listBuy = state.list;
                 state.totalCheckout = state.total;
+                if (state.voucher) {
+                    state.totalAfterVoucher =
+                        state.totalCheckout -
+                        0.01 * state.voucher.amount * state.totalCheckout;
+                } else {
+                    state.totalAfterVoucher = state.totalCheckout;
+                }
             } else if (state.listBuy.length === state.list.length) {
                 state.listBuy = [];
                 state.totalCheckout = 0;
+                state.totalAfterVoucher = 0;
             }
         },
         removeOrderCart(state, action) {
@@ -144,7 +173,8 @@ const cartSlice = createSlice({
 
             state.listBuy = [];
             state.totalCheckout = 0;
-
+            state.totalAfterVoucher = 0;
+            state.voucher = null;
             state.total = state.list.reduce((sum, product) => {
                 let price =
                     product.price - product.price * 0.01 * product.discount;
@@ -160,12 +190,22 @@ const cartSlice = createSlice({
                 (action.payload.price -
                     action.payload.price * 0.01 * action.payload.discount) *
                 action.payload.quantity;
+            if (state.voucher) {
+                state.totalAfterVoucher =
+                    state.totalCheckout -
+                    0.01 * state.voucher.amount * state.totalCheckout;
+            } else {
+                state.totalAfterVoucher = state.totalCheckout;
+            }
         },
         applyVoucher(state, action) {
             state.voucher = action.payload;
+            state.totalAfterVoucher =
+                state.totalCheckout * (1 - state.voucher.amount / 100);
         },
         removeVoucher(state) {
             state.voucher = null;
+            state.totalAfterVoucher = state.totalCheckout;
         }
     }
 });

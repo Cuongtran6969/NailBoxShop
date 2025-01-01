@@ -20,6 +20,10 @@ public class OrderItem extends AbstractEntity<Long> {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "design_id")
+    private Design design;
+
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 

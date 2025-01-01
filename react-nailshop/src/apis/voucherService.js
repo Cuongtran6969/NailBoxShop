@@ -12,9 +12,7 @@ export const getRandomTicket = async () => {
 
 export const getVoucherByCode = async (code) => {
     try {
-        const response = await axiosClient.get("/api/v1//coupon/code", {
-            code: code
-        });
+        const response = await axiosClient.get(`/api/v1/coupon/code/${code}`);
         return response.data;
     } catch (error) {
         throw error;

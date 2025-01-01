@@ -15,3 +15,18 @@ export const getShipFee = async (token, shop_id, formData) => {
         throw error;
     }
 };
+
+export const getLeadtime = async (token, formData) => {
+    const urlApi = `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime`;
+    try {
+        const response = await axios.post(urlApi, formData, {
+            headers: {
+                token: token
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Lỗi khi gọi API getFee:", error);
+        throw error;
+    }
+};

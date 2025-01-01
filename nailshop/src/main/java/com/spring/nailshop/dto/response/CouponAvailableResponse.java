@@ -9,6 +9,8 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CouponAvailableResponse {
+    Long id;
+    String code;
     String type;
     Double amount;
     Boolean isAvailable;

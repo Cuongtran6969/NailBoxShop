@@ -49,6 +49,7 @@ instance.interceptors.response.use(
         if (
             error.response &&
             error.response.status === 401 &&
+            error.response.data.message === "EXPIRED_TOKEN" &&
             !originalRequest._retry
         ) {
             originalRequest._retry = true;

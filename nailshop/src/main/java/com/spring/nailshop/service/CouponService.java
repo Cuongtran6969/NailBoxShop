@@ -8,7 +8,7 @@ import com.spring.nailshop.dto.response.CouponResponse;
 public interface CouponService {
     void createCoupon(CouponRequest request);
 
-    CouponAvailableResponse getCouponByCode(CouponCodeRequest request);
+    CouponAvailableResponse getCouponByCode(String code);
 
     CouponResponse getRandomCouponForUser();
 }

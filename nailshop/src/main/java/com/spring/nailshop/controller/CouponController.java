@@ -35,11 +35,11 @@ public class CouponController {
                 .build();
     }
 
-    @GetMapping("/code")
-    public ApiResponse<CouponAvailableResponse> getCouponByCode(@RequestBody CouponCodeRequest request) {
+    @GetMapping("/code/{value}")
+    public ApiResponse<CouponAvailableResponse> getCouponByCode(@PathVariable String value) {
         return ApiResponse.<CouponAvailableResponse>builder()
                 .code(HttpStatus.CREATED.value())
-                .result(couponService.getCouponByCode(request))
+                .result(couponService.getCouponByCode(value))
                 .message("Coupon created successfully")
                 .build();
     }

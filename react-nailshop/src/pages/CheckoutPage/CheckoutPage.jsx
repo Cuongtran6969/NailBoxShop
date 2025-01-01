@@ -7,12 +7,21 @@ import { Container, Row, Col } from "react-bootstrap";
 import PurchaseSummary from "./PurchaseSummary/PurchaseSummary";
 import { useEffect, useState } from "react";
 import { purchaseMethod } from "./constants";
-import { getShipFee } from "@/apis/shipmentService";
+import { getShipFee, getLeadtime } from "@/apis/shipmentService";
+import { getProfile } from "@/apis/userService";
 import { getProvince, getDistrict, getWard } from "@/apis/giaohanhnhanhService";
+import { FaPeopleCarryBox } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 function CheckoutPage() {
     const { list, listBuy, totalCheckout } = useSelector((state) => state.cart);
-    const { purchaseBtn, labelSelect } = styles;
+    const {
+        purchaseBtn,
+        labelSelect,
+        containerInput,
+        labelInput,
+        boxInput,
+        inputForm
+    } = styles;
     const [value, setValue] = useState(1);
     const [province, setProvince] = useState([]);
     const [district, setDistrict] = useState([]);
@@ -22,6 +31,12 @@ function CheckoutPage() {
     const [currentDistrictId, setCurrentDistrictId] = useState(null);
     const [currentWardId, setCurrentWardId] = useState(null);
     const [shipFee, setShipFee] = useState(null);
+    const [shipDate, setShipDay] = useState(null);
+    const [userInfo, setUserInfo] = useState({
+        name: "",
+        phone: ""
+    });
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         province: "",
         district: "",
@@ -96,6 +111,14 @@ function CheckoutPage() {
         fetchApiWard();
     }, [currentDistrictId]);
 
+    const getNumberDay = (leadtime) => {
+        const leadtimeDate = new Date(leadtime * 1000);
+        const currentDate = new Date();
+        const timeDifference = leadtimeDate - currentDate;
+        const daysDifference = timeDifference / (1000 * 3600 * 24);
+        return Math.floor(daysDifference);
+    };
+
     useEffect(() => {
         const fetchApiGetShipFee = async () => {
             if (currentWardId != null) {
@@ -125,8 +148,51 @@ function CheckoutPage() {
                 setShipFee(null);
             }
         };
+
+        const fetchApiGetLeadTime = async () => {
+            if (currentWardId != null) {
+                const formData = {
+                    service_type_id: 2,
+                    from_district_id: shopInfo.district_id,
+                    from_ward_code: shopInfo.ward_code + "",
+                    to_district_id: parseInt(currentDistrictId),
+                    to_ward_code: currentWardId
+                };
+                await getLeadtime(shopInfo.token, formData)
+                    .then((res) => {
+                        console.log(res);
+                        setShipDay(getNumberDay(res.data.leadtime));
+                    })
+                    .catch((err) => {
+                        console.log("fail day number");
+                        console.log(err);
+                    });
+            } else {
+                setShipDay(null);
+            }
+        };
         fetchApiGetShipFee();
+        fetchApiGetLeadTime();
     }, [currentWardId]);
+
+    useEffect(() => {
+        const getUserInfo = async () => {
+            setLoading(true);
+            await getProfile()
+                .then((res) => {
+                    console.log(res);
+                    setUserInfo({
+                        name: res.result.name ?? "",
+                        phone: res.result.phone ?? ""
+                    });
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            setLoading(false);
+        };
+        getUserInfo();
+    }, []);
 
     const onChange = (e) => {
         console.log("radio checked", e.target.value);
@@ -167,17 +233,37 @@ function CheckoutPage() {
         });
         setDetail(value);
     };
-
+    if (loading) {
+        return <div>...</div>;
+    }
     return (
         <Container>
             <Row>
                 <Col sm={6}>
                     <h5>Thông tin thanh toán</h5>
                     <Row>
-                        <InputCommon label="Họ và tên" />
+                        <div className={containerInput}>
+                            <div className={labelInput}>Họ và tên</div>
+                            <div className={boxInput}>
+                                <Input
+                                    className={inputForm}
+                                    placeholder="Tên người nhận hàng"
+                                    value={userInfo.name}
+                                />
+                            </div>
+                        </div>
                     </Row>
                     <Row className="mt-4">
-                        <InputCommon label="Số điện thoại" />
+                        <div className={containerInput}>
+                            <div className={labelInput}>Số điện thoại</div>
+                            <div className={boxInput}>
+                                <Input
+                                    className={inputForm}
+                                    placeholder="Số điện thoại người nhận"
+                                    value={userInfo.phone}
+                                />
+                            </div>
+                        </div>
                     </Row>
                     <Row className="mt-4">
                         <Col sm={12}>
@@ -271,6 +357,19 @@ function CheckoutPage() {
                             />
                         </Col>
                     </Row>
+                    {shipDate && (
+                        <Row className="mt-4">
+                            <Col sm={12}>
+                                <label htmlFor="detail" className={labelSelect}>
+                                    <FaPeopleCarryBox fontSize={40} />{" "}
+                                    <span className="ms-3">
+                                        Dự kiến nhận hàng sau{" "}
+                                        <strong>{shipDate}</strong> ngày
+                                    </span>
+                                </label>
+                            </Col>
+                        </Row>
+                    )}
                     <Row className="mt-4">
                         <div className="fs-6 mt-1">Phương thức thanh toán</div>
                         <Radio.Group onChange={onChange} value={value}>

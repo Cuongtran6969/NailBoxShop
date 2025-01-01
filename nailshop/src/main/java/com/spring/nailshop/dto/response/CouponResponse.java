@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CouponResponse {
+    Long id;
     String code;
     String type;
     Double amount;

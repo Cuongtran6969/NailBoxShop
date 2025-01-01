@@ -8,7 +8,8 @@ import SubMenu from "antd/es/menu/SubMenu";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 function PurchaseSummary({ shipFee }) {
-    const { list, listBuy, totalCheckout } = useSelector((state) => state.cart);
+    const { list, listBuy, totalCheckout, totalAfterVoucher, voucher } =
+        useSelector((state) => state.cart);
     const parseMoneyFormat = (price) => {
         return new Intl.NumberFormat("vi-VN").format(price);
     };
@@ -62,7 +63,23 @@ function PurchaseSummary({ shipFee }) {
                         <BiSolidDiscount color="orange" />
                         <span className="ms-2">Voucher</span>
                     </span>
-                    <span>20%</span>
+                    {voucher && voucher.amount == 0 && (
+                        <span>
+                            <span className="me-3 fw-medium">
+                                Miễn phí vận chuyển
+                            </span>
+                            {shipFee && "-" + parseMoneyFormat(shipFee)}₫
+                        </span>
+                    )}
+                    {voucher && voucher.amount > 0 && (
+                        <span>
+                            -
+                            {parseMoneyFormat(
+                                voucher.amount * 0.01 * totalCheckout
+                            )}
+                            ₫
+                        </span>
+                    )}
                 </div>
 
                 <div className="mt-3 d-flex align-items-center justify-content-between">
@@ -71,7 +88,12 @@ function PurchaseSummary({ shipFee }) {
                     </span>
                     {shipFee ? (
                         <span className="fs-5 fw-bold">
-                            {parseMoneyFormat(totalCheckout + shipFee)}₫
+                            {/* amount == 0 mean have is free ship */}
+                            {/* ko co voucher hoac la voucher amount > 0 deu phai co ship */}
+                            {voucher && voucher.amount == 0
+                                ? parseMoneyFormat(totalAfterVoucher)
+                                : parseMoneyFormat(totalAfterVoucher + shipFee)}
+                            ₫
                         </span>
                     ) : (
                         <Spin
