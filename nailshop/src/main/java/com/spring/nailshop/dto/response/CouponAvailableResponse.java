@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CouponResponse {
-    CouponType type;
+    String type;
     Double amount;
     Boolean isAvailable;
 }
