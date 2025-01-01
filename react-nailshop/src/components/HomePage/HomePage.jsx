@@ -7,12 +7,13 @@ import SaleHomePage from "@components/SaleHomePage/SaleHomePage";
 import ProductTrend from "@components/ProductTrend/ProductTrend";
 import ListNews from "@components/ListNews/ListNews";
 import Footer from "@components/Footer/Footer";
-
+import Ticket from "@components/Ticket/Ticket";
 function HomePage() {
     return (
         <>
             <SideBar />
             <Banner />
+            <Ticket />
             <Info />
             <CardTrend />
             <SaleHomePage />

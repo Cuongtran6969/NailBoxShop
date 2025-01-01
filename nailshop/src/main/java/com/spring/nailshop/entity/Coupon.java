@@ -29,6 +29,6 @@ public class Coupon extends AbstractEntity<Long> {
     @Column(name = "endTime")
     private LocalDateTime endTime;
 
-    @Column(name = "is_used", columnDefinition = "BOOLEAN DEFAULT false")
+    @Column(name = "is_used")
     private Boolean is_used;
 }

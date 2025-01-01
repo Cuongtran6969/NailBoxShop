@@ -5,12 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public enum CouponType {
     FREE_SHIP("Miễn phí vận chuyển"),
     MONEY("Giảm tiền");
-    private String type;
 
-    private CouponType(String type) {
-        this.type = type;
+    private String name;
+
+    private CouponType(String name) {
+        this.name = name;
     }
-    public String getType() {
-        return type;
+    public String getName() {
+        return name;
     }
 }

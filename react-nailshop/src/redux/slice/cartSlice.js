@@ -5,10 +5,8 @@ const cartSlice = createSlice({
         list: [],
         total: 0,
         listBuy: [],
-        totalCheckout: 0
-        total: 0,
-        listBuy: [],
-        totalCheckout: 0
+        totalCheckout: 0,
+        voucher: null
     },
     reducers: {
         addToCart(state, action) {
@@ -162,6 +160,12 @@ const cartSlice = createSlice({
                 (action.payload.price -
                     action.payload.price * 0.01 * action.payload.discount) *
                 action.payload.quantity;
+        },
+        applyVoucher(state, action) {
+            state.voucher = action.payload;
+        },
+        removeVoucher(state) {
+            state.voucher = null;
         }
     }
 });
@@ -174,7 +178,9 @@ export const {
     changeListBuy,
     resetBuyOrder,
     removeOrderCart,
-    buyNowToCart
+    buyNowToCart,
+    applyVoucher,
+    removeVoucher
 } = actions;
 
 export default reducer;

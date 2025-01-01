@@ -3,6 +3,7 @@ package com.spring.nailshop.controller;
 import com.spring.nailshop.dto.request.CouponCodeRequest;
 import com.spring.nailshop.dto.request.CouponRequest;
 import com.spring.nailshop.dto.response.ApiResponse;
+import com.spring.nailshop.dto.response.CouponAvailableResponse;
 import com.spring.nailshop.dto.response.CouponResponse;
 import com.spring.nailshop.service.CouponService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequestMapping("/coupon")
+@RequestMapping("/api/v1/coupon")
 @Tag(name = "Coupon Controller")
 @Slf4j
 @Validated
@@ -35,20 +36,20 @@ public class CouponController {
     }
 
     @GetMapping("/code")
-    public ApiResponse<CouponResponse> getCouponByCode(CouponCodeRequest request) {
-        return ApiResponse.<CouponResponse>builder()
+    public ApiResponse<CouponAvailableResponse> getCouponByCode(@RequestBody CouponCodeRequest request) {
+        return ApiResponse.<CouponAvailableResponse>builder()
                 .code(HttpStatus.CREATED.value())
                 .result(couponService.getCouponByCode(request))
                 .message("Coupon created successfully")
                 .build();
     }
 
-    @PutMapping("/update_used/{id}")
-    public ApiResponse<Void> setUsedCoupon(@PathVariable Long id) {
-        couponService.setUsedCoupon(id);
-        return ApiResponse.<Void>builder()
+    @GetMapping("/get-random")
+    public ApiResponse<CouponResponse> getRandomCouponForUser() {
+        return ApiResponse.<CouponResponse>builder()
                 .code(HttpStatus.CREATED.value())
-                .message("Update used successfully")
+                .result(couponService.getRandomCouponForUser())
+                .message("Coupon created successfully")
                 .build();
     }
 }

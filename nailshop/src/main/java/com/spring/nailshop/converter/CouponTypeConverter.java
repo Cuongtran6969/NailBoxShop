@@ -14,17 +14,17 @@ public class CouponTypeConverter implements AttributeConverter<CouponType, Strin
         if (couponType == null) {
             return null;
         }
-        return couponType.getType();
+        return couponType.getName();
     }
 
     @Override
-    public CouponType convertToEntityAttribute(String type) {
-        if (type == null) {
+    public CouponType convertToEntityAttribute(String name) {
+        if (name == null) {
             return null;
         }
 
         return Stream.of(CouponType.values())
-                .filter(c -> c.getType().equals(type))
+                .filter(c -> c.getName().equals(name))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }

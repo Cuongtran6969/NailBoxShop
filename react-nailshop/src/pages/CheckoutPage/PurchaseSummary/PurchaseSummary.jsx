@@ -40,20 +40,13 @@ function PurchaseSummary({ shipFee }) {
             </Card>
             <Card className="mt-2">
                 <div className="d-flex align-items-center justify-content-between">
-                    <span className="fw-bold">Tạm tính</span>
-                    <span>456.000₫</span>
-                </div>
-                <div className="mt-3 d-flex align-items-center justify-content-between">
-                    <span className="fw-bold d-flex align-items-center">
-                        <BiSolidDiscount color="orange" />
-                        <span className="ms-2">Voucher</span>
-                    </span>
-                    <span>20%</span>
+                    <span className="fw-bold">Tổng tiền hàng</span>
+                    <span> {parseMoneyFormat(totalCheckout)}₫</span>
                 </div>
                 <div className="mt-3 d-flex align-items-center justify-content-between">
                     <span className="fw-bold d-flex align-items-center">
                         <FaShippingFast color="red" />
-                        <span className="ms-2">Shop Fee</span>
+                        <span className="ms-2">Ship Fee</span>
                     </span>
                     {shipFee ? (
                         <span>{parseMoneyFormat(shipFee)}₫</span>
@@ -64,6 +57,14 @@ function PurchaseSummary({ shipFee }) {
                         />
                     )}
                 </div>
+                <div className="mt-3 d-flex align-items-center justify-content-between">
+                    <span className="fw-bold d-flex align-items-center">
+                        <BiSolidDiscount color="orange" />
+                        <span className="ms-2">Voucher</span>
+                    </span>
+                    <span>20%</span>
+                </div>
+
                 <div className="mt-3 d-flex align-items-center justify-content-between">
                     <span className="fw-bold d-flex align-items-center">
                         <span className="fs-5">Tổng</span>

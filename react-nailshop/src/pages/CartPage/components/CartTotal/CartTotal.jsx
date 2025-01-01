@@ -6,9 +6,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { resetBuyOrder, removeOrderCart } from "@redux/slice/cartSlice";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getVoucherByCode } from "@/apis/voucherService";
 function CartTotal() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [voucherCode, setVoucherCode] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
     const { list, listBuy, totalCheckout } = useSelector((state) => state.cart);
@@ -32,7 +34,12 @@ function CartTotal() {
             content: mess
         });
     };
-
+    const success = (mess) => {
+        messageApi.open({
+            type: "success",
+            content: mess
+        });
+    };
     const showModal = () => {
         if (listBuy.length == 0) {
             warning("Vui lòng chọn sản phẩm");
@@ -63,7 +70,26 @@ function CartTotal() {
     const parseMoneyFormat = (price) => {
         return new Intl.NumberFormat("vi-VN").format(price);
     };
-
+    const handleApplyVoucher = () => {
+        if (voucherCode) {
+            getVoucherByCode(voucherCode)
+                .then((res) => {
+                    dispatch(
+                        applyVoucher({
+                            type: "Miễn phí vận chuyển",
+                            amount: 0.0,
+                            isAvailable: true
+                        })
+                    );
+                    success("Áp dụng thành công");
+                })
+                .catch((err) => {
+                    warning("Voucher không hợp lệ");
+                });
+        } else {
+            warning("Voucher không hợp lệ");
+        }
+    };
     return (
         <div className={container}>
             {contextHolder}
