@@ -15,6 +15,9 @@ import java.util.List;
 @Table(name = "orders")
 public class Order extends AbstractEntity<Long> {
 
+    @Column(name = "code")
+    private String code;
+
     @Column(name = "receiver_name")
     private String receiver_name;
 
@@ -45,6 +48,9 @@ public class Order extends AbstractEntity<Long> {
     @Column(name = "detail")
     private String detail;
 
+    @Column(name = "ship_fee")
+    private Integer ship_fee;
+
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
@@ -63,5 +69,6 @@ public class Order extends AbstractEntity<Long> {
     @OneToOne
     @JoinColumn(name = "payment_id")
     private Payment payment;
+
 
 }

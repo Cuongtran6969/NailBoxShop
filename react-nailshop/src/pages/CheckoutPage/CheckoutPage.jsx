@@ -1,17 +1,21 @@
 import { Radio, Space, Tooltip, Select, Input } from "antd";
 const { TextArea } = Input;
 import InputCommon from "./InputComon/InputComon";
-// import SelectCommon from "./SelectCommon/SelectCommon";
+import { AuthContext } from "@contexts/AuthContext";
 import styles from "./styles.module.scss";
 import { Container, Row, Col } from "react-bootstrap";
 import PurchaseSummary from "./PurchaseSummary/PurchaseSummary";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { purchaseMethod } from "./constants";
 import { getShipFee, getLeadtime } from "@/apis/shipmentService";
 import { getProfile } from "@/apis/userService";
+import { getShopInfo } from "@/apis/shopService";
+import { getPaymentInfo } from "@/apis/paymentMethodService";
 import { getProvince, getDistrict, getWard } from "@/apis/giaohanhnhanhService";
 import { FaPeopleCarryBox } from "react-icons/fa6";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+const service_type_id = 2;
 function CheckoutPage() {
     const { list, listBuy, totalCheckout } = useSelector((state) => state.cart);
     const {
@@ -43,33 +47,54 @@ function CheckoutPage() {
         ward: "",
         detail: ""
     });
-    const [shopInfo, setShopInfo] = useState({
-        id: 1,
-        district_id: 1847,
-        ward_code: 291238,
-        token: "0f7f0dee-c521-11ef-bc3f-4e8d0f51e688",
-        shopId: 5556347,
-        boxLength: 18,
-        boxWidth: 12,
-        boxHeight: 4,
-        boxWeight: 200
-    });
-
+    const [shopInfo, setShopInfo] = useState(null);
+    const navigate = useNavigate();
+    const [paymentMethod, setPaymentMethod] = useState(null);
+    const { authenticated } = useContext(AuthContext);
     useEffect(() => {
-        const fetchApiProvince = async () => {
+        if (!authenticated || listBuy.length === 0) {
+            navigate("/");
+            return;
+        }
+
+        const fetchData = async () => {
             try {
-                const res = await getProvince();
-                const formattedOptions = res.data.map((province) => ({
+                setLoading(true);
+
+                // Gọi API song song
+                const [
+                    provinceRes,
+                    shopInfoRes,
+                    paymentMethodRes,
+                    userInfoRes
+                ] = await Promise.all([
+                    getProvince(),
+                    getShopInfo(),
+                    getPaymentInfo(),
+                    getProfile()
+                ]);
+
+                // Xử lý kết quả
+                const formattedProvinces = provinceRes.data.map((province) => ({
                     value: province.ProvinceID.toString(),
                     label: province.ProvinceName
                 }));
-                setProvince(formattedOptions);
+                setProvince(formattedProvinces);
+                setShopInfo(shopInfoRes.result);
+                setPaymentMethod(paymentMethodRes.result);
+                setUserInfo({
+                    name: userInfoRes.result.name ?? "",
+                    phone: userInfoRes.result.phone ?? ""
+                });
             } catch (error) {
-                console.error(error);
+                console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
             }
         };
-        fetchApiProvince();
-    }, []);
+
+        fetchData();
+    }, [authenticated, listBuy, navigate]);
 
     useEffect(() => {
         const fetchApiDistrict = async () => {
@@ -123,7 +148,7 @@ function CheckoutPage() {
         const fetchApiGetShipFee = async () => {
             if (currentWardId != null) {
                 const formData = {
-                    service_type_id: 2,
+                    service_type_id: service_type_id,
                     from_district_id: shopInfo.district_id,
                     from_ward_code: shopInfo.ward_code + "",
                     to_district_id: parseInt(currentDistrictId),
@@ -134,7 +159,7 @@ function CheckoutPage() {
                     weight: shopInfo.boxWeight,
                     insurance_value: totalCheckout
                 };
-                await getShipFee(shopInfo.token, shopInfo.shopId, formData)
+                await getShipFee(shopInfo.token, shopInfo.shop_id, formData)
                     .then((res) => {
                         console.log("success fee");
                         console.log(res);
@@ -152,7 +177,7 @@ function CheckoutPage() {
         const fetchApiGetLeadTime = async () => {
             if (currentWardId != null) {
                 const formData = {
-                    service_type_id: 2,
+                    service_type_id: service_type_id,
                     from_district_id: shopInfo.district_id,
                     from_ward_code: shopInfo.ward_code + "",
                     to_district_id: parseInt(currentDistrictId),
@@ -174,25 +199,6 @@ function CheckoutPage() {
         fetchApiGetShipFee();
         fetchApiGetLeadTime();
     }, [currentWardId]);
-
-    useEffect(() => {
-        const getUserInfo = async () => {
-            setLoading(true);
-            await getProfile()
-                .then((res) => {
-                    console.log(res);
-                    setUserInfo({
-                        name: res.result.name ?? "",
-                        phone: res.result.phone ?? ""
-                    });
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-            setLoading(false);
-        };
-        getUserInfo();
-    }, []);
 
     const onChange = (e) => {
         console.log("radio checked", e.target.value);
@@ -374,21 +380,22 @@ function CheckoutPage() {
                         <div className="fs-6 mt-1">Phương thức thanh toán</div>
                         <Radio.Group onChange={onChange} value={value}>
                             <Space direction="vertical">
-                                {purchaseMethod.map((item) => {
-                                    return (
-                                        <Radio
-                                            value={item.value}
-                                            className="fs-6"
-                                        >
-                                            <Tooltip
-                                                placement="right"
-                                                title={item.suggest}
+                                {paymentMethod &&
+                                    paymentMethod.map((item) => {
+                                        return (
+                                            <Radio
+                                                value={item.id}
+                                                className="fs-6"
                                             >
-                                                <span>{item.title}</span>
-                                            </Tooltip>
-                                        </Radio>
-                                    );
-                                })}
+                                                <Tooltip
+                                                    placement="right"
+                                                    title={item.description}
+                                                >
+                                                    <span>{item.name}</span>
+                                                </Tooltip>
+                                            </Radio>
+                                        );
+                                    })}
                             </Space>
                         </Radio.Group>
                     </Row>

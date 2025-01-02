@@ -32,4 +32,8 @@ public class OrderItem extends AbstractEntity<Long> {
 
     @Column(name = "discount")
     private Integer discount;
+
+    @Column(name = "size")
+    private String size;
+
 }
