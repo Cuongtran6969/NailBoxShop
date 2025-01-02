@@ -34,23 +34,11 @@ public class CouponServiceImpl implements CouponService {
         couponRepository.saveAll(coupons);
     }
 
-    public void setUsedCoupon(String code) {
-        Coupon coupon = couponRepository.findByCode(code)
-                .orElseThrow(() -> new AppException(ErrorCode.COUPON_CODE_INVALID));
-        coupon.setIs_used(false);
-        couponRepository.save(coupon);
-    }
 
     @Override
     public CouponAvailableResponse getCouponByCode(String code) {
-        Coupon coupon = couponRepository.findByCode(code)
+        Coupon coupon = couponRepository.findByCodeToUse(code)
                 .orElseThrow(() -> new AppException(ErrorCode.COUPON_CODE_INVALID));
-
-        if (coupon.getStartTime().isAfter(LocalDateTime.now()) ||
-            coupon.getEndTime().isBefore(LocalDateTime.now()) ||
-            coupon.getIs_used()) {
-            throw new AppException(ErrorCode.COUPON_CODE_INVALID);
-        }
 
         CouponAvailableResponse response = CouponAvailableResponse.builder()
                 .id(coupon.getId())

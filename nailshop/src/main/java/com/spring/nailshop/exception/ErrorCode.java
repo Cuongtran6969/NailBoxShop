@@ -32,6 +32,7 @@ public enum ErrorCode {
     ADDRESS_INVALID(400, "Address must be your own.", HttpStatus.BAD_REQUEST),
     COUPON_ID_INVALID(400, "Coupon id not found.", HttpStatus.BAD_REQUEST),
     COUPON_CODE_INVALID(400, "Coupon code not found.", HttpStatus.BAD_REQUEST),
+    COUPON_CODE_USED(400, "Coupon đã được sử dụng.", HttpStatus.BAD_REQUEST),
     NO_COUPONS_AVAILABLE(400, "Coupon unavailable", HttpStatus.BAD_REQUEST),
     PAYMENT_ID_INVALID(400, "Payment id invalid", HttpStatus.BAD_REQUEST),
     SHOP_NOT_FOUND(400, "Shop not found", HttpStatus.BAD_REQUEST),

@@ -8,6 +8,7 @@ import com.spring.nailshop.entity.*;
 import com.spring.nailshop.exception.AppException;
 import com.spring.nailshop.exception.ErrorCode;
 import com.spring.nailshop.repository.*;
+import com.spring.nailshop.service.CouponService;
 import com.spring.nailshop.service.OrderService;
 import com.spring.nailshop.service.ShippingFeeService;
 import com.spring.nailshop.service.ShopService;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -44,6 +46,9 @@ public class OrderServiceImpl implements OrderService {
 
     private final PaymentRepository paymentRepository;
 
+    private final CouponService couponService;
+
+    @Transactional
     @Override
     public OrderCreateSuccess createOrder(OrderRequest request) {
         SecurityContext contextHolder = SecurityContextHolder.getContext();
@@ -99,12 +104,12 @@ public class OrderServiceImpl implements OrderService {
         }
         // Áp dụng mã giảm giá nếu có
         Coupon coupon = null;
-        if (request.getCoupon_code() != null) {
-            Optional<Coupon> couponEntity = couponRepository.findByCode(request.getCoupon_code());
-            if(couponEntity.isPresent()) {
-                totalPrice -= (totalPrice * couponEntity.get().getAmount() / 100);
-                coupon = couponEntity.get();
-            }
+        if (!request.getCoupon_code().isEmpty()) {
+            coupon = couponRepository.findByCodeToUse(request.getCoupon_code())
+                    .orElseThrow(() -> new AppException(ErrorCode.COUPON_CODE_USED));
+            totalPrice -= (totalPrice * coupon.getAmount() / 100);
+            coupon.setIs_used(true);
+            couponRepository.save(coupon);
         }
         String code = generateUniqueCouponCode();
 
@@ -168,6 +173,5 @@ public class OrderServiceImpl implements OrderService {
         String couponCode = NanoIdUtils.randomNanoId(secureRandom, alphabet, 6);
         return couponCode;
     }
-
 
 }

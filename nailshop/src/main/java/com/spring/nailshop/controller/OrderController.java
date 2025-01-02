@@ -30,7 +30,7 @@ public class OrderController {
     @PostMapping("/create")
     public ApiResponse<OrderCreateSuccess> createOrder(@RequestBody OrderRequest request) {
         return ApiResponse.<OrderCreateSuccess>builder()
-                .code(HttpStatus.CREATED.value())
+                .code(HttpStatus.OK.value())
                 .result(orderService.createOrder(request))
                 .message("Created order successfully")
                 .build();

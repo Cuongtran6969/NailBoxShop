@@ -1,4 +1,4 @@
-import { Radio, Space, Tooltip, Select, Input } from "antd";
+import { Radio, Space, Tooltip, Select, Input, notification } from "antd";
 const { TextArea } = Input;
 import InputCommon from "./InputComon/InputComon";
 import { AuthContext } from "@contexts/AuthContext";
@@ -11,22 +11,28 @@ import { getShipFee, getLeadtime } from "@/apis/shipmentService";
 import { getProfile } from "@/apis/userService";
 import { getShopInfo } from "@/apis/shopService";
 import { getPaymentInfo } from "@/apis/paymentMethodService";
+import { createOrder } from "@/apis/orderService";
 import { getProvince, getDistrict, getWard } from "@/apis/giaohanhnhanhService";
 import { FaPeopleCarryBox } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import * as Yup from "yup";
+import { useFormik } from "formik";
 const service_type_id = 2;
 function CheckoutPage() {
-    const { list, listBuy, totalCheckout } = useSelector((state) => state.cart);
+    const { list, listBuy, totalCheckout, voucher } = useSelector(
+        (state) => state.cart
+    );
     const {
         purchaseBtn,
         labelSelect,
         containerInput,
         labelInput,
         boxInput,
-        inputForm
+        inputForm,
+        errorText
     } = styles;
-    const [value, setValue] = useState(1);
+    const [paym, setValue] = useState(1);
     const [province, setProvince] = useState([]);
     const [district, setDistrict] = useState([]);
     const [ward, setWard] = useState([]);
@@ -51,6 +57,25 @@ function CheckoutPage() {
     const navigate = useNavigate();
     const [paymentMethod, setPaymentMethod] = useState(null);
     const { authenticated } = useContext(AuthContext);
+    const [initForm, setInitForm] = useState({
+        name: "",
+        phone: "",
+        provinceId: "",
+        districtId: "",
+        wardId: "",
+        provinceName: "",
+        districtName: "",
+        wardName: "",
+        detail: "",
+        paymentId: ""
+    });
+    const [api, contextHolder] = notification.useNotification();
+    const openNotificationWithIcon = (type, mess, desc) => {
+        api[type]({
+            message: mess,
+            description: desc
+        });
+    };
     useEffect(() => {
         if (!authenticated || listBuy.length === 0) {
             navigate("/");
@@ -82,29 +107,36 @@ function CheckoutPage() {
                 setProvince(formattedProvinces);
                 setShopInfo(shopInfoRes.result);
                 setPaymentMethod(paymentMethodRes.result);
-                setUserInfo({
+
+                // setUserInfo({
+                //     name: userInfoRes.result.name ?? "",
+                //     phone: userInfoRes.result.phone ?? ""
+                // });
+                setInitForm((prev) => ({
+                    ...prev,
                     name: userInfoRes.result.name ?? "",
-                    phone: userInfoRes.result.phone ?? ""
-                });
+                    phone: userInfoRes.result.phone ?? "",
+                    paymentId: paymentMethodRes.result?.[0].id || ""
+                }));
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {
                 setLoading(false);
             }
         };
-
         fetchData();
     }, [authenticated, listBuy, navigate]);
 
     useEffect(() => {
         const fetchApiDistrict = async () => {
-            if (!currentProvinceId) return;
+            if (!initForm.provinceId) return;
             try {
-                const res = await getDistrict(currentProvinceId);
+                const res = await getDistrict(initForm.provinceId);
                 const formattedOptions = res.data.map((district) => ({
                     value: district.DistrictID.toString(),
                     label: district.DistrictName
                 }));
+
                 setDistrict(formattedOptions);
             } catch (error) {
                 console.error(error);
@@ -115,13 +147,13 @@ function CheckoutPage() {
         setCurrentDistrictId(null);
         setCurrentWardId(null);
         fetchApiDistrict();
-    }, [currentProvinceId]);
+    }, [initForm.provinceId]);
 
     useEffect(() => {
         const fetchApiWard = async () => {
-            if (!currentDistrictId) return;
+            if (!initForm.districtId) return;
             try {
-                const res = await getWard(currentDistrictId);
+                const res = await getWard(initForm.districtId);
                 const formattedOptions = res.data.map((ward) => ({
                     value: ward.WardCode.toString(),
                     label: ward.WardName
@@ -134,7 +166,7 @@ function CheckoutPage() {
         setWard([]);
         setCurrentWardId(null);
         fetchApiWard();
-    }, [currentDistrictId]);
+    }, [initForm.districtId]);
 
     const getNumberDay = (leadtime) => {
         const leadtimeDate = new Date(leadtime * 1000);
@@ -146,13 +178,13 @@ function CheckoutPage() {
 
     useEffect(() => {
         const fetchApiGetShipFee = async () => {
-            if (currentWardId != null) {
+            if (initForm.districtId) {
                 const formData = {
                     service_type_id: service_type_id,
                     from_district_id: shopInfo.district_id,
                     from_ward_code: shopInfo.ward_code + "",
-                    to_district_id: parseInt(currentDistrictId),
-                    to_ward_code: currentWardId,
+                    to_district_id: parseInt(initForm.districtId),
+                    to_ward_code: initForm.wardId,
                     length: shopInfo.boxLength,
                     width: shopInfo.boxWidth,
                     height: shopInfo.boxHeight,
@@ -198,211 +230,366 @@ function CheckoutPage() {
         };
         fetchApiGetShipFee();
         fetchApiGetLeadTime();
-    }, [currentWardId]);
+    }, [initForm.wardId]);
 
-    const onChange = (e) => {
-        console.log("radio checked", e.target.value);
-        setValue(e.target.value);
+    const handleChangePayment = (e) => {
+        console.log(e.target.value);
+
+        setInitForm((prev) => ({
+            ...prev,
+            paymentId: e.target.value
+        }));
     };
 
     const handleChangeProvince = (value) => {
         const provinceChoose = province.find((item) => item.value === value);
         //save name in db
-        let data = provinceChoose?.label ?? "";
-        setFormData((prev) => {
-            return { ...prev, province: data, district: "", ward: "" };
-        });
-        setCurrentProvinceId(value);
+        // let data = provinceChoose?.label ?? "";
+        // setFormData((prev) => {
+        //     return { ...prev, province: data, district: "", ward: "" };
+        // });
+
+        setInitForm((prev) => ({
+            ...prev,
+            provinceId: provinceChoose?.value ?? "",
+            provinceName: provinceChoose?.label ?? "",
+            districtId: "",
+            wardId: "",
+            districtName: "",
+            wardName: ""
+        }));
+
+        // setCurrentProvinceId(value);
     };
 
     const handleChangeDistrict = (value) => {
         const districtChoose = district.find((item) => item.value === value);
-        let data = districtChoose?.label ?? "";
-        setFormData((prev) => {
-            return { ...prev, district: data, ward: "" };
-        });
-        setCurrentDistrictId(value);
+        // let data = districtChoose?.label ?? "";
+        // setFormData((prev) => {
+        //     return { ...prev, district: data, ward: "" };
+        // });
+        // setCurrentDistrictId(value);
+        setInitForm((prev) => ({
+            ...prev,
+            districtId: districtChoose?.value ?? "",
+            districtName: districtChoose?.label ?? "",
+            wardId: "",
+            wardName: ""
+        }));
     };
 
     const handleChangeWard = (value) => {
         const wardChoose = ward.find((item) => item.value === value);
-        let data = wardChoose?.label ?? "";
-        setFormData((prev) => {
-            return { ...prev, ward: data };
-        });
-        setCurrentWardId(value);
+        // let data = wardChoose?.label ?? "";
+        // setFormData((prev) => {
+        //     return { ...prev, ward: data };
+        // });
+        // setCurrentWardId(value);
+        setInitForm((prev) => ({
+            ...prev,
+            wardId: wardChoose?.value ?? "",
+            wardName: wardChoose?.label ?? ""
+        }));
     };
 
     const handleChangeDetail = (value) => {
-        setFormData((prev) => {
-            return { ...prev, detail: value };
-        });
-        setDetail(value);
+        // setDetail(value);
+    };
+
+    const handleOrderRequest = () => {
+        for (const key in initForm) {
+            if (!initForm[key]) {
+                openNotificationWithIcon(
+                    "warning",
+                    "Nhập đầy đủ thông tin",
+                    "Yêu cầu nhập đầy đủ thông tin"
+                );
+                return; // Nếu có trường trống, ngừng submit
+            }
+        }
+
+        fetchApiOrder(initForm);
+    };
+    const fetchApiOrder = async (data) => {
+        const items = [];
+        console.log(listBuy);
+
+        for (const item of listBuy) {
+            items.push({
+                productId: item.productId,
+                quantity: item.quantity,
+                size: item.size,
+                designId: item.designId
+            });
+        }
+        const formData = {
+            receiver_name: data.name,
+            phone: data.phone,
+            province_id: data.provinceId,
+            district_id: data.districtId,
+            ward_code: data.wardId,
+            province_name: data.provinceName,
+            district_name: data.districtName,
+            ward_name: data.wardName,
+            detail: data.detail,
+            coupon_code: voucher?.code || "",
+            payment_id: data.paymentId,
+            items: items
+        };
+
+        await createOrder(formData)
+            .then((res) => {
+                if (res.code == 200) {
+                    // openNotificationWithIcon(
+                    //     "success",
+                    //     "Cảm ơn quý khách",
+                    //     "Đơn hàng được đặt thành công"
+                    // );
+                    const orderCode = res.result.code;
+
+                    if (formData.payment_id == 1) {
+                        navigate("/payment", {
+                            orderCode: { orderCode }
+                        });
+                    } else {
+                        let result = "success";
+                        navigate("/order-result", {
+                            orderResult: { result }
+                        });
+                    }
+                } else {
+                    openNotificationWithIcon(
+                        "error",
+                        "Xảy ra lỗi",
+                        res.message
+                    );
+                    let result = "error";
+                    navigate("/order-result", {
+                        orderResult: { result }
+                    });
+                }
+
+                console.log(res);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+
+        console.log(formData);
     };
     if (loading) {
         return <div>...</div>;
     }
+
     return (
         <Container>
+            {contextHolder}
             <Row>
                 <Col sm={6}>
                     <h5>Thông tin thanh toán</h5>
-                    <Row>
-                        <div className={containerInput}>
-                            <div className={labelInput}>Họ và tên</div>
-                            <div className={boxInput}>
-                                <Input
-                                    className={inputForm}
-                                    placeholder="Tên người nhận hàng"
-                                    value={userInfo.name}
-                                />
+                    <form>
+                        <Row>
+                            <div className={containerInput}>
+                                <div className={labelInput}>Họ và tên</div>
+                                <div className={boxInput}>
+                                    <Input
+                                        name="name"
+                                        className={inputForm}
+                                        placeholder="Tên người nhận hàng"
+                                        value={initForm.name}
+                                        onChange={(e) =>
+                                            setInitForm((prev) => ({
+                                                ...prev,
+                                                name: e.target.value
+                                            }))
+                                        }
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    </Row>
-                    <Row className="mt-4">
-                        <div className={containerInput}>
-                            <div className={labelInput}>Số điện thoại</div>
-                            <div className={boxInput}>
-                                <Input
-                                    className={inputForm}
-                                    placeholder="Số điện thoại người nhận"
-                                    value={userInfo.phone}
-                                />
+                        </Row>
+                        <Row className="mt-4">
+                            <div className={containerInput}>
+                                <div className={labelInput}>Số điện thoại</div>
+                                <div className={boxInput}>
+                                    <Input
+                                        name="phone"
+                                        className={inputForm}
+                                        placeholder="Số điện thoại người nhận"
+                                        value={initForm.phone}
+                                        onChange={(e) =>
+                                            setInitForm((prev) => ({
+                                                ...prev,
+                                                phone: e.target.value
+                                            }))
+                                        }
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    </Row>
-                    <Row className="mt-4">
-                        <Col sm={12}>
-                            <label htmlFor="province" className={labelSelect}>
-                                Tỉnh/Thành phố
-                            </label>
-                            <Select
-                                id="province"
-                                showSearch
-                                style={{ width: "100%" }}
-                                size="large"
-                                placeholder="Chọn tỉnh/thành phố"
-                                optionFilterProp="label"
-                                filterSort={(optionA, optionB) =>
-                                    (optionA?.label ?? "")
-                                        .toLowerCase()
-                                        .localeCompare(
-                                            (optionB?.label ?? "").toLowerCase()
-                                        )
-                                }
-                                onChange={handleChangeProvince}
-                                options={province}
-                                value={currentProvinceId}
-                            />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col sm={6} className="mt-4">
-                            <label htmlFor="district" className={labelSelect}>
-                                Quận/Huyện
-                            </label>
-                            <Select
-                                id="district"
-                                showSearch
-                                style={{ width: "100%" }}
-                                size="large"
-                                placeholder="Chọn quận/huyện"
-                                optionFilterProp="label"
-                                filterSort={(optionA, optionB) =>
-                                    (optionA?.label ?? "")
-                                        .toLowerCase()
-                                        .localeCompare(
-                                            (optionB?.label ?? "").toLowerCase()
-                                        )
-                                }
-                                onChange={handleChangeDistrict}
-                                options={district}
-                                value={currentDistrictId}
-                                disabled={!currentProvinceId}
-                            />
-                        </Col>
-                        <Col sm={6} className="mt-4">
-                            <label htmlFor="ward" className={labelSelect}>
-                                Xã/Phường
-                            </label>
-                            <Select
-                                id="ward"
-                                showSearch
-                                style={{ width: "100%" }}
-                                size="large"
-                                placeholder="Chọn xã/phường"
-                                optionFilterProp="label"
-                                filterSort={(optionA, optionB) =>
-                                    (optionA?.label ?? "")
-                                        .toLowerCase()
-                                        .localeCompare(
-                                            (optionB?.label ?? "").toLowerCase()
-                                        )
-                                }
-                                onChange={handleChangeWard}
-                                options={ward}
-                                value={currentWardId}
-                                disabled={!currentDistrictId}
-                            />
-                        </Col>
-                    </Row>
-                    <Row className="mt-4">
-                        <Col sm={12}>
-                            <label htmlFor="detail" className={labelSelect}>
-                                Địa chỉ chi tiết
-                            </label>
-                            <TextArea
-                                id="detail"
-                                size="large"
-                                rows={4}
-                                value={detail}
-                                onChange={(e) =>
-                                    handleChangeDetail(e.target.value)
-                                }
-                                placeholder="Nhập địa chỉ cụ thể (số nhà, đường, thôn/xóm, ...)"
-                            />
-                        </Col>
-                    </Row>
-                    {shipDate && (
+                        </Row>
+                        <Row className="mt-4">
+                            <Col sm={12}>
+                                <label
+                                    htmlFor="province"
+                                    className={labelSelect}
+                                >
+                                    Tỉnh/Thành phố
+                                </label>
+                                <Select
+                                    id="province"
+                                    name="province"
+                                    showSearch
+                                    style={{ width: "100%" }}
+                                    size="large"
+                                    placeholder="Chọn tỉnh/thành phố"
+                                    optionFilterProp="label"
+                                    filterSort={(optionA, optionB) =>
+                                        (optionA?.label ?? "")
+                                            .toLowerCase()
+                                            .localeCompare(
+                                                (
+                                                    optionB?.label ?? ""
+                                                ).toLowerCase()
+                                            )
+                                    }
+                                    onChange={handleChangeProvince}
+                                    options={province}
+                                    value={initForm.provinceId}
+                                />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col sm={6} className="mt-4">
+                                <label
+                                    htmlFor="district"
+                                    className={labelSelect}
+                                >
+                                    Quận/Huyện
+                                </label>
+                                <Select
+                                    id="district"
+                                    name="district"
+                                    showSearch
+                                    style={{ width: "100%" }}
+                                    size="large"
+                                    placeholder="Chọn quận/huyện"
+                                    optionFilterProp="label"
+                                    filterSort={(optionA, optionB) =>
+                                        (optionA?.label ?? "")
+                                            .toLowerCase()
+                                            .localeCompare(
+                                                (
+                                                    optionB?.label ?? ""
+                                                ).toLowerCase()
+                                            )
+                                    }
+                                    onChange={handleChangeDistrict}
+                                    options={district}
+                                    value={initForm.districtId}
+                                    disabled={!initForm.provinceId}
+                                />
+                            </Col>
+                            <Col sm={6} className="mt-4">
+                                <label htmlFor="ward" className={labelSelect}>
+                                    Xã/Phường
+                                </label>
+                                <Select
+                                    id="ward"
+                                    name="ward"
+                                    showSearch
+                                    style={{ width: "100%" }}
+                                    size="large"
+                                    placeholder="Chọn xã/phường"
+                                    optionFilterProp="label"
+                                    filterSort={(optionA, optionB) =>
+                                        (optionA?.label ?? "")
+                                            .toLowerCase()
+                                            .localeCompare(
+                                                (
+                                                    optionB?.label ?? ""
+                                                ).toLowerCase()
+                                            )
+                                    }
+                                    onChange={handleChangeWard}
+                                    options={ward}
+                                    value={initForm.wardId}
+                                    disabled={!initForm.districtId}
+                                />
+                            </Col>
+                        </Row>
                         <Row className="mt-4">
                             <Col sm={12}>
                                 <label htmlFor="detail" className={labelSelect}>
-                                    <FaPeopleCarryBox fontSize={40} />{" "}
-                                    <span className="ms-3">
-                                        Dự kiến nhận hàng sau{" "}
-                                        <strong>{shipDate}</strong> ngày
-                                    </span>
+                                    Địa chỉ chi tiết
                                 </label>
+                                <TextArea
+                                    id="detail"
+                                    name="detail"
+                                    size="large"
+                                    rows={4}
+                                    value={initForm.detail}
+                                    onChange={(e) =>
+                                        setInitForm((prev) => ({
+                                            ...prev,
+                                            detail: e.target.value
+                                        }))
+                                    }
+                                    placeholder="Nhập địa chỉ cụ thể (số nhà, đường, thôn/xóm, ...)"
+                                />
                             </Col>
                         </Row>
-                    )}
-                    <Row className="mt-4">
-                        <div className="fs-6 mt-1">Phương thức thanh toán</div>
-                        <Radio.Group onChange={onChange} value={value}>
-                            <Space direction="vertical">
-                                {paymentMethod &&
-                                    paymentMethod.map((item) => {
-                                        return (
-                                            <Radio
-                                                value={item.id}
-                                                className="fs-6"
-                                            >
-                                                <Tooltip
-                                                    placement="right"
-                                                    title={item.description}
+                        {shipDate && (
+                            <Row className="mt-4">
+                                <Col sm={12}>
+                                    <label
+                                        htmlFor="detail"
+                                        className={labelSelect}
+                                    >
+                                        <FaPeopleCarryBox fontSize={40} />{" "}
+                                        <span className="ms-3">
+                                            Dự kiến nhận hàng sau{" "}
+                                            <strong>{shipDate}</strong> ngày
+                                        </span>
+                                    </label>
+                                </Col>
+                            </Row>
+                        )}
+                        <Row className="mt-4">
+                            <div className="fs-6 mt-1">
+                                Phương thức thanh toán
+                            </div>
+
+                            <Radio.Group
+                                onChange={handleChangePayment}
+                                value={initForm.paymentId}
+                            >
+                                <Space direction="vertical">
+                                    {paymentMethod &&
+                                        paymentMethod.map((item) => {
+                                            return (
+                                                <Radio
+                                                    value={item.id}
+                                                    className="fs-6"
                                                 >
-                                                    <span>{item.name}</span>
-                                                </Tooltip>
-                                            </Radio>
-                                        );
-                                    })}
-                            </Space>
-                        </Radio.Group>
-                    </Row>
+                                                    <Tooltip
+                                                        placement="right"
+                                                        title={item.description}
+                                                    >
+                                                        <span>{item.name}</span>
+                                                    </Tooltip>
+                                                </Radio>
+                                            );
+                                        })}
+                                </Space>
+                            </Radio.Group>
+                        </Row>
+                    </form>
                 </Col>
                 <Col sm={6}>
                     <h5 className="mt-sm-0 mt-5">Đơn hàng của bạn</h5>
-                    <PurchaseSummary shipFee={shipFee} />
+                    <PurchaseSummary
+                        shipFee={shipFee}
+                        handleOrderRequest={handleOrderRequest}
+                    />
                 </Col>
             </Row>
         </Container>
