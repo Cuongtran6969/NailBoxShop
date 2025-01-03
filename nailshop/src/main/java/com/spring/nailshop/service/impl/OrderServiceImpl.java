@@ -1,9 +1,15 @@
 package com.spring.nailshop.service.impl;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import com.spring.nailshop.dto.request.OrderItemRequest;
 import com.spring.nailshop.dto.request.OrderRequest;
 import com.spring.nailshop.dto.response.OrderCreateSuccess;
+import com.spring.nailshop.dto.response.OrderInfoResponse;
+import com.spring.nailshop.dto.response.OrderPaymentInfoResponse;
 import com.spring.nailshop.entity.*;
 import com.spring.nailshop.exception.AppException;
 import com.spring.nailshop.exception.ErrorCode;
@@ -11,7 +17,6 @@ import com.spring.nailshop.repository.*;
 import com.spring.nailshop.service.CouponService;
 import com.spring.nailshop.service.OrderService;
 import com.spring.nailshop.service.ShippingFeeService;
-import com.spring.nailshop.service.ShopService;
 import com.spring.nailshop.util.CouponType;
 import com.spring.nailshop.util.OrderStatus;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +25,9 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -120,6 +123,7 @@ public class OrderServiceImpl implements OrderService {
                 shop.getBoxHeight(), shop.getBoxWeight(),
                 totalPrice, shop.getToken(), shop.getShop_id());
 
+        //total price include ship fee || coupon
         if (coupon != null && coupon.getType() != CouponType.FREE_SHIP) {
             totalPrice+=shipFee;
         }
@@ -138,6 +142,7 @@ public class OrderServiceImpl implements OrderService {
                 .ward_name(request.getWard_name())
                 .status(OrderStatus.PENDING)
                 .ship_fee(shipFee)
+                .code(code)
                 .coupon(coupon)
                 .payment(payment)
                 .orderItems(orderItems)
@@ -147,12 +152,53 @@ public class OrderServiceImpl implements OrderService {
         for (OrderItem orderItem : orderItems) {
             orderItem.setOrder(order); // Gán order cho orderItem
         }
-        orderRepository.save(order);
+         orderRepository.save(order);
          return OrderCreateSuccess.builder()
+                 .id(order.getId())
                  .total_fee(totalPrice)
                  .shipping_fee(shipFee)
                  .code(code)
                  .build();
+    }
+
+    @Override
+    public OrderInfoResponse getOrderToPaymentInfo(Long orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        if(order.getPayment().getId() != 1 || !order.getStatus().equals(OrderStatus.PENDING)) {
+            throw new AppException(ErrorCode.ORDER_PAYMENT_INVALID);
+        }
+        return OrderInfoResponse.builder()
+                .orderId(order.getId())
+                .totalPrice((int) Math.round(order.getTotal_price()))
+                .orderCode(order.getCode())
+                .status(order.getStatus().name())
+                .build();
+    }
+
+    @Override
+    public void savePaymentQr(Long orderId, String image) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        order.setQr_img(image);
+        orderRepository.save(order);
+    }
+
+    @Override
+    public OrderPaymentInfoResponse getOrderPaymentInfo(Long orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        Shop shop = shopRepository.findAll()
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new AppException(ErrorCode.SHOP_NOT_FOUND));
+        return OrderPaymentInfoResponse.builder()
+                .accountName(shop.getBank_account_name())
+                .bankCode(shop.getBank_code())
+                .bankName(shop.getBank_name())
+                .qrImage(order.getQr_img())
+                .orderCode(order.getCode())
+                .totalPrice(order.getTotal_price())
+                .status(order.getStatus().name())
+                .createdAt(order.getCreateAt())
+                .build();
     }
 
     public boolean isCodeUnique(String code) {

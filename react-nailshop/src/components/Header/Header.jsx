@@ -9,12 +9,15 @@ import { IoCart } from "react-icons/io5";
 import { Container, Row, Col } from "react-bootstrap";
 import { SideBarContext } from "@contexts/SideBarProvider";
 import { AuthContext } from "@contexts/AuthContext";
-import { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useContext, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Badge } from "antd";
 import { useSelector } from "react-redux";
+import SearchBoxHeader from "@components/SearchBoxHeader/SearchBoxHeader";
+import { HeaderSearchContext } from "@contexts/HeaderSearchProvider";
 function Header() {
     const navigate = useNavigate();
+    const location = useLocation();
     const {
         headerText,
         headerLogo,
@@ -26,6 +29,12 @@ function Header() {
     const { setIsOpen, setType } = useContext(SideBarContext);
     const { authenticated } = useContext(AuthContext);
     const { list } = useSelector((state) => state.cart);
+    const { keyword, setKeyword } = useContext(HeaderSearchContext);
+    useEffect(() => {
+        if (!location.pathname.startsWith("/search")) {
+            setKeyword(""); // Xóa từ khóa
+        }
+    }, [location.pathname]);
     const countCart = list.reduce((sum, item) => sum + item.quantity, 0);
     const hanleOpenSideBar = (type) => {
         if (type === "login" && authenticated) {
@@ -119,12 +128,13 @@ function Header() {
                         md={7}
                         className="text-center d-flex justify-content-center mt-md-0 mt-3 justify-content-md-start"
                     >
-                        <div className={searchBox}>
+                        <SearchBoxHeader />
+                        {/* <div className={searchBox}>
                             <input placeholder="Nhập từ khóa tìm kiếm..." />
                             <MdSearch
                                 style={{ fontSize: "30px", padding: "5px" }}
                             />
-                        </div>
+                        </div> */}
                     </Col>
                     <Col
                         lg={4}

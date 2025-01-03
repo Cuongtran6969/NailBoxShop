@@ -81,6 +81,7 @@ public class ApplicationInitConfig {
                         .ward_name("Dien Thai")
                         .bank_code("083838383999")
                         .bank_name("MB Bank")
+                        .bank_account_name("TRAN VAN CUONG")
                         .phone("0383459560")
                         .build();
                 shopRepository.save(shop);

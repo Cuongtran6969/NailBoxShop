@@ -3,6 +3,7 @@ import ProductDetailPage from "@pages/ProductDetailPage/ProductDetailPage";
 import CartPage from "@pages/CartPage/CartPage";
 import CheckoutPage from "@pages/CheckoutPage/CheckoutPage";
 import OrderResultPage from "@pages/OrderResultPage/OrderResultPage";
+import PaymentPage from "@pages/PaymentPage/PaymentPage";
 import DefaultLayout from "@components/DefaultLayout/DefaultLayout";
 import SearchPage from "@pages/SearchPage/SearchPage";
 import AdminLayout from "@components/AdminLayout/AdminLayout";
@@ -53,6 +54,12 @@ const routers = [
     {
         path: "/order-result",
         component: OrderResultPage,
+        layout: DefaultLayout,
+        roles: [ROLE.USER]
+    },
+    {
+        path: "/payment",
+        component: PaymentPage,
         layout: DefaultLayout,
         roles: [ROLE.USER]
     },

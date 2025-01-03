@@ -23,6 +23,7 @@ public class ShopResponse {
     String ward_name;
     String bank_code;
     String bank_name;
+    String bank_account_name;
     Integer boxLength;
     Integer boxWidth;
     Integer boxHeight;

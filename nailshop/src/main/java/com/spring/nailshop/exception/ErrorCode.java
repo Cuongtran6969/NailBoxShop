@@ -38,6 +38,8 @@ public enum ErrorCode {
     SHOP_NOT_FOUND(400, "Shop not found", HttpStatus.BAD_REQUEST),
     PRODUCT_EMPTY(400, "Product is out of stock", HttpStatus.BAD_REQUEST),
     ORDER_FAIL(400, "Tạo đơn hàng thất bại", HttpStatus.BAD_REQUEST),
+    ORDER_NOT_FOUND(404, "Đơn hàng không tìm thấy, liên hệ để hỗ trợ", HttpStatus.BAD_REQUEST),
+    ORDER_PAYMENT_INVALID(404, "Yêu cần thanh toán online không hợp lệ", HttpStatus.BAD_REQUEST),
     ;
     private int code;
     private String message;

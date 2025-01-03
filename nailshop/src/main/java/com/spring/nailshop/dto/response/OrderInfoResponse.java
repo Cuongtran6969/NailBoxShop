@@ -9,9 +9,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OrderCreateSuccess {
-    Long id;
-    String code;
-    Double total_fee;
-    Integer shipping_fee;
+public class OrderInfoResponse {
+  Long orderId;
+  Integer totalPrice;
+  String orderCode;
+  String status;
 }

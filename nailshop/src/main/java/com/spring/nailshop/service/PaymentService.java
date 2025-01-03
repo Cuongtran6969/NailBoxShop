@@ -1,5 +1,6 @@
 package com.spring.nailshop.service;
 
+import com.spring.nailshop.dto.request.PaymentCreateRequest;
 import com.spring.nailshop.dto.request.PaymentRequest;
 import com.spring.nailshop.dto.response.PaymentResponse;
 

@@ -41,6 +41,8 @@ public class Shop {
 
     private String bank_name;
 
+    private String bank_account_name;
+
     private Integer boxLength;
 
     private Integer boxWidth;

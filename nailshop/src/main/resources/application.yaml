@@ -22,3 +22,8 @@ spring:
       max-file-size: 200MB
       max-request-size: 200MB
       file-size-threshold: 2KB
+
+payos:
+  client-id: "016bd9cc-e92c-46c0-9704-fd25ef18a68b"
+  api-key: "2e0123f4-3341-486d-9bb5-947a1a83435f"
+  checksum-key: "81a821b97ca81ee954423f04b11f581a5db31fff2caab90b650dbb733330961f"

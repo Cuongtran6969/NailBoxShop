@@ -10,12 +10,17 @@ import { purchaseMethod } from "./constants";
 import { getShipFee, getLeadtime } from "@/apis/shipmentService";
 import { getProfile } from "@/apis/userService";
 import { getShopInfo } from "@/apis/shopService";
-import { getPaymentInfo } from "@/apis/paymentMethodService";
+import { getPaymentInfo } from "@/apis/paymentService";
 import { createOrder } from "@/apis/orderService";
 import { getProvince, getDistrict, getWard } from "@/apis/giaohanhnhanhService";
 import { FaPeopleCarryBox } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import {
+    createPaymentQR,
+    getStatusPaymentQR,
+    cancelPaymentQR
+} from "@/apis/paymentService";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 const service_type_id = 2;
@@ -345,16 +350,25 @@ function CheckoutPage() {
                     //     "Cảm ơn quý khách",
                     //     "Đơn hàng được đặt thành công"
                     // );
-                    const orderCode = res.result.code;
+                    const orderId = res.result.id;
 
                     if (formData.payment_id == 1) {
-                        navigate("/payment", {
-                            orderCode: { orderCode }
-                        });
+                        createPaymentQR(orderId)
+                            .then((res) => {
+                                console.log("createPaymentQR: " + res);
+                                navigate("/payment", {
+                                    state: { orderId }
+                                });
+                            })
+                            .catch((err) => {
+                                console.log("err: " + err);
+                                navigate("/payment", {
+                                    state: { orderId }
+                                });
+                            });
                     } else {
-                        let result = "success";
                         navigate("/order-result", {
-                            orderResult: { result }
+                            state: { result: "success" }
                         });
                     }
                 } else {
@@ -365,7 +379,7 @@ function CheckoutPage() {
                     );
                     let result = "error";
                     navigate("/order-result", {
-                        orderResult: { result }
+                        state: { result }
                     });
                 }
 

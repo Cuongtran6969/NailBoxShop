@@ -1,20 +1,19 @@
 package com.spring.nailshop.controller;
-
 import com.spring.nailshop.dto.request.OrderRequest;
 import com.spring.nailshop.dto.response.ApiResponse;
 import com.spring.nailshop.dto.response.OrderCreateSuccess;
+import com.spring.nailshop.dto.response.OrderPaymentInfoResponse;
 import com.spring.nailshop.service.OrderService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -35,4 +34,16 @@ public class OrderController {
                 .message("Created order successfully")
                 .build();
     }
+
+    @GetMapping("/payment-info/{orderId}")
+    public ApiResponse<OrderPaymentInfoResponse> createOrder(@PathVariable(value = "orderId") Long orderId) {
+        return ApiResponse.<OrderPaymentInfoResponse>builder()
+                .code(HttpStatus.OK.value())
+                .result(orderService.getOrderPaymentInfo(orderId))
+                .message("Get payment of order successfully")
+                .build();
+    }
+
+
+
 }

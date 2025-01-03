@@ -5,3 +5,9 @@ export const createOrder = async (formData) => {
     const res = await axiosClient.post(urlApi, formData);
     return res.data;
 };
+
+export const getOrderPaymentInfo = async (id) => {
+    let urlApi = `/api/v1/order/payment-info/${id}`;
+    const res = await axiosClient.get(urlApi);
+    return res.data;
+};

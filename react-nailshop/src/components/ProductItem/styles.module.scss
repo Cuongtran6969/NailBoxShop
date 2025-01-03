@@ -25,19 +25,32 @@
         border: 1px solid $color_border;
         border-radius: 15px;
         overflow: hidden;
+        .boxImage {
+            img {
+                height: 240px;
+                cursor: pointer;
+            }
+        }
         .productContent {
             padding: 15px;
+            background-color: $white_color;
             .productCate {
                 display: block;
-                font-size: 18px;
+                font-size: 17px;
                 margin-top: 8px;
                 font-weight: 500;
                 text-decoration: none;
                 text-align: center;
                 color: $four_color;
+                display: -webkit-box;
+                -webkit-line-clamp: 1; /* Giới hạn số dòng của tiêu đề */
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                cursor: pointer;
             }
             .productTitle {
                 font-size: 14px;
+                text-align: center;
                 font-weight: 400;
                 display: -webkit-box;
                 -webkit-line-clamp: 2; /* Giới hạn số dòng của tiêu đề */
@@ -45,6 +58,8 @@
                 overflow: hidden;
                 text-overflow: ellipsis;
                 height: 40px; /* Chiều cao cố định */
+                cursor: pointer;
+                margin-bottom: 10px;
             }
             .productContentPrice {
                 @include flex_box_custom(space-between, center, 0px);

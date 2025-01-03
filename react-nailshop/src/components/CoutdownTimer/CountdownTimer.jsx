@@ -36,7 +36,7 @@ const CountdownTimer = ({ targetDate }) => {
     const timerComponents = [];
 
     Object.keys(timeLeft).forEach((interval, index, array) => {
-        if (timeLeft[interval] !== undefined && timeLeft[interval] > 0) {
+        if (timeLeft[interval] !== undefined) {
             timerComponents.push(
                 <>
                     <span key={interval} className={box}>

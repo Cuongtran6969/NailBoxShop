@@ -29,6 +29,7 @@ const updateProduct = async (formData) => {
     );
     return response.data;
 };
+
 const getProductDetail = async (id) => {
     let urlApi = `/admin/products/${id}`;
     const res = await axiosClient.get(urlApi);

@@ -11,7 +11,7 @@ import "swiper/css/navigation";
 
 // import required modules
 import { Navigation } from "swiper/modules";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import DiscountTicket from "@components/DiscountTicket/DiscountTicket";
 
 import {
@@ -21,7 +21,8 @@ import {
     Button,
     Flex,
     Breadcrumb,
-    Image
+    Image,
+    Skeleton
 } from "antd";
 import classNames from "classnames";
 import { FaShoppingCart } from "react-icons/fa";
@@ -29,7 +30,7 @@ import CateFilter from "@components/CateFilter/CateFilter";
 import ProductSuggest from "@components/ProductSuggest/ProductSuggest";
 import Description from "@productPages/CollapseDesc/Description";
 import ProductItem from "@components/ProductItem/ProductItem";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getProductById } from "@/apis/productService";
 import { useDispatch } from "react-redux";
 import { addToCart, buyNowToCart } from "@redux/slice/cartSlice";
@@ -86,6 +87,7 @@ const ProductDetailPage = () => {
         discount: ""
     });
     useEffect(() => {
+        window.scrollTo(0, 0);
         const fetchInitialData = async () => {
             try {
                 setLoading(true);
@@ -108,7 +110,7 @@ const ProductDetailPage = () => {
                 });
                 setProduct(data.result);
                 setImages(pictures);
-                setCurrentImage(firstPicture ?? pictures[0]);
+                setCurrentImage(firstPicture || pictures[0]);
                 setOrderData({
                     ...orderData,
                     productId: id,
@@ -191,7 +193,7 @@ const ProductDetailPage = () => {
         );
         navigate("/cart");
     };
-    if (loading) return <div>Loading...</div>;
+    // if (loading) return <div>Loading...</div>;
     return (
         <div>
             {contextHolder}
@@ -216,349 +218,415 @@ const ProductDetailPage = () => {
                 }}
             >
                 <Container>
-                    <Row>
-                        <Col sm={9}>
+                    <Skeleton loading={loading} avatar active>
+                        {!loading && (
                             <Row>
-                                <Col sm={12}>
+                                <Col sm={9}>
                                     <Row>
-                                        <Col sm={5}>
-                                            <div className={navPage}>
-                                                <Breadcrumb
-                                                    items={[
-                                                        {
-                                                            title: (
-                                                                <a href="">
-                                                                    Home
-                                                                </a>
-                                                            )
-                                                        },
-                                                        {
-                                                            title: (
-                                                                <a href="">
-                                                                    Nail Box
-                                                                </a>
-                                                            )
-                                                        }
-                                                    ]}
-                                                />
-                                            </div>
-                                            <div className={mainProductImg}>
-                                                <Image src={currentImage} />
-                                            </div>
-                                            <div className={imageSlider}>
-                                                <Swiper
-                                                    slidesPerView={4}
-                                                    spaceBetween={20}
-                                                    pagination={{
-                                                        clickable: true
-                                                    }}
-                                                    navigation={true}
-                                                    modules={[Navigation]}
-                                                >
-                                                    {images.map((image) => {
-                                                        return (
-                                                            <SwiperSlide>
-                                                                <div
-                                                                    onClick={() =>
-                                                                        handleChangeImage(
-                                                                            image
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    <img
-                                                                        className={classNames(
-                                                                            {
-                                                                                [activeImg]:
-                                                                                    image ===
-                                                                                    currentImage
-                                                                            }
-                                                                        )}
-                                                                        src={
-                                                                            image
-                                                                        }
-                                                                        alt=""
-                                                                    />
-                                                                </div>
-                                                            </SwiperSlide>
-                                                        );
-                                                    })}
-                                                </Swiper>
-                                            </div>
-                                        </Col>
-                                        <Col sm={7}>
-                                            <div className={productContent}>
-                                                <a
-                                                    className={productType}
-                                                    href=""
-                                                >
-                                                    {/* {product.categories} */}
-                                                </a>
-                                                <h3 className={productTitle}>
-                                                    {product.name}
-                                                </h3>
-                                                <div
-                                                    className={productPriceBox}
-                                                >
-                                                    <span
-                                                        className={currentPrice}
-                                                    >
-                                                        {new Intl.NumberFormat(
-                                                            "vi-VN"
-                                                        ).format(
-                                                            product.price -
-                                                                product.price *
-                                                                    0.01 *
-                                                                    product.discount
-                                                        )}
-                                                        <span
-                                                            className={
-                                                                priceSymbol
-                                                            }
-                                                        >
-                                                            ₫
-                                                        </span>
-                                                    </span>
-                                                    <p className={rootPrice}>
-                                                        {new Intl.NumberFormat(
-                                                            "vi-VN"
-                                                        ).format(product.price)}
-                                                        <span
-                                                            className={
-                                                                priceSymbol
-                                                            }
-                                                        >
-                                                            ₫
-                                                        </span>
-                                                    </p>
-                                                    <DiscountTicket
-                                                        value={product.discount}
-                                                        isAnimation={false}
-                                                    />
-                                                </div>
-                                                {product.designs.length > 0 && (
+                                        <Col sm={12}>
+                                            <Row>
+                                                <Col sm={5}>
+                                                    <div className={navPage}>
+                                                        <Breadcrumb
+                                                            items={[
+                                                                {
+                                                                    title: (
+                                                                        <a href="">
+                                                                            Home
+                                                                        </a>
+                                                                    )
+                                                                },
+                                                                {
+                                                                    title: (
+                                                                        <a href="">
+                                                                            Nail
+                                                                            Box
+                                                                        </a>
+                                                                    )
+                                                                }
+                                                            ]}
+                                                        />
+                                                    </div>
                                                     <div
                                                         className={
-                                                            productOptions
+                                                            mainProductImg
                                                         }
                                                     >
-                                                        <p
-                                                            style={{
-                                                                marginBottom: 3
-                                                            }}
-                                                        >
-                                                            Chọn mẫu:{" "}
-                                                        </p>
-
-                                                        <Space>
-                                                            <Select
-                                                                size={"large"}
-                                                                defaultValue={
-                                                                    product
-                                                                        .designs[0]
-                                                                        .name
-                                                                }
-                                                                style={{
-                                                                    width: 353,
-                                                                    height: 40
-                                                                }}
-                                                                onChange={
-                                                                    handleChangeOption
-                                                                }
-                                                                value={
-                                                                    orderData.designId
-                                                                }
-                                                                options={[
-                                                                    ...product.designs.map(
-                                                                        (
-                                                                            design
-                                                                        ) => ({
-                                                                            value: design.id,
-                                                                            label: design.name
-                                                                        })
-                                                                    )
-                                                                ]}
-                                                            />
-                                                        </Space>
-                                                    </div>
-                                                )}
-                                                <div className={productSize}>
-                                                    <p
-                                                        style={{
-                                                            marginBottom: 3
-                                                        }}
-                                                    >
-                                                        Kích cỡ:{" "}
-                                                    </p>
-                                                    <Flex wrap gap="small">
-                                                        <Button
-                                                            ghost={isCurrentSize(
-                                                                "XS"
-                                                            )}
-                                                            onClick={() =>
-                                                                handleChooseSize(
-                                                                    "XS"
-                                                                )
-                                                            }
-                                                            type={
-                                                                isCurrentSize(
-                                                                    "XS"
-                                                                )
-                                                                    ? "primary"
-                                                                    : ""
-                                                            }
-                                                            className={sizeBtn}
-                                                        >
-                                                            XS
-                                                        </Button>
-                                                        <Button
-                                                            ghost={isCurrentSize(
-                                                                "S"
-                                                            )}
-                                                            onClick={() =>
-                                                                handleChooseSize(
-                                                                    "S"
-                                                                )
-                                                            }
-                                                            type={
-                                                                isCurrentSize(
-                                                                    "S"
-                                                                )
-                                                                    ? "primary"
-                                                                    : ""
-                                                            }
-                                                            className={sizeBtn}
-                                                        >
-                                                            S
-                                                        </Button>
-                                                        <Button
-                                                            ghost={isCurrentSize(
-                                                                "M"
-                                                            )}
-                                                            onClick={() =>
-                                                                handleChooseSize(
-                                                                    "M"
-                                                                )
-                                                            }
-                                                            type={
-                                                                isCurrentSize(
-                                                                    "M"
-                                                                )
-                                                                    ? "primary"
-                                                                    : ""
-                                                            }
-                                                            className={sizeBtn}
-                                                        >
-                                                            M
-                                                        </Button>
-                                                        <Button
-                                                            ghost={isCurrentSize(
-                                                                "L"
-                                                            )}
-                                                            onClick={() =>
-                                                                handleChooseSize(
-                                                                    "L"
-                                                                )
-                                                            }
-                                                            type={
-                                                                isCurrentSize(
-                                                                    "L"
-                                                                )
-                                                                    ? "primary"
-                                                                    : ""
-                                                            }
-                                                            className={sizeBtn}
-                                                        >
-                                                            L
-                                                        </Button>
-                                                    </Flex>
-                                                </div>
-                                                <div
-                                                    className={productQuantity}
-                                                >
-                                                    <p
-                                                        style={{
-                                                            marginBottom: 3
-                                                        }}
-                                                    >
-                                                        Kích cỡ:{" "}
-                                                    </p>
-                                                    <Space>
-                                                        <InputNumberBox
-                                                            type="large"
-                                                            quantity={
-                                                                currentQuantity
-                                                            }
-                                                            changeQuantity={
-                                                                setCurrentQuantity
-                                                            }
+                                                        <Image
+                                                            src={currentImage}
                                                         />
-                                                        <Button
-                                                            type="primary"
-                                                            shape="round"
-                                                            icon={
-                                                                <FaShoppingCart />
-                                                            }
-                                                            className={
-                                                                addToCartBtn
-                                                            }
-                                                            size={20}
-                                                            onClick={
-                                                                addToCartHandle
-                                                            }
-                                                        >
-                                                            Thêm vào giỏ hàng
-                                                        </Button>
-                                                    </Space>
-                                                </div>
-                                                <div>
-                                                    <Button
-                                                        type="primary"
-                                                        shape="round"
-                                                        icon={
-                                                            <FaShoppingCart />
-                                                        }
-                                                        className={buyNowBtn}
-                                                        size={20}
-                                                        onClick={handleBuyNow}
+                                                    </div>
+                                                    <div
+                                                        className={imageSlider}
                                                     >
-                                                        Mua ngay
-                                                    </Button>
-                                                </div>
-                                                <div>
-                                                    <Space
-                                                        style={{
-                                                            marginTop: "20px"
-                                                        }}
-                                                    >
-                                                        <Button danger>
-                                                            Quà tặng
-                                                        </Button>
-                                                        <p
-                                                            style={{
-                                                                marginBottom:
-                                                                    "0"
+                                                        <Swiper
+                                                            slidesPerView={4}
+                                                            spaceBetween={20}
+                                                            pagination={{
+                                                                clickable: true
                                                             }}
+                                                            navigation={true}
+                                                            modules={[
+                                                                Navigation
+                                                            ]}
                                                         >
-                                                            dũa, bông cồn, cây
-                                                            đẩy móng, keo, miếng
-                                                            dán
-                                                        </p>
-                                                    </Space>
-                                                </div>
-                                            </div>
+                                                            {images.map(
+                                                                (image) => {
+                                                                    return (
+                                                                        <SwiperSlide>
+                                                                            <div
+                                                                                onClick={() =>
+                                                                                    handleChangeImage(
+                                                                                        image
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <img
+                                                                                    className={classNames(
+                                                                                        {
+                                                                                            [activeImg]:
+                                                                                                image ===
+                                                                                                currentImage
+                                                                                        }
+                                                                                    )}
+                                                                                    src={
+                                                                                        image
+                                                                                    }
+                                                                                    alt=""
+                                                                                />
+                                                                            </div>
+                                                                        </SwiperSlide>
+                                                                    );
+                                                                }
+                                                            )}
+                                                        </Swiper>
+                                                    </div>
+                                                </Col>
+                                                <Col sm={7}>
+                                                    <div
+                                                        className={
+                                                            productContent
+                                                        }
+                                                    >
+                                                        <a
+                                                            className={
+                                                                productType
+                                                            }
+                                                            href=""
+                                                        >
+                                                            {/* {product.categories} */}
+                                                        </a>
+                                                        <h3
+                                                            className={
+                                                                productTitle
+                                                            }
+                                                        >
+                                                            {product.name}
+                                                        </h3>
+                                                        <div
+                                                            className={
+                                                                productPriceBox
+                                                            }
+                                                        >
+                                                            <span
+                                                                className={
+                                                                    currentPrice
+                                                                }
+                                                            >
+                                                                {new Intl.NumberFormat(
+                                                                    "vi-VN"
+                                                                ).format(
+                                                                    product.price -
+                                                                        product.price *
+                                                                            0.01 *
+                                                                            product.discount
+                                                                )}
+                                                                <span
+                                                                    className={
+                                                                        priceSymbol
+                                                                    }
+                                                                >
+                                                                    ₫
+                                                                </span>
+                                                            </span>
+                                                            <p
+                                                                className={
+                                                                    rootPrice
+                                                                }
+                                                            >
+                                                                {new Intl.NumberFormat(
+                                                                    "vi-VN"
+                                                                ).format(
+                                                                    product.price
+                                                                )}
+                                                                <span
+                                                                    className={
+                                                                        priceSymbol
+                                                                    }
+                                                                >
+                                                                    ₫
+                                                                </span>
+                                                            </p>
+                                                            <DiscountTicket
+                                                                value={
+                                                                    product.discount
+                                                                }
+                                                                isAnimation={
+                                                                    false
+                                                                }
+                                                            />
+                                                        </div>
+                                                        {product.designs
+                                                            .length > 0 && (
+                                                            <div
+                                                                className={
+                                                                    productOptions
+                                                                }
+                                                            >
+                                                                <p
+                                                                    style={{
+                                                                        marginBottom: 3
+                                                                    }}
+                                                                >
+                                                                    Chọn mẫu:{" "}
+                                                                </p>
+
+                                                                <Space>
+                                                                    <Select
+                                                                        size={
+                                                                            "large"
+                                                                        }
+                                                                        defaultValue={
+                                                                            product
+                                                                                .designs[0]
+                                                                                .name
+                                                                        }
+                                                                        style={{
+                                                                            width: 353,
+                                                                            height: 40
+                                                                        }}
+                                                                        onChange={
+                                                                            handleChangeOption
+                                                                        }
+                                                                        value={
+                                                                            orderData.designId
+                                                                        }
+                                                                        options={[
+                                                                            ...product.designs.map(
+                                                                                (
+                                                                                    design
+                                                                                ) => ({
+                                                                                    value: design.id,
+                                                                                    label: design.name
+                                                                                })
+                                                                            )
+                                                                        ]}
+                                                                    />
+                                                                </Space>
+                                                            </div>
+                                                        )}
+                                                        <div
+                                                            className={
+                                                                productSize
+                                                            }
+                                                        >
+                                                            <p
+                                                                style={{
+                                                                    marginBottom: 3
+                                                                }}
+                                                            >
+                                                                Kích cỡ:{" "}
+                                                            </p>
+                                                            <Flex
+                                                                wrap
+                                                                gap="small"
+                                                            >
+                                                                <Button
+                                                                    ghost={isCurrentSize(
+                                                                        "XS"
+                                                                    )}
+                                                                    onClick={() =>
+                                                                        handleChooseSize(
+                                                                            "XS"
+                                                                        )
+                                                                    }
+                                                                    type={
+                                                                        isCurrentSize(
+                                                                            "XS"
+                                                                        )
+                                                                            ? "primary"
+                                                                            : ""
+                                                                    }
+                                                                    className={
+                                                                        sizeBtn
+                                                                    }
+                                                                >
+                                                                    XS
+                                                                </Button>
+                                                                <Button
+                                                                    ghost={isCurrentSize(
+                                                                        "S"
+                                                                    )}
+                                                                    onClick={() =>
+                                                                        handleChooseSize(
+                                                                            "S"
+                                                                        )
+                                                                    }
+                                                                    type={
+                                                                        isCurrentSize(
+                                                                            "S"
+                                                                        )
+                                                                            ? "primary"
+                                                                            : ""
+                                                                    }
+                                                                    className={
+                                                                        sizeBtn
+                                                                    }
+                                                                >
+                                                                    S
+                                                                </Button>
+                                                                <Button
+                                                                    ghost={isCurrentSize(
+                                                                        "M"
+                                                                    )}
+                                                                    onClick={() =>
+                                                                        handleChooseSize(
+                                                                            "M"
+                                                                        )
+                                                                    }
+                                                                    type={
+                                                                        isCurrentSize(
+                                                                            "M"
+                                                                        )
+                                                                            ? "primary"
+                                                                            : ""
+                                                                    }
+                                                                    className={
+                                                                        sizeBtn
+                                                                    }
+                                                                >
+                                                                    M
+                                                                </Button>
+                                                                <Button
+                                                                    ghost={isCurrentSize(
+                                                                        "L"
+                                                                    )}
+                                                                    onClick={() =>
+                                                                        handleChooseSize(
+                                                                            "L"
+                                                                        )
+                                                                    }
+                                                                    type={
+                                                                        isCurrentSize(
+                                                                            "L"
+                                                                        )
+                                                                            ? "primary"
+                                                                            : ""
+                                                                    }
+                                                                    className={
+                                                                        sizeBtn
+                                                                    }
+                                                                >
+                                                                    L
+                                                                </Button>
+                                                            </Flex>
+                                                        </div>
+                                                        <div
+                                                            className={
+                                                                productQuantity
+                                                            }
+                                                        >
+                                                            <p
+                                                                style={{
+                                                                    marginBottom: 3
+                                                                }}
+                                                            >
+                                                                Kích cỡ:{" "}
+                                                            </p>
+                                                            <Space>
+                                                                <InputNumberBox
+                                                                    type="large"
+                                                                    quantity={
+                                                                        currentQuantity
+                                                                    }
+                                                                    changeQuantity={
+                                                                        setCurrentQuantity
+                                                                    }
+                                                                />
+                                                                <Button
+                                                                    type="primary"
+                                                                    shape="round"
+                                                                    icon={
+                                                                        <FaShoppingCart />
+                                                                    }
+                                                                    className={
+                                                                        addToCartBtn
+                                                                    }
+                                                                    size={20}
+                                                                    onClick={
+                                                                        addToCartHandle
+                                                                    }
+                                                                >
+                                                                    Thêm vào giỏ
+                                                                    hàng
+                                                                </Button>
+                                                            </Space>
+                                                        </div>
+                                                        <div>
+                                                            <Button
+                                                                type="primary"
+                                                                shape="round"
+                                                                icon={
+                                                                    <FaShoppingCart />
+                                                                }
+                                                                className={
+                                                                    buyNowBtn
+                                                                }
+                                                                size={20}
+                                                                onClick={
+                                                                    handleBuyNow
+                                                                }
+                                                            >
+                                                                Mua ngay
+                                                            </Button>
+                                                        </div>
+                                                        <div>
+                                                            <Space
+                                                                style={{
+                                                                    marginTop:
+                                                                        "20px"
+                                                                }}
+                                                            >
+                                                                <Button danger>
+                                                                    Quà tặng
+                                                                </Button>
+                                                                <p
+                                                                    style={{
+                                                                        marginBottom:
+                                                                            "0"
+                                                                    }}
+                                                                >
+                                                                    dũa, bông
+                                                                    cồn, cây đẩy
+                                                                    móng, keo,
+                                                                    miếng dán
+                                                                </p>
+                                                            </Space>
+                                                        </div>
+                                                    </div>
+                                                </Col>
+                                            </Row>
                                         </Col>
-                                    </Row>
-                                </Col>
-                                <Col sm={12}>
-                                    <Description />
-                                </Col>
-                                <Col sm={12}>
-                                    <div className={productRelation}>
-                                        <h4 className={relationTitle}>
-                                            Sản phẩm tương tự
-                                        </h4>
-                                        <Row className="gx-3 gy-5">
-                                            {/* <ProductItem numberDisplay={4} />
+                                        <Col sm={12}>
+                                            <Description />
+                                        </Col>
+                                        <Col sm={12}>
+                                            <div className={productRelation}>
+                                                <h4 className={relationTitle}>
+                                                    Sản phẩm tương tự
+                                                </h4>
+                                                <Row className="gx-3 gy-5">
+                                                    {/* <ProductItem numberDisplay={4} />
                                             <ProductItem numberDisplay={4} />
                                             <ProductItem numberDisplay={4} />
                                             <ProductItem numberDisplay={4} />
@@ -566,18 +634,20 @@ const ProductDetailPage = () => {
                                             <ProductItem numberDisplay={4} />
                                             <ProductItem numberDisplay={4} />
                                             <ProductItem numberDisplay={4} /> */}
-                                        </Row>
-                                    </div>
+                                                </Row>
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                </Col>
+                                <Col sm={3}>
+                                    <CateFilter />
+                                    <>
+                                        <ProductSuggest />
+                                    </>
                                 </Col>
                             </Row>
-                        </Col>
-                        <Col sm={3}>
-                            <CateFilter />
-                            <>
-                                <ProductSuggest />
-                            </>
-                        </Col>
-                    </Row>
+                        )}
+                    </Skeleton>
                 </Container>
             </ConfigProvider>
         </div>

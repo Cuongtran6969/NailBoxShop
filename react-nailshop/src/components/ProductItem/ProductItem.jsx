@@ -23,6 +23,7 @@ function ProductItem(props) {
     const {
         productBox,
         productItem,
+        boxImage,
         productCate,
         productTitle,
         productContent,
@@ -35,25 +36,36 @@ function ProductItem(props) {
     } = styles;
     return (
         <div
-            onClick={() => navigate(`/detail/${id}`)}
             className={classNames(productBox, {
                 [forItemDisplay]: numberDisplay == 4
             })}
         >
             <div className={productItem}>
-                <div>
-                    <img src={pictures.split(",")[0]} alt="" />
+                <div className={boxImage}>
+                    <img
+                        src={pictures.split(",")[0]}
+                        alt=""
+                        onClick={() => navigate(`/detail/${id}`)}
+                    />
                 </div>
                 <div className={productContent}>
                     <div>
                         <ProgressBar sold={sold} total={sold + stock} />
                     </div>
-                    <a href="#" className={productCate}>
+                    <a
+                        className={productCate}
+                        onClick={() => navigate(`/detail/${id}`)}
+                    >
                         {categories && categories.length > 0
                             ? categories[0].name
                             : "No Category"}
                     </a>
-                    <p className={productTitle}>{name}</p>
+                    <p
+                        className={productTitle}
+                        onClick={() => navigate(`/detail/${id}`)}
+                    >
+                        {name}
+                    </p>
                     <div className={productContentPrice}>
                         <span className={productPrice}>
                             {new Intl.NumberFormat("vi-VN").format(

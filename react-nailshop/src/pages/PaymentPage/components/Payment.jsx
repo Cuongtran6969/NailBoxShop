@@ -1,22 +1,52 @@
-import { Button, Card, Image } from "antd";
+import { Button, Card, Image, Modal } from "antd";
 import { Container, Table } from "react-bootstrap";
-import styles from "./styles.module.scss";
+import styles from "../styles.module.scss";
 import { DownloadOutlined } from "@ant-design/icons";
-function Payment() {
+import CountdownTimer from "@components/CoutdownTimer/CountdownTimer";
+import Logo_MB from "@icons/images/Logo_MB.png";
+import { useState } from "react";
+function Payment({ info, countTime, hanleCancelPayment }) {
     const { qrTitle } = styles;
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleCancelConfirm = () => {
+        setIsModalOpen(false);
+    };
     return (
         <div>
+            <Modal
+                title="Xóa sản phẩm"
+                open={isModalOpen}
+                onOk={hanleCancelPayment}
+                onCancel={handleCancelConfirm}
+            >
+                <p>Bạn có muốn loại hủy thanh toán đơn hàng này</p>
+            </Modal>
             <Container>
                 <div className="">
                     <Card>
                         <p className="text-center text-danger fs-6">
                             QUÉT MÃ QR SAU ĐỂ TỰ ĐỘNG ĐIỀN THÔNG TIN
                         </p>
-                        <div className="p-5 text-center d-flex justify-content-center">
-                            <Image
-                                src="https://api.vietqr.io/image/970422-083838383999-cv2vf00.jpg?accountName=TRAN%20VAN%20CUONG&amount=200000"
+                        <div className="d-flex justify-content-center mt-3">
+                            <span>
+                                {" "}
+                                <CountdownTimer targetDate={countTime} />
+                            </span>
+                        </div>
+                        <div className="p-5 text-center d-flex justify-content-center flex-column align-items-center">
+                            <img
+                                src={info.qrImage}
                                 className="border"
+                                style={{ width: "300px" }}
                             />
+                            <span>
+                                <img
+                                    src={Logo_MB}
+                                    alt=""
+                                    style={{ width: "60px" }}
+                                />
+                            </span>
                         </div>
                         <div className="d-flex justify-content-center mt-3">
                             <Button
@@ -33,8 +63,8 @@ function Payment() {
                                 Thông tin chuyển khoản ngân hàng
                             </h5>
                             <h6 className="text-center text-danger fw-bold my-3">
-                                Vui lòng chuyển đúng nội dung WCORDER202 để
-                                chúng tôi có thể xác nhận thanh toán
+                                Vui lòng chuyển đúng nội dung {info.orderCode}{" "}
+                                để chúng tôi có thể xác nhận thanh toán
                             </h6>
                             <Table
                                 bordered
@@ -46,24 +76,38 @@ function Payment() {
                                 <tbody>
                                     <tr>
                                         <td className={qrTitle}>NGÂN HÀNG:</td>
-                                        <td>MB Bank</td>
+                                        <td>{info.bankName}</td>
                                     </tr>
                                     <tr>
                                         <td className={qrTitle}>
                                             CHỦ TÀI KHOẢN:
                                         </td>
-                                        <td>TRAN VAN CUONG</td>
+                                        <td>{info.accountName}</td>
                                     </tr>
                                     <tr>
                                         <td className={qrTitle}>SỐ TK:</td>
-                                        <td>083838383999</td>
+                                        <td>{info.bankCode}</td>
                                     </tr>
                                     <tr>
                                         <td className={qrTitle}>SỐ TIỀN:</td>
-                                        <td>NAP5716FUO</td>
+                                        <td>
+                                            {new Intl.NumberFormat(
+                                                "vi-VN"
+                                            ).format(info.totalPrice)}
+                                            ₫
+                                        </td>
                                     </tr>
                                 </tbody>
                             </Table>
+                        </div>
+                        <div className="d-flex justify-content-center mt-3">
+                            <Button
+                                type="primary"
+                                danger
+                                onClick={() => setIsModalOpen(true)}
+                            >
+                                Hủy thanh toán
+                            </Button>
                         </div>
                     </Card>
                 </div>

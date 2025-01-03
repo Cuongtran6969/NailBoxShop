@@ -1,4 +1,5 @@
 import { Button, Result } from "antd";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 const data = {
     error: {
@@ -19,7 +20,12 @@ const data = {
 };
 function OrderResultPage() {
     const location = useLocation();
-    const { result } = location.orderResult || "warning";
+    const [result, setResult] = useState(location.state?.result || "warning");
+    useEffect(() => {
+        if (!location.state) {
+            navigate("/");
+        }
+    }, [location.state]);
     return (
         <Result
             status={data[result].status}

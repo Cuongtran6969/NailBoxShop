@@ -70,5 +70,7 @@ public class Order extends AbstractEntity<Long> {
     @JoinColumn(name = "payment_id")
     private Payment payment;
 
+    @Column(name = "qr_img")
+    private String qr_img;
 
 }
