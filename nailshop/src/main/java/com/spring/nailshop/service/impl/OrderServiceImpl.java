@@ -72,7 +72,9 @@ public class OrderServiceImpl implements OrderService {
 
             // Kiểm tra stock
             if (product.getStock() < itemRequest.getQuantity()) {
-                throw new AppException(ErrorCode.PRODUCT_EMPTY);
+                    String customMessage = product.getName() + " đã hết hàng, vui lòng chọn sản phẩm khác.";
+                    ErrorCode.PRODUCT_EMPTY.setMessage(customMessage);
+                    throw new AppException(ErrorCode.PRODUCT_EMPTY);
             }
             // Tính giá tiền cho sản phẩm sau dicount
             Double unitPrice = product.getPrice().doubleValue();

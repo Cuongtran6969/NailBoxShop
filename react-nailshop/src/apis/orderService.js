@@ -11,3 +11,9 @@ export const getOrderPaymentInfo = async (id) => {
     const res = await axiosClient.get(urlApi);
     return res.data;
 };
+
+export const getAllOrders = async () => {
+    let urlApi = `/admin/orders`;
+    const res = await axiosClient.get(urlApi);
+    return res.data;
+};

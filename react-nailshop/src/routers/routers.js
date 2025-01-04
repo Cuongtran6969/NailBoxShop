@@ -8,6 +8,7 @@ import DefaultLayout from "@components/DefaultLayout/DefaultLayout";
 import SearchPage from "@pages/SearchPage/SearchPage";
 import AdminLayout from "@components/AdminLayout/AdminLayout";
 import ProductManage from "@pages/ProductManage/ProductManage";
+import OrderManage from "@pages/OrderManage/OrderManage";
 import ProductCreatePage from "@pages/ProductCreatePage/ProductCreatePage";
 import ProductAdminDetail from "@pages/ProductAdminDetail/ProductAdminDetail";
 import UserManagerPage from "@pages/UserManagerPage/UserManagerPage";
@@ -71,6 +72,12 @@ const routers = [
     {
         path: "/admin/products",
         component: ProductManage,
+        layout: AdminLayout,
+        roles: [ROLE.ADMIN, ROLE.STAFF]
+    },
+    {
+        path: "/admin/orders",
+        component: OrderManage,
         layout: AdminLayout,
         roles: [ROLE.ADMIN, ROLE.STAFF]
     },

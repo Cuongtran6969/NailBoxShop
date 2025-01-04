@@ -3,7 +3,9 @@ package com.spring.nailshop.entity;
 import com.spring.nailshop.util.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -73,4 +75,24 @@ public class Order extends AbstractEntity<Long> {
     @Column(name = "qr_img")
     private String qr_img;
 
+    @Column(name = "payment_at")
+    @CreationTimestamp
+    private LocalDateTime paymentAt;
+
+    @Column(name = "cancel_at")
+    @CreationTimestamp
+    private LocalDateTime cancelAt;
+
+    @Column(name = "complete_at")
+    @CreationTimestamp
+    private LocalDateTime completeAt;
+
+    public int totalQuantity() {
+        if (orderItems == null || orderItems.isEmpty()) {
+            return 0;
+        }
+        return orderItems.stream()
+                .mapToInt(OrderItem::getQuantity)
+                .sum();
+    }
 }

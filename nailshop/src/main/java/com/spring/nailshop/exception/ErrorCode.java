@@ -1,6 +1,7 @@
 package com.spring.nailshop.exception;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
@@ -30,13 +31,13 @@ public enum ErrorCode {
     ADDRESS_MIN_REACH(400, "Limit min is one address", HttpStatus.BAD_REQUEST),
     ADDRESS_MAX_REACH(400, "Limit nax is three address", HttpStatus.BAD_REQUEST),
     ADDRESS_INVALID(400, "Address must be your own.", HttpStatus.BAD_REQUEST),
-    COUPON_ID_INVALID(400, "Coupon id not found.", HttpStatus.BAD_REQUEST),
-    COUPON_CODE_INVALID(400, "Coupon code not found.", HttpStatus.BAD_REQUEST),
-    COUPON_CODE_USED(400, "Coupon đã được sử dụng.", HttpStatus.BAD_REQUEST),
+    COUPON_ID_INVALID(400, "Voucher không hợp lệ", HttpStatus.BAD_REQUEST),
+    COUPON_CODE_INVALID(400, "Mã voucher không được tìm thấy", HttpStatus.BAD_REQUEST),
+    COUPON_CODE_USED(400, "Voucher đã hết lượt sử dụng", HttpStatus.BAD_REQUEST),
     NO_COUPONS_AVAILABLE(400, "Coupon unavailable", HttpStatus.BAD_REQUEST),
     PAYMENT_ID_INVALID(400, "Payment id invalid", HttpStatus.BAD_REQUEST),
     SHOP_NOT_FOUND(400, "Shop not found", HttpStatus.BAD_REQUEST),
-    PRODUCT_EMPTY(400, "Product is out of stock", HttpStatus.BAD_REQUEST),
+    PRODUCT_EMPTY(400, "Sản phẩm đã hết hàng, vui lòng chọn sản phẩm khác", HttpStatus.BAD_REQUEST),
     ORDER_FAIL(400, "Tạo đơn hàng thất bại", HttpStatus.BAD_REQUEST),
     ORDER_NOT_FOUND(404, "Đơn hàng không tìm thấy, liên hệ để hỗ trợ", HttpStatus.BAD_REQUEST),
     ORDER_PAYMENT_INVALID(404, "Yêu cần thanh toán online không hợp lệ", HttpStatus.BAD_REQUEST),
@@ -49,5 +50,8 @@ public enum ErrorCode {
         this.code = code;
         this.message = message;
         this.statusCode = statusCode;
+    }
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

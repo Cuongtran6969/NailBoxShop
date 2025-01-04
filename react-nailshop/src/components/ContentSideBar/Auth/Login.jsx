@@ -18,7 +18,8 @@ function Login() {
     const openNotificationWithIcon = (type, mess, desc) => {
         api[type]({
             message: mess,
-            description: desc
+            description: desc,
+            placement: "top"
         });
     };
     const {

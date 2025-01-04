@@ -8,6 +8,7 @@ import { PiTicket } from "react-icons/pi";
 import { MdOutlineLocalShipping } from "react-icons/md";
 import { IoSettingsOutline } from "react-icons/io5";
 import { CiLogout } from "react-icons/ci";
+import { FaPeopleCarryBox } from "react-icons/fa6";
 import Logo from "@icons/images/nailLaBoxLogo.png";
 import styles from "./styles.module.scss";
 import classNames from "classnames";
@@ -99,16 +100,35 @@ const items = [
     },
     {
         key: "grp2",
-        label: "Settings",
+        label: "Order",
         type: "group",
         children: [
             {
                 key: "sub6",
+                label: "Order",
+                icon: <FaPeopleCarryBox />,
+                children: [
+                    {
+                        key: "7",
+                        label: "Manager order",
+                        path: "/admin/orders"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        key: "grp3",
+        label: "Settings",
+        type: "group",
+        children: [
+            {
+                key: "sub7",
                 label: "Settings",
                 icon: <IoSettingsOutline />
             },
             {
-                key: "sub7",
+                key: "sub8",
                 label: "Logout",
                 icon: <CiLogout />
             }

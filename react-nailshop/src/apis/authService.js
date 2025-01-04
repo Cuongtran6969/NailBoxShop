@@ -54,4 +54,16 @@ export const introspect = async () => {
     }
 };
 
+export const logout = async (token) => {
+    let urlApi = `/auth/logout`;
+    try {
+        const response = await axiosClient.post(urlApi, {
+            token: token
+        });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
 export default { sendOtpRegister, register, login, introspect };

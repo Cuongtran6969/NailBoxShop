@@ -44,7 +44,11 @@ function CartPage() {
         key: item.title,
         title: item.title
     }));
-
+const onChangeStep = (value) => {
+    if (value == 1 && listBuy.length > 0) {
+        navigate("/checkout");
+    }
+};
     return (
         <>
             <Container
@@ -90,6 +94,7 @@ function CartPage() {
                                 marginTop: "40px"
                             }}
                             items={items}
+                            onChange={onChangeStep}
                         />
                         <div>
                             <OrderProcess />

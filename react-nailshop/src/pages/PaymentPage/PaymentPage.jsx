@@ -17,7 +17,7 @@ function PaymentPage() {
     const [paymentInfo, setPaymentInfo] = useState(null);
     const [paymentStatus, setPaymentStatus] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [targetDate, setTargetDate] = useState("2025-01-03T9:45:59");
+    const [targetDate, setTargetDate] = useState("");
 
     const hanleCancelPayment = () => {
         if (orderId) {

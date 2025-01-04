@@ -2,8 +2,6 @@ import styles from "./styles.module.scss";
 import Logo from "@icons/images/nailLaBoxLogo.png";
 import { dataBoxIcon, dataMenu } from "./constants";
 import BoxIcon from "./BoxIcon/BoxIcon";
-import { MdSearch } from "react-icons/md";
-import { BiFontSize } from "react-icons/bi";
 import { FaUser } from "react-icons/fa";
 import { IoCart } from "react-icons/io5";
 import { Container, Row, Col } from "react-bootstrap";
@@ -11,10 +9,12 @@ import { SideBarContext } from "@contexts/SideBarProvider";
 import { AuthContext } from "@contexts/AuthContext";
 import { useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Badge } from "antd";
+import { Badge, Dropdown, notification } from "antd";
 import { useSelector } from "react-redux";
 import SearchBoxHeader from "@components/SearchBoxHeader/SearchBoxHeader";
 import { HeaderSearchContext } from "@contexts/HeaderSearchProvider";
+import { logout } from "@/apis/authService";
+import Cookies from "js-cookie";
 function Header() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -27,9 +27,17 @@ function Header() {
         headerNavCart
     } = styles;
     const { setIsOpen, setType } = useContext(SideBarContext);
-    const { authenticated } = useContext(AuthContext);
+    const { authenticated, refresh } = useContext(AuthContext);
     const { list } = useSelector((state) => state.cart);
     const { keyword, setKeyword } = useContext(HeaderSearchContext);
+    const [api, contextHolder] = notification.useNotification();
+    const openNotificationWithIcon = (type, mess, desc) => {
+        api[type]({
+            message: mess,
+            description: desc,
+            placement: "top"
+        });
+    };
     useEffect(() => {
         if (!location.pathname.startsWith("/search")) {
             setKeyword(""); // Xóa từ khóa
@@ -47,8 +55,49 @@ function Header() {
             setType(type);
         }
     };
+
+    const handleLogout = async () => {
+        console.log("logout");
+
+        const token = Cookies.get("accessToken");
+        if (!token) {
+            console.log("No token found");
+            navigate("/");
+            return;
+        }
+        try {
+            await logout(token);
+            Cookies.remove("accessToken");
+            Cookies.remove("refreshToken");
+            Cookies.remove("userId");
+            await refresh();
+            openNotificationWithIcon(
+                "success",
+                "Thông báo",
+                "Đăng xuất thành công"
+            );
+            navigate("/");
+        } catch (err) {
+            console.log("Logout error: ", err);
+        }
+    };
+
+    const items = [
+        {
+            key: "1",
+            label: (
+                <a
+                    onClick={handleLogout}
+                    className="fs-6 px-3 py-1 text-center"
+                >
+                    Đăng xuất
+                </a>
+            )
+        }
+    ];
     return (
         <>
+            {contextHolder}
             <div className={headerText}>
                 Nail Box Xinh - Nâng niu bàn tay phái đẹp.
             </div>
@@ -142,10 +191,28 @@ function Header() {
                         className="justify-content-end d-lg-flex d-none"
                     >
                         <div className={conatinerBoxIcon}>
-                            <FaUser
-                                className={headerNavUser}
-                                onClick={() => hanleOpenSideBar("login")}
-                            />
+                            {authenticated && (
+                                <Dropdown
+                                    size="middle"
+                                    menu={{
+                                        items
+                                    }}
+                                    placement="bottom"
+                                >
+                                    <FaUser
+                                        className={headerNavUser}
+                                        onClick={() =>
+                                            hanleOpenSideBar("login")
+                                        }
+                                    />
+                                </Dropdown>
+                            )}{" "}
+                            {!authenticated && (
+                                <FaUser
+                                    className={headerNavUser}
+                                    onClick={() => hanleOpenSideBar("login")}
+                                />
+                            )}
                             <Badge count={countCart}>
                                 <IoCart
                                     className={headerNavCart}

@@ -1,4 +1,12 @@
-import { Radio, Space, Tooltip, Select, Input, notification } from "antd";
+import {
+    Radio,
+    Space,
+    Tooltip,
+    Select,
+    Input,
+    notification,
+    Steps
+} from "antd";
 const { TextArea } = Input;
 import InputCommon from "./InputComon/InputComon";
 import { AuthContext } from "@contexts/AuthContext";
@@ -14,20 +22,34 @@ import { getPaymentInfo } from "@/apis/paymentService";
 import { createOrder } from "@/apis/orderService";
 import { getProvince, getDistrict, getWard } from "@/apis/giaohanhnhanhService";
 import { FaPeopleCarryBox } from "react-icons/fa6";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
     createPaymentQR,
     getStatusPaymentQR,
     cancelPaymentQR
 } from "@/apis/paymentService";
+import { removeVoucher } from "@redux/slice/cartSlice";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+const steps = [
+    {
+        title: "Giỏ hàng"
+    },
+    {
+        title: "Chi tiết thanh toán"
+    },
+    {
+        title: "Đơn hàng hoàn tất"
+    }
+];
 const service_type_id = 2;
 function CheckoutPage() {
     const { list, listBuy, totalCheckout, voucher } = useSelector(
         (state) => state.cart
     );
+    const dispatch = useDispatch();
+    const [current, setCurrent] = useState(1);
     const {
         purchaseBtn,
         labelSelect,
@@ -81,6 +103,10 @@ function CheckoutPage() {
             description: desc
         });
     };
+    const items = steps.map((item) => ({
+        key: item.title,
+        title: item.title
+    }));
     useEffect(() => {
         if (!authenticated || listBuy.length === 0) {
             navigate("/");
@@ -315,6 +341,7 @@ function CheckoutPage() {
 
         fetchApiOrder(initForm);
     };
+
     const fetchApiOrder = async (data) => {
         const items = [];
         console.log(listBuy);
@@ -345,11 +372,6 @@ function CheckoutPage() {
         await createOrder(formData)
             .then((res) => {
                 if (res.code == 200) {
-                    // openNotificationWithIcon(
-                    //     "success",
-                    //     "Cảm ơn quý khách",
-                    //     "Đơn hàng được đặt thành công"
-                    // );
                     const orderId = res.result.id;
 
                     if (formData.payment_id == 1) {
@@ -377,10 +399,13 @@ function CheckoutPage() {
                         "Xảy ra lỗi",
                         res.message
                     );
-                    let result = "error";
-                    navigate("/order-result", {
-                        state: { result }
-                    });
+                    if (res.message === "Voucher đã hết lượt sử dụng") {
+                        dispatch(removeVoucher());
+                    }
+                    // let result = "error";
+                    // navigate("/order-result", {
+                    //     state: { result }
+                    // });
                 }
 
                 console.log(res);
@@ -391,6 +416,14 @@ function CheckoutPage() {
 
         console.log(formData);
     };
+
+    const onChangeStep = (value) => {
+        console.log(value);
+
+        if (value === 0) {
+            navigate("/cart");
+        }
+    };
     if (loading) {
         return <div>...</div>;
     }
@@ -398,6 +431,15 @@ function CheckoutPage() {
     return (
         <Container>
             {contextHolder}
+            <Steps
+                current={current}
+                style={{
+                    marginBottom: "40px",
+                    marginTop: "40px"
+                }}
+                onChange={onChangeStep}
+                items={items}
+            />
             <Row>
                 <Col sm={6}>
                     <h5>Thông tin thanh toán</h5>
