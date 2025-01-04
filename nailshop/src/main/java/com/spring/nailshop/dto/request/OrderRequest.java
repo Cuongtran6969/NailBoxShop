@@ -15,7 +15,7 @@ public class OrderRequest {
      String phone;
      Integer province_id;
      Integer district_id;
-     Integer ward_code;
+     String ward_code;
      String province_name;
      String district_name;
      String ward_name;

@@ -19,7 +19,7 @@ public class ShopUpdateRequest {
      String province_name;
      Integer district_id;
      String district_name;
-     Integer ward_code;
+     String ward_code;
      String ward_name;
      String bank_code;
      String bank_name;

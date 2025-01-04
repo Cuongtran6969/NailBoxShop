@@ -20,6 +20,9 @@ public class Order extends AbstractEntity<Long> {
     @Column(name = "code")
     private String code;
 
+    @Column(name = "ship_code")
+    private String ship_code;
+
     @Column(name = "receiver_name")
     private String receiver_name;
 
@@ -36,7 +39,7 @@ public class Order extends AbstractEntity<Long> {
     private Integer district_id;
 
     @Column(name = "to_ward_code")
-    private Integer ward_code;
+    private String ward_code;
 
     @Column(name = "province_name")
     private String province_name;
@@ -76,23 +79,13 @@ public class Order extends AbstractEntity<Long> {
     private String qr_img;
 
     @Column(name = "payment_at")
-    @CreationTimestamp
     private LocalDateTime paymentAt;
 
     @Column(name = "cancel_at")
-    @CreationTimestamp
     private LocalDateTime cancelAt;
 
     @Column(name = "complete_at")
-    @CreationTimestamp
     private LocalDateTime completeAt;
 
-    public int totalQuantity() {
-        if (orderItems == null || orderItems.isEmpty()) {
-            return 0;
-        }
-        return orderItems.stream()
-                .mapToInt(OrderItem::getQuantity)
-                .sum();
-    }
+
 }

@@ -33,7 +33,7 @@ public class Shop {
 
     private String district_name;
 
-    private Integer ward_code;
+    private String ward_code;
 
     private String ward_name;
 

@@ -1,12 +1,9 @@
 import ProductItem from "@productManagePages/productItem/ProductItem";
 import {
-    Button,
     Checkbox,
-    Dropdown,
-    Form,
-    Input,
+    Modal,
     Pagination,
-    Space,
+    notification,
     Table,
     Tag,
     Tooltip
@@ -19,6 +16,8 @@ import { TiArrowSortedUp } from "react-icons/ti";
 import { TiArrowSortedDown } from "react-icons/ti";
 import CateFilter from "@components/CateFilter/CateFilter";
 import { useNavigate } from "react-router-dom";
+import { MdCancel } from "react-icons/md";
+import { Divider } from "antd";
 // api
 import {
     CheckCircleOutlined,
@@ -28,65 +27,122 @@ import {
     MinusCircleOutlined,
     SyncOutlined
 } from "@ant-design/icons";
-import { getAllOrders } from "@/apis/orderService";
 
+import { getShipStatus, createOrderShip } from "@/apis/shipmentService";
+import { getAllOrders, saveShipCode } from "@/apis/orderService";
+import { LiaShippingFastSolid } from "react-icons/lia";
+import { getShopInfo } from "@/apis/shopService";
 const sortOptions = [
     { id: 1, type: "", icon: TiArrowUnsorted },
     { id: 2, type: "asc", icon: TiArrowSortedUp },
     { id: 3, type: "desc", icon: TiArrowSortedDown }
 ];
 import styles from "./styles.module.scss";
+import OrderItem from "./components/OrderItem";
 const statusInfo = {
-    PENDING: { label: "Chưa xử lý", color: "orange" },
+    PENDING: { label: "Chờ xác nhận", color: "orange" },
     PAYMENT_SUCCESS: { label: "Đã thanh toán trước", color: "green" },
-    PROCESSING: { label: "Đơn hàng đang xử lý", color: "blue" },
+    PROCESSING: { label: "Đơn hàng đang giao đến bạn", color: "blue" },
     CANCELLED: { label: "Đã hủy", color: "red" },
     COMPLETED: { label: "Hoàn thành", color: "volcano" }
 };
+const shipStatusInfo = {
+    pending: { label: "Chờ xác nhận", color: "orange" },
+    ready_to_pick: { label: "Chuẩn bị hàng", color: "gold" },
+    picking: { label: "Chờ ship lấy hàng", color: "lime" },
+    picked: { label: "Đã giao cho vận chuyển", color: "cyan" },
+    delivering: { label: "Đang giao", color: "blue" },
+    delivered: { label: "Giao hàng thành công", color: "green" },
+    delivery_fail: { label: "Giao hàng thất bại", color: "magenta" },
+    waiting_to_return: { label: "Chờ dvvc trả hàng", color: "purple" },
+    return: { label: "Đã trả", color: "geekblue" },
+    cancel: { label: "Đã hủy ship", color: "red" }
+};
 function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
     const navigate = useNavigate();
-    const { table } = styles;
+    const { table, shipRequireBtn, shipCancelBtn, detailBtn } = styles;
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isOpenDetail, setIsOpenDetail] = useState(false);
     const [loading, setLoading] = useState(true);
     const [orders, setOrders] = useState([]);
+    const [chooseId, setChooseId] = useState(null);
+    const [shopInfo, setShopInfo] = useState(null);
     const [filter, setFilter] = useState({
         page: 1,
         size: 10,
         total: 1
     });
-
+    const [api, contextHolder] = notification.useNotification();
+    const openNotificationWithIcon = (type, mess, desc) => {
+        api[type]({
+            message: mess,
+            description: desc,
+            placement: "top"
+        });
+    };
+    const [order, setOrder] = useState();
     console.log("initCheckList: " + initCheckList);
 
     // const handlePageChange = (page) => {
     //     setPagination((prev) => ({ ...prev, currentPage: page }));
     // };
+    const fetchApiShopInfo = async () => {
+        await getShopInfo()
+            .then((res) => {
+                setShopInfo(res.result);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
 
     const fetchOrders = async () => {
         setLoading(true);
         try {
             const response = await getAllOrders();
-            setOrders(
-                response.result.items.map((item) => {
+            console.log(shopInfo.token);
+
+            const ordersWithShipStatus = await Promise.all(
+                response.result.items.map(async (item) => {
+                    let status = "pending";
+                    if (item.ship_code) {
+                        await getShipStatus(shopInfo.token, item.ship_code)
+                            .then((res) => {
+                                status = res.data.status;
+                            })
+                            .catch(() => {
+                                status = "pending";
+                            });
+                    }
                     return {
                         key: item.id,
-                        ...item
+                        ...item,
+                        ship_status: status
                     };
                 })
             );
+
+            setOrders(ordersWithShipStatus);
+
             setFilter((prev) => ({
                 ...prev,
                 total: response.result.total
             }));
         } catch (error) {
-            console.error("Error fetching products:", error);
+            console.error("Error fetching orders:", error);
         } finally {
-            setLoading(false); // Tắt loading
+            setLoading(false);
         }
     };
-    console.log("loading:" + loading);
 
+    console.log("loading:" + loading);
+    console.log("chooseId:" + chooseId);
+    useEffect(() => {
+        fetchApiShopInfo();
+    }, []);
     useEffect(() => {
         fetchOrders();
-    }, []);
+    }, [shopInfo]);
 
     // useEffect(() => {
     //     if (initCheckList && initCheckList.length > 0) {
@@ -141,6 +197,12 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
         return new Intl.NumberFormat("vi-VN").format(price) + " ₫";
     };
 
+    const showOrderDetail = (id) => {
+        const order = orders.find((order) => order.id === id);
+        console.log("id: " + id);
+        setIsOpenDetail(true);
+        setOrder(order);
+    };
     const columns = useMemo(
         () => [
             {
@@ -165,11 +227,39 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
             },
             {
                 title: "Mã",
-                dataIndex: "code"
+                dataIndex: "code",
+                render: (t, r) => (
+                    <div className="d-flex">
+                        <span
+                            className={detailBtn}
+                            onClick={() => {
+                                // setChooseId(r.id);
+                                showOrderDetail(r.id);
+                            }}
+                        >
+                            {r.code}
+                        </span>
+                    </div>
+                )
+            },
+            {
+                title: "Người nhận",
+                dataIndex: "receiver_name"
             },
             {
                 title: "Địa chỉ",
-                dataIndex: "address"
+                dataIndex: "address",
+                render: (t, r) => {
+                    return (
+                        <span>
+                            {r.ward_name +
+                                ", " +
+                                r.district_name +
+                                ", " +
+                                r.province_name}
+                        </span>
+                    );
+                }
             },
             {
                 title: "Giá ship",
@@ -225,11 +315,44 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
             },
             {
                 title: "Tình trạng ship",
-                dataIndex: "status"
+                dataIndex: "ship_status",
+                render: (ship_status) =>
+                    ship_status ? (
+                        <Tag color={shipStatusInfo[ship_status]?.color}>
+                            {shipStatusInfo[ship_status]?.label}
+                        </Tag>
+                    ) : (
+                        <Tag>{ship_status}</Tag>
+                    )
             },
             {
                 title: "shipper lấy hàng",
-                dataIndex: "status"
+                dataIndex: "status",
+                render: (t, r) => (
+                    <div className="d-flex">
+                        <div>
+                            <LiaShippingFastSolid
+                                className={shipRequireBtn}
+                                onClick={() => {
+                                    setChooseId(r.id);
+                                    setIsModalOpen(true);
+                                }}
+                            />
+                            {r.ship_code &&
+                                (r.ship_status === "pending" ||
+                                    r.ship_status == "ready_to_pick" ||
+                                    r.ship_status == "picking") && (
+                                    <MdCancel
+                                        className={shipCancelBtn}
+                                        onClick={() => {
+                                            setChooseId(r.id);
+                                            setIsModalOpen(true);
+                                        }}
+                                    />
+                                )}
+                        </div>
+                    </div>
+                )
             }
         ],
         []
@@ -240,9 +363,180 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
             page: page
         }));
     };
+    const handleCancelConfirm = () => {
+        setIsModalOpen(false);
+    };
+    const handleCancelDetail = () => {
+        setIsOpenDetail(false);
+    };
+
+    const transformItems = (items) => {
+        return items.map((item) => {
+            return {
+                name:
+                    item.productName +
+                    (item.designName ? "|" + item.designName : "") +
+                    "| size " +
+                    item.size,
+                quantity: item.quantity,
+                price: parseInt(item.unitPrice * (1 - item.discount / 100))
+            };
+        });
+    };
+
+    const createShipOrder = () => {
+        setIsModalOpen(false);
+        if (shopInfo && chooseId) {
+            const order = orders.find((order) => order.id === chooseId);
+            const orderItems = transformItems(order.items);
+            const formData = {
+                to_name: order.receiver_name,
+                to_phone: order.phone,
+                client_order_code: order.code,
+                to_address:
+                    order.ward_name +
+                    "," +
+                    order.district_name +
+                    "," +
+                    order.province_name,
+                to_ward_name: order.ward_name,
+                to_district_name: order.district_name,
+                to_province_name: order.province_name,
+                cod_amount: parseInt(order.total_price),
+                content: "Đơn hàng nailbox thiết kế, thương hiệu NailLaBox",
+                length: shopInfo.boxLength,
+                width: shopInfo.boxWidth,
+                height: shopInfo.boxHeight * order.quantity,
+                weight: shopInfo.boxWeight * order.quantity,
+                insurance_value: parseInt(order.total_price),
+                service_type_id: 2,
+                pick_shift: [2],
+                required_note: "CHOXEMHANGKHONGTHU",
+                payment_type_id: 2,
+                items: orderItems
+            };
+            createOrderShip(shopInfo.token, shopInfo.shopId, formData)
+                .then((res) => {
+                    openNotificationWithIcon(
+                        "success",
+                        "Yêu cầu vận chuyển thành công",
+                        "Chuẩn bị hàng cho bên vận chuyển đến lấy hàng"
+                    );
+                    saveShipCode(chooseId, res.data.order_code);
+                })
+                .catch((err) => {
+                    console.log(err);
+
+                    openNotificationWithIcon(
+                        "error",
+                        "Yêu cầu vận chuyển thất bại",
+                        err.response?.data?.code_message_value
+                    );
+                });
+        }
+    };
+
+    const handleShipRequire = () => {
+        if (chooseId) {
+            createShipOrder();
+        } else {
+            console.log("errr");
+        }
+    };
 
     return (
         <div>
+            {contextHolder}
+            <Modal
+                title="Dịch vụ giao hàng"
+                open={isModalOpen}
+                onOk={handleShipRequire}
+                onCancel={handleCancelConfirm}
+            >
+                <p>Yêu cầu bên vận chuyển tới lấy hàng</p>
+            </Modal>
+
+            <Modal
+                title="Chi tiết đơn hàng"
+                onCancel={handleCancelDetail}
+                open={isOpenDetail}
+                width={580}
+            >
+                {console.log(order)}
+
+                {order &&
+                    order?.items.map((item) => {
+                        return <OrderItem item={item} />;
+                    })}
+                {order && (
+                    <>
+                        {" "}
+                        <Divider />
+                        <div>
+                            <div className="d-flex justify-content-between">
+                                <strong className="mt-2">Sum:</strong>
+                                <span className="fs-6 fw-medium">
+                                    {new Intl.NumberFormat("vi-VN").format(
+                                        order.total_price
+                                    )}
+                                    ₫
+                                </span>
+                            </div>
+                            <div className="d-flex justify-content-between">
+                                <strong className="mt-2">Voucher:</strong>
+                                <span className="fs-6 fw-medium">
+                                    {order.coupon &&
+                                        order.coupon &&
+                                        (order.coupon.type === "Discount"
+                                            ? order.coupon.amount + "%"
+                                            : order.coupon.type)}
+                                </span>
+                            </div>
+                            <div className="d-flex justify-content-between">
+                                <strong className="mt-2">Ship fee:</strong>
+                                <span className="fs-6 fw-medium">
+                                    {new Intl.NumberFormat("vi-VN").format(
+                                        order.ship_fee
+                                    )}
+                                    ₫
+                                </span>
+                            </div>
+                            <div className="d-flex justify-content-between">
+                                <strong className="mt-2">Total:</strong>
+                                <span className="fs-6 fw-medium">
+                                    {order.coupon &&
+                                        order.coupon.type === "Discount" &&
+                                        new Intl.NumberFormat("vi-VN").format(
+                                            Math.floor(
+                                                order.total_price -
+                                                    order.total_price *
+                                                        0.01 *
+                                                        order.coupon.amount
+                                            )
+                                        )}
+                                    {order.coupon && <>{order.coupon.type}</>}
+                                    {!order.coupon && (
+                                        <>
+                                            {new Intl.NumberFormat(
+                                                "vi-VN"
+                                            ).format(
+                                                Math.floor(
+                                                    order.total_price +
+                                                        order.ship_fee
+                                                )
+                                            )}
+                                            ₫
+                                        </>
+                                    )}
+                                </span>
+                            </div>
+                        </div>
+                    </>
+                )}
+
+                {}
+            </Modal>
+
             <Table
                 // rowSelection={rowSelection}
                 columns={columns}

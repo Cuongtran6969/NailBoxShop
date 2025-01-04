@@ -116,6 +116,7 @@ public class OrderServiceImpl implements OrderService {
             coupon.setIs_used(true);
             couponRepository.save(coupon);
         }
+
         String code = generateUniqueCouponCode();
 
         Integer shipFee = shippingFeeService.calculateShippingFee(
@@ -125,12 +126,7 @@ public class OrderServiceImpl implements OrderService {
                 shop.getBoxHeight(), shop.getBoxWeight(),
                 totalPrice, shop.getToken(), shop.getShop_id());
 
-        //total price include ship fee || coupon
-        if (coupon != null && coupon.getType() != CouponType.FREE_SHIP) {
-            totalPrice+=shipFee;
-        }
-
-        // Tạo đơn hàng
+        // Total price not include ship
         Order order = Order.builder()
                 .user(user) // Chỉ cần set userId
                 .receiver_name(request.getReceiver_name())

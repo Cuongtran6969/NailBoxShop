@@ -18,3 +18,58 @@
         background: #ff90bc7e;
     }
 }
+.shipRequireBtn {
+    font-size: 24px;
+    cursor: pointer;
+    &:hover {
+        color: #ff90bc;
+    }
+}
+.shipCancelBtn {
+    font-size: 24px;
+    cursor: pointer;
+    color: red;
+    opacity: 0.8;
+    margin-left: 10px;
+    &:hover {
+        opacity: 1;
+    }
+}
+.detailBtn {
+    color: rgb(0, 119, 255);
+    cursor: pointer;
+    user-select: none;
+    &:hover {
+        color: #ff90bc;
+    }
+}
+.itemBox {
+    display: flex;
+    margin-bottom: 15px;
+    .itemImg {
+        width: 150px;
+        height: 150px;
+        border-radius: 5px;
+    }
+    .itemContent {
+        padding: 0 10px;
+        .itemName {
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+        .itemOption {
+            font-size: 14px;
+            margin: 10px 0;
+            color: #333;
+        }
+        .itemPrice {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            .afterPrice {
+                font-weight: 500;
+            }
+        }
+    }
+}

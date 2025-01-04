@@ -17,3 +17,16 @@ export const getAllOrders = async () => {
     const res = await axiosClient.get(urlApi);
     return res.data;
 };
+
+export const saveShipCode = async (id, code) => {
+    const urlApi = `/admin/orders/${id}/update/ship-code`;
+    try {
+        const response = await axiosClient.put(urlApi, {
+            code: code
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Lỗi khi gọi API getShipStatus:", error);
+        throw error;
+    }
+};

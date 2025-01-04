@@ -1,5 +1,6 @@
 package com.spring.nailshop.controller.admin;
 
+import com.spring.nailshop.dto.request.OrderShipCodeRequest;
 import com.spring.nailshop.dto.response.ApiResponse;
 import com.spring.nailshop.dto.response.PageResponse;
 import com.spring.nailshop.dto.response.admin.Admin_OrderResponse;
@@ -18,10 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +49,23 @@ public class AdminOrderController {
                 .build();
     }
 
+    @PutMapping("/{orderId}/update/ship-code")
+    public ApiResponse<Void> saveShipCode(@PathVariable(value = "orderId") Long orderId,
+                                          @RequestBody OrderShipCodeRequest request ) {
+        adminOrderService.saveOrderShipCode(orderId, request);
+        return ApiResponse.<Void>builder()
+                .code(HttpStatus.OK.value())
+                .message("Save ship code successfully")
+                .build();
+    }
+
+    @PutMapping("/{orderId}/cancel")
+    public ApiResponse<Void> saveShipCode(@PathVariable(value = "orderId") Long orderId) {
+        return ApiResponse.<Void>builder()
+                .code(HttpStatus.OK.value())
+                .message("Save ship code successfully")
+                .build();
+    }
 
     private Sort getSortOrder(String[] sort) {
         List<Sort.Order> orders = new ArrayList<>();
