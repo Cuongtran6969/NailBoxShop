@@ -30,28 +30,6 @@ export const getLeadtime = async (token, formData) => {
         throw error;
     }
 };
-
-// export const getShipStatus = async (code) => {
-//     const urlApi =
-//         "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/detail";
-//     try {
-//         const response = await axios.post(
-//             urlApi,
-//             {
-//                 order_code: code
-//             },
-//             {
-//                 headers: {
-//                     token: token
-//                 }
-//             }
-//         );
-//         return response.data;
-//     } catch (error) {
-//         console.error("Lỗi khi gọi API getWard:", error);
-//         throw error;
-//     }
-// };
 //test
 export const createOrderShip = async (token, shopId, formData) => {
     const urlApi =
@@ -94,6 +72,28 @@ export const getShipStatus = async (token, code) => {
         return response.data;
     } catch (error) {
         console.error("Lỗi khi gọi API getShipStatus:", error);
+        throw error;
+    }
+};
+
+export const cancelShip = async (token, code) => {
+    const urlApi =
+        "https://online-gateway.ghn.vn/shiip/public-api/v2/switch-status/cancel";
+    try {
+        const response = await axios.post(
+            urlApi,
+            {
+                order_codes: [code]
+            },
+            {
+                headers: {
+                    token: token
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Lỗi khi gọi API cancelShip:", error);
         throw error;
     }
 };

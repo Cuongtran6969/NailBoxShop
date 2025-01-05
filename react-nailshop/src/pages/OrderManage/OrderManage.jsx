@@ -6,7 +6,12 @@ import {
     notification,
     Table,
     Tag,
-    Tooltip
+    Dropdown,
+    Space,
+    Divider,
+    Tooltip,
+    Input,
+    Button
 } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { GoPencil } from "react-icons/go";
@@ -17,8 +22,8 @@ import { TiArrowSortedDown } from "react-icons/ti";
 import CateFilter from "@components/CateFilter/CateFilter";
 import { useNavigate } from "react-router-dom";
 import { MdCancel } from "react-icons/md";
-import { Divider } from "antd";
 // api
+import { DownOutlined } from "@ant-design/icons";
 import {
     CheckCircleOutlined,
     ClockCircleOutlined,
@@ -28,7 +33,11 @@ import {
     SyncOutlined
 } from "@ant-design/icons";
 
-import { getShipStatus, createOrderShip } from "@/apis/shipmentService";
+import {
+    getShipStatus,
+    createOrderShip,
+    cancelShip
+} from "@/apis/shipmentService";
 import { getAllOrders, saveShipCode } from "@/apis/orderService";
 import { LiaShippingFastSolid } from "react-icons/lia";
 import { getShopInfo } from "@/apis/shopService";
@@ -47,7 +56,7 @@ const statusInfo = {
     COMPLETED: { label: "Hoàn thành", color: "volcano" }
 };
 const shipStatusInfo = {
-    pending: { label: "Chờ xác nhận", color: "orange" },
+    none: { label: "Chưa yêu cầu", color: "" },
     ready_to_pick: { label: "Chuẩn bị hàng", color: "gold" },
     picking: { label: "Chờ ship lấy hàng", color: "lime" },
     picked: { label: "Đã giao cho vận chuyển", color: "cyan" },
@@ -62,15 +71,23 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
     const navigate = useNavigate();
     const { table, shipRequireBtn, shipCancelBtn, detailBtn } = styles;
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalCancel, setIsModalCancel] = useState(false);
     const [isOpenDetail, setIsOpenDetail] = useState(false);
     const [loading, setLoading] = useState(true);
     const [orders, setOrders] = useState([]);
     const [chooseId, setChooseId] = useState(null);
+    const [chooseCode, setChooseCode] = useState(null);
     const [shopInfo, setShopInfo] = useState(null);
     const [filter, setFilter] = useState({
         page: 1,
         size: 10,
-        total: 1
+        total: 1,
+        code: "",
+        inputCode: "",
+        createAt: sortOptions[0],
+        shipFee: sortOptions[0],
+        totalPrice: sortOptions[0],
+        status: ""
     });
     const [api, contextHolder] = notification.useNotification();
     const openNotificationWithIcon = (type, mess, desc) => {
@@ -79,6 +96,43 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
             description: desc,
             placement: "top"
         });
+    };
+    const items = [
+        {
+            label: <a>Tất cả</a>,
+            key: ""
+        },
+        {
+            label: <a>Chờ xác nhận</a>,
+            key: "PENDING"
+        },
+        {
+            label: <a>Đã thanh toán trước</a>,
+            key: "PAYMENT_SUCCESS"
+        },
+        {
+            label: <a>Đơn hàng đang giao đến bạn</a>,
+            key: "PROCESSING"
+        },
+        {
+            label: <a>Đã hủy</a>,
+            key: "CANCELLED"
+        },
+        {
+            label: <a>Hoàn thành</a>,
+            key: "COMPLETED"
+        }
+    ];
+    const handleMenuClick = (e) => {
+        setFilter((prev) => ({
+            ...prev,
+            page: 1,
+            status: e.key
+        }));
+    };
+    const menuProps = {
+        items,
+        onClick: handleMenuClick
     };
     const [order, setOrder] = useState();
     console.log("initCheckList: " + initCheckList);
@@ -96,22 +150,38 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
             });
     };
 
+    const parseMoneyFormat = (price) => {
+        return new Intl.NumberFormat("vi-VN").format(Math.floor(price)) + "đ";
+    };
+
     const fetchOrders = async () => {
         setLoading(true);
         try {
-            const response = await getAllOrders();
+            const { page, size, code, createAt, status, shipFee, totalPrice } =
+                filter;
+
+            let query = `code~'${code.trim()}'`;
+            if (status) {
+                query += `&filter=status='${status}'`;
+            } else {
+                query += `&filter=status~'${status}'`;
+            }
+            if (createAt.type) query += `&sort=createAt:${createAt.type}`;
+            if (shipFee.type) query += `&sort=shipFee:${shipFee.type}`;
+            if (totalPrice.type) query += `&sort=totalPrice:${totalPrice.type}`;
+            const response = await getAllOrders(page, size, query);
             console.log(shopInfo.token);
 
             const ordersWithShipStatus = await Promise.all(
                 response.result.items.map(async (item) => {
-                    let status = "pending";
+                    let status = "none";
                     if (item.ship_code) {
                         await getShipStatus(shopInfo.token, item.ship_code)
                             .then((res) => {
                                 status = res.data.status;
                             })
                             .catch(() => {
-                                status = "pending";
+                                status = "none";
                             });
                     }
                     return {
@@ -134,99 +204,124 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
             setLoading(false);
         }
     };
+    const handleSortChange = (field) => {
+        console.log("--------------------" + field);
 
+        setFilter((prev) => {
+            const nextSortIndex = prev[field].id % sortOptions.length;
+            console.log("--------------------" + nextSortIndex);
+            return { ...prev, [field]: sortOptions[nextSortIndex] };
+        });
+    };
     console.log("loading:" + loading);
     console.log("chooseId:" + chooseId);
+
     useEffect(() => {
         fetchApiShopInfo();
     }, []);
+
     useEffect(() => {
         fetchOrders();
-    }, [shopInfo]);
-
-    // useEffect(() => {
-    //     if (initCheckList && initCheckList.length > 0) {
-    //         setCheckedList(initCheckList);
-    //     }
-    // }, [initCheckList]);
-
-    // const onCheckChange = (e, id) => {
-    //     console.log(e.target.checked);
-    //     if (e.target.checked) {
-    //         setCheckedList((prev) => [...prev, id]);
-    //     } else {
-    //         setCheckedList((prev) => prev.filter((item) => item != id));
-    //     }
-    // };
-    // const checkAll = () => {
-    //     console.log("Aaaaa");
-    //     console.log("in checkAll = checkedList: " + checkedList);
-    //     if (checkedList.length === 0) return false;
-    //     return products.every((product) => checkedList.includes(product.id));
-    // };
-    // const haveCheck = () => {
-    //     console.log("Bbbbb");
-    //     console.log("in haveCheck = checkedList: " + checkedList);
-
-    //     if (checkedList.length === 0) return false;
-    //     return products.some((product) => checkedList.includes(product.id));
-    // };
-
-    // const onCheckAllChange = (e) => {
-    //     console.log("select change to: " + e.target.checked);
-    //     if (e.target.checked) {
-    //         //da check full
-    //         console.log("herere 1");
-
-    //         setCheckedList((prev) => [
-    //             ...prev,
-    //             ...products
-    //                 .map((product) => product.id)
-    //                 .filter((id) => !prev.includes(id))
-    //         ]);
-    //     } else {
-    //         console.log("here 2");
-    //         setCheckedList((prev) =>
-    //             prev.filter(
-    //                 (id) => !products.some((product) => product.id === id)
-    //             )
-    //         );
-    //     }
-    // };
-    const displayPriceFomatVn = (price) => {
-        return new Intl.NumberFormat("vi-VN").format(price) + " ₫";
-    };
+    }, [
+        shopInfo,
+        filter.page,
+        filter.size,
+        filter.createAt,
+        filter.status,
+        filter.shipFee,
+        filter.totalPrice,
+        filter.code
+    ]);
 
     const showOrderDetail = (id) => {
+        //orders chưa dc load len
+        console.log(orders);
         const order = orders.find((order) => order.id === id);
-        console.log("id: " + id);
+        console.log("order: " + order);
         setIsOpenDetail(true);
         setOrder(order);
     };
+
+    const handleCancelShip = async () => {
+        setIsModalCancel(false);
+        setChooseCode(null);
+        await cancelShip(shopInfo.token, chooseCode)
+            .then((res) => {
+                openNotificationWithIcon(
+                    "success",
+                    "Yêu cầu hủy vận chuyển thành công",
+                    "Đơn hàng đã hủy yêu cầu ship với đơn vị vận chuyển"
+                );
+                fetchApiShopInfo();
+            })
+            .catch((err) => {
+                openNotificationWithIcon(
+                    "error",
+                    "Yêu cầu hủy vận chuyển không thành công",
+                    "Đơn hàng đã hủy yêu không thành công"
+                );
+            });
+    };
+    const handleSearch = () => {
+        setFilter((prev) => ({ ...prev, page: 1, code: prev.inputCode }));
+    };
+    const clearSearch = () => {
+        setFilter((prev) => ({ ...prev, page: 1, code: "", inputCode: "" }));
+    };
+
     const columns = useMemo(
         () => [
             {
                 title: (
-                    <div className="d-flex">
-                        <Checkbox
-                        // indeterminate={haveCheck() && !checkAll()}
-                        // onChange={(e) => onCheckAllChange(e)}
-                        // checked={checkAll()}
-                        />
+                    <div className="d-flex justify-content-between align-items-center">
+                        <span>Mã {filter.code}</span>
+                        <span>
+                            <Tooltip title="search">
+                                <Dropdown
+                                    overlay={
+                                        <div
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <Input
+                                                value={filter.inputCode}
+                                                onChange={(e) =>
+                                                    setFilter((prev) => ({
+                                                        ...prev,
+                                                        inputCode:
+                                                            e.target.value
+                                                    }))
+                                                }
+                                            />
+                                            <div className="mt-2">
+                                                <Button onClick={handleSearch}>
+                                                    Search
+                                                </Button>
+                                                <Button
+                                                    onClick={clearSearch}
+                                                    className="ms-2"
+                                                >
+                                                    Reset
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    }
+                                    trigger={["click"]}
+                                    placement="bottomRight"
+                                >
+                                    <a onClick={(e) => e.preventDefault()}>
+                                        <Space>
+                                            <Button
+                                                type="primary"
+                                                shape="circle"
+                                                icon={<IoSearch />}
+                                            />
+                                        </Space>
+                                    </a>
+                                </Dropdown>
+                            </Tooltip>
+                        </span>
                     </div>
                 ),
-                dataIndex: "",
-                render: (t, r) => (
-                    <div className="d-flex">
-                        <Checkbox
-                        // onChange={(e) => onCheckChange(e, r.id)}
-                        // checked={checkedList.includes(r.id)}
-                        />
-                    </div>
-                )
-            },
-            {
-                title: "Mã",
                 dataIndex: "code",
                 render: (t, r) => (
                     <div className="d-flex">
@@ -243,8 +338,20 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
                 )
             },
             {
+                title: (
+                    <div className="d-flex">
+                        <span className="me-3">Ngày tạo</span>
+                        <span onClick={() => handleSortChange("createAt")}>
+                            <filter.createAt.icon />
+                        </span>
+                    </div>
+                ),
+                dataIndex: "createAt",
+                render: (t, r) => new Date(r.createAt).toLocaleString()
+            },
+            {
                 title: "Người nhận",
-                dataIndex: "receiver_name"
+                dataIndex: "receiverName"
             },
             {
                 title: "Địa chỉ",
@@ -262,13 +369,20 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
                 }
             },
             {
-                title: "Giá ship",
-                dataIndex: "ship_fee",
-                render: (ship_fee) =>
-                    ship_fee && (
+                title: (
+                    <div className="d-flex">
+                        <span className="me-3">Giá ship</span>
+                        <span onClick={() => handleSortChange("shipFee")}>
+                            <filter.shipFee.icon />
+                        </span>
+                    </div>
+                ),
+                dataIndex: "shipFee",
+                render: (shipFee) =>
+                    shipFee && (
                         <>
                             <div className="d-flex">
-                                {displayPriceFomatVn(ship_fee)}
+                                <span>{parseMoneyFormat(shipFee)}</span>
                             </div>
                         </>
                     )
@@ -288,23 +402,50 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
                     )
             },
             {
-                title: "Tổng giá",
-                dataIndex: "total_price",
-                render: (total_price) =>
-                    total_price && (
+                title: (
+                    <div className="d-flex">
+                        <span className="me-3">Tổng giá</span>
+                        <span onClick={() => handleSortChange("totalPrice")}>
+                            <filter.totalPrice.icon />
+                        </span>
+                    </div>
+                ),
+                dataIndex: "totalPrice",
+                render: (totalPrice) =>
+                    totalPrice && (
                         <>
                             <div className="d-flex">
-                                {displayPriceFomatVn(total_price)}
+                                {parseMoneyFormat(totalPrice)}
                             </div>
                         </>
                     )
             },
             {
-                title: "Số lượng",
+                title: (
+                    <div className="d-flex">
+                        <span className="me-3">Số lượng</span>
+                    </div>
+                ),
                 dataIndex: "quantity"
             },
             {
-                title: "Tình trạng",
+                title: (
+                    <div>
+                        <Dropdown
+                            menu={menuProps}
+                            trigger={["click"]}
+                            placement="bottom"
+                        >
+                            <span style={{ color: "red !important" }}>
+                                <Space>
+                                    {statusInfo[filter.status]?.label ||
+                                        "Tất cả"}
+                                    <DownOutlined />
+                                </Space>
+                            </span>
+                        </Dropdown>
+                    </div>
+                ),
                 dataIndex: "status",
                 render: (status) =>
                     status ? (
@@ -345,8 +486,8 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
                                     <MdCancel
                                         className={shipCancelBtn}
                                         onClick={() => {
-                                            setChooseId(r.id);
-                                            setIsModalOpen(true);
+                                            setChooseCode(r.ship_code);
+                                            setIsModalCancel(true);
                                         }}
                                     />
                                 )}
@@ -355,10 +496,10 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
                 )
             }
         ],
-        []
+        [filter]
     );
     const handlePageChange = (page) => {
-        setSearchData((prev) => ({
+        setFilter((prev) => ({
             ...prev,
             page: page
         }));
@@ -390,7 +531,7 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
             const order = orders.find((order) => order.id === chooseId);
             const orderItems = transformItems(order.items);
             const formData = {
-                to_name: order.receiver_name,
+                to_name: order.receiverName,
                 to_phone: order.phone,
                 client_order_code: order.code,
                 to_address:
@@ -402,13 +543,13 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
                 to_ward_name: order.ward_name,
                 to_district_name: order.district_name,
                 to_province_name: order.province_name,
-                cod_amount: parseInt(order.total_price),
+                cod_amount: parseInt(order.totalPrice),
                 content: "Đơn hàng nailbox thiết kế, thương hiệu NailLaBox",
                 length: shopInfo.boxLength,
                 width: shopInfo.boxWidth,
                 height: shopInfo.boxHeight * order.quantity,
                 weight: shopInfo.boxWeight * order.quantity,
-                insurance_value: parseInt(order.total_price),
+                insurance_value: parseInt(order.totalPrice),
                 service_type_id: 2,
                 pick_shift: [2],
                 required_note: "CHOXEMHANGKHONGTHU",
@@ -423,6 +564,7 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
                         "Chuẩn bị hàng cho bên vận chuyển đến lấy hàng"
                     );
                     saveShipCode(chooseId, res.data.order_code);
+                    fetchApiShopInfo();
                 })
                 .catch((err) => {
                     console.log(err);
@@ -455,6 +597,14 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
             >
                 <p>Yêu cầu bên vận chuyển tới lấy hàng</p>
             </Modal>
+            <Modal
+                title="Dịch vụ giao hàng"
+                open={isModalCancel}
+                onOk={handleCancelShip}
+                onCancel={() => setIsModalCancel(false)}
+            >
+                <p>Hủy vận chuyển đơn hàng</p>
+            </Modal>
 
             <Modal
                 title="Chi tiết đơn hàng"
@@ -466,68 +616,62 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
 
                 {order &&
                     order?.items.map((item) => {
-                        return <OrderItem item={item} />;
+                        return <OrderItem key={item.productId} item={item} />;
                     })}
                 {order && (
                     <>
-                        {" "}
                         <Divider />
                         <div>
                             <div className="d-flex justify-content-between">
                                 <strong className="mt-2">Sum:</strong>
                                 <span className="fs-6 fw-medium">
-                                    {new Intl.NumberFormat("vi-VN").format(
-                                        order.total_price
-                                    )}
-                                    ₫
+                                    {order.coupon &&
+                                        order.coupon.amount > 0 &&
+                                        parseMoneyFormat(
+                                            order.totalPrice /
+                                                (1 - order.coupon.amount * 0.01)
+                                        )}
+                                    {(!order.coupon ||
+                                        (order.coupon &&
+                                            order.coupon.amount === 0)) &&
+                                        parseMoneyFormat(order.totalPrice)}
+                                </span>
+                            </div>
+                            <div className="d-flex justify-content-between">
+                                <strong className="mt-2">Ship fee:</strong>
+                                <span className="fs-6 fw-medium">
+                                    {parseMoneyFormat(order.shipFee)}
                                 </span>
                             </div>
                             <div className="d-flex justify-content-between">
                                 <strong className="mt-2">Voucher:</strong>
                                 <span className="fs-6 fw-medium">
                                     {order.coupon &&
-                                        order.coupon &&
-                                        (order.coupon.type === "Discount"
-                                            ? order.coupon.amount + "%"
-                                            : order.coupon.type)}
-                                </span>
-                            </div>
-                            <div className="d-flex justify-content-between">
-                                <strong className="mt-2">Ship fee:</strong>
-                                <span className="fs-6 fw-medium">
-                                    {new Intl.NumberFormat("vi-VN").format(
-                                        order.ship_fee
-                                    )}
-                                    ₫
+                                        order.coupon.amount > 0 &&
+                                        "- " +
+                                            parseMoneyFormat(
+                                                order.totalPrice *
+                                                    (order.coupon.amount /
+                                                        (100 -
+                                                            order.coupon
+                                                                .amount))
+                                            )}
+
+                                    {order.coupon &&
+                                        order.coupon.type === 0 &&
+                                        "- " +
+                                            parseMoneyFormat(order.totalPrice)}
                                 </span>
                             </div>
                             <div className="d-flex justify-content-between">
                                 <strong className="mt-2">Total:</strong>
                                 <span className="fs-6 fw-medium">
-                                    {order.coupon &&
-                                        order.coupon.type === "Discount" &&
-                                        new Intl.NumberFormat("vi-VN").format(
-                                            Math.floor(
-                                                order.total_price -
-                                                    order.total_price *
-                                                        0.01 *
-                                                        order.coupon.amount
-                                            )
-                                        )}
-                                    {order.coupon && <>{order.coupon.type}</>}
-                                    {!order.coupon && (
-                                        <>
-                                            {new Intl.NumberFormat(
-                                                "vi-VN"
-                                            ).format(
-                                                Math.floor(
-                                                    order.total_price +
-                                                        order.ship_fee
-                                                )
-                                            )}
-                                            ₫
-                                        </>
-                                    )}
+                                    {order.coupon && order.coupon.type === 0
+                                        ? parseMoneyFormat(order.totalPrice)
+                                        : parseMoneyFormat(
+                                              order.totalPrice + order.shipFee
+                                          )}
+                                    {/* amount == 0 mean have is free ship */}
                                 </span>
                             </div>
                         </div>
@@ -543,7 +687,7 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
                 dataSource={orders}
                 pagination={false}
                 loading={loading}
-                scroll={{ x: 1500, y: 700 }}
+                scroll={{ x: 1500, y: 650 }}
                 className={table}
             />
             <Pagination

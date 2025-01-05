@@ -126,10 +126,10 @@ public class OrderServiceImpl implements OrderService {
                 shop.getBoxHeight(), shop.getBoxWeight(),
                 totalPrice, shop.getToken(), shop.getShop_id());
 
-        // Total price not include ship
+        // Total price not include ship || include discount
         Order order = Order.builder()
                 .user(user) // Chỉ cần set userId
-                .receiver_name(request.getReceiver_name())
+                .receiverName(request.getReceiver_name())
                 .phone(request.getPhone())
                 .detail(request.getDetail())
                 .province_id(request.getProvince_id())
@@ -139,12 +139,12 @@ public class OrderServiceImpl implements OrderService {
                 .ward_code(request.getWard_code())
                 .ward_name(request.getWard_name())
                 .status(OrderStatus.PENDING)
-                .ship_fee(shipFee)
+                .shipFee(shipFee)
                 .code(code)
                 .coupon(coupon)
                 .payment(payment)
                 .orderItems(orderItems)
-                .total_price(totalPrice)
+                .totalPrice(totalPrice)
                 .build();
 
         for (OrderItem orderItem : orderItems) {
@@ -167,7 +167,7 @@ public class OrderServiceImpl implements OrderService {
         }
         return OrderInfoResponse.builder()
                 .orderId(order.getId())
-                .totalPrice((int) Math.round(order.getTotal_price()))
+                .totalPrice((int) Math.round(order.getTotalPrice()))
                 .orderCode(order.getCode())
                 .status(order.getStatus().name())
                 .build();
@@ -193,7 +193,7 @@ public class OrderServiceImpl implements OrderService {
                 .bankName(shop.getBank_name())
                 .qrImage(order.getQr_img())
                 .orderCode(order.getCode())
-                .totalPrice(order.getTotal_price())
+                .totalPrice(order.getTotalPrice())
                 .status(order.getStatus().name())
                 .createdAt(order.getCreateAt())
                 .build();

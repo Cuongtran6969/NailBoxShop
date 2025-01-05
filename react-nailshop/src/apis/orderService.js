@@ -12,8 +12,11 @@ export const getOrderPaymentInfo = async (id) => {
     return res.data;
 };
 
-export const getAllOrders = async () => {
-    let urlApi = `/admin/orders`;
+export const getAllOrders = async (page, size, query) => {
+    let urlApi = `/admin/orders?page=${page}&size=${size}`;
+    if (query) {
+        urlApi += `&filter=${query}`;
+    }
     const res = await axiosClient.get(urlApi);
     return res.data;
 };

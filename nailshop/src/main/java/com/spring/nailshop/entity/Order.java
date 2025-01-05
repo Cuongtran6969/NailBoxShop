@@ -24,13 +24,13 @@ public class Order extends AbstractEntity<Long> {
     private String ship_code;
 
     @Column(name = "receiver_name")
-    private String receiver_name;
+    private String receiverName;
 
     @Column(name = "phone")
     private String phone;
 
     @Column(name = "total_price")
-    private Double total_price;
+    private Double totalPrice;
 
     @Column(name = "to_province_id")
     private Integer province_id;
@@ -54,7 +54,7 @@ public class Order extends AbstractEntity<Long> {
     private String detail;
 
     @Column(name = "ship_fee")
-    private Integer ship_fee;
+    private Integer shipFee;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)

@@ -1,22 +1,5 @@
 .table {
-    overflow-y: scroll;
-    &::-webkit-scrollbar {
-        width: 5px;
-    }
-
-    &::-webkit-scrollbar-track {
-        box-shadow: inset 0 0 2px transparent;
-        border-radius: 10px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        border-radius: 10px;
-        background: #f77aac83;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-        background: #ff90bc7e;
-    }
+    min-height: 750px;
 }
 .shipRequireBtn {
     font-size: 24px;
@@ -38,7 +21,6 @@
 .detailBtn {
     color: rgb(0, 119, 255);
     cursor: pointer;
-    user-select: none;
     &:hover {
         color: #ff90bc;
     }
@@ -67,6 +49,10 @@
             margin-top: 20px;
             display: flex;
             justify-content: space-between;
+            .rootPrice {
+                text-decoration: line-through;
+                color: #999999f8;
+            }
             .afterPrice {
                 font-weight: 500;
             }

@@ -8,6 +8,7 @@ function OrderItem({ item }) {
         itemName,
         itemOption,
         itemPrice,
+        rootPrice,
         afterPrice
     } = styles;
     return (
@@ -23,7 +24,7 @@ function OrderItem({ item }) {
                     {item.size}
                 </div>
                 <div className={itemPrice}>
-                    <span>
+                    <span className={rootPrice}>
                         {new Intl.NumberFormat("vi-VN").format(item.unitPrice)}{" "}
                         ₫
                     </span>
@@ -34,6 +35,7 @@ function OrderItem({ item }) {
                             item.unitPrice -
                                 item.unitPrice * 0.01 * item.discount
                         )}
+                        ₫
                     </span>
                 </div>
                 <div className="fs-6 text-end mt-3">
