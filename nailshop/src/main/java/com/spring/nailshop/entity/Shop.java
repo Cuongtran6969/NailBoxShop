@@ -50,4 +50,7 @@ public class Shop {
     private Integer boxHeight;
 
     private Integer boxWeight;
+
+    @Column(name = "banners", columnDefinition = "TEXT")
+    private String banners;
 }

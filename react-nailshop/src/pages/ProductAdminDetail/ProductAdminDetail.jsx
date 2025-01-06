@@ -46,7 +46,9 @@ const ProductAdminDetail = () => {
                 const formattedOldImages = pictures
                     .split(",")
                     .map((url) => url.trim());
+
                 setOldImages(formattedOldImages);
+
                 const formattedFileList = pictures
                     .split(",")
                     .map((url, index) => ({

@@ -41,6 +41,7 @@ public enum ErrorCode {
     ORDER_FAIL(400, "Tạo đơn hàng thất bại", HttpStatus.BAD_REQUEST),
     ORDER_NOT_FOUND(404, "Đơn hàng không tìm thấy, liên hệ để hỗ trợ", HttpStatus.BAD_REQUEST),
     ORDER_PAYMENT_INVALID(404, "Yêu cần thanh toán online không hợp lệ", HttpStatus.BAD_REQUEST),
+    POST_NOT_FOUND(400, "Khong tìm thấy post", HttpStatus.BAD_REQUEST),
     ;
     private int code;
     private String message;

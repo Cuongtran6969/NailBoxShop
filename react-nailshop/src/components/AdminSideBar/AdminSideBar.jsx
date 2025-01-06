@@ -9,6 +9,7 @@ import { MdOutlineLocalShipping } from "react-icons/md";
 import { IoSettingsOutline } from "react-icons/io5";
 import { CiLogout } from "react-icons/ci";
 import { FaPeopleCarryBox } from "react-icons/fa6";
+import { BsShop } from "react-icons/bs";
 import Logo from "@icons/images/nailLaBoxLogo.png";
 import styles from "./styles.module.scss";
 import classNames from "classnames";
@@ -109,7 +110,7 @@ const items = [
                 icon: <FaPeopleCarryBox />,
                 children: [
                     {
-                        key: "7",
+                        key: "9",
                         label: "Manager order",
                         path: "/admin/orders"
                     }
@@ -118,17 +119,51 @@ const items = [
         ]
     },
     {
+        type: "divider"
+    },
+    {
         key: "grp3",
-        label: "Settings",
+        label: "Post",
         type: "group",
         children: [
             {
                 key: "sub7",
-                label: "Settings",
-                icon: <IoSettingsOutline />
+                label: "Post",
+                icon: <FaPeopleCarryBox />,
+                children: [
+                    {
+                        key: "10",
+                        label: "Manager post",
+                        path: "/admin/post/manage"
+                    },
+                    {
+                        key: "11",
+                        label: "Create post",
+                        path: "/admin/post/create"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        key: "grp4",
+        label: "Settings",
+        type: "group",
+        children: [
+            {
+                key: "12",
+                label: "Shop",
+                icon: <BsShop />,
+                path: "/admin/shop"
             },
             {
-                key: "sub8",
+                key: "13",
+                label: "Settings",
+                icon: <IoSettingsOutline />,
+                path: "/admin/setting"
+            },
+            {
+                key: "14",
                 label: "Logout",
                 icon: <CiLogout />
             }

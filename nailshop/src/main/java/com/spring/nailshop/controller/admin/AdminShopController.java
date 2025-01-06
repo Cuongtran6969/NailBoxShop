@@ -1,7 +1,10 @@
 package com.spring.nailshop.controller.admin;
 
+import com.spring.nailshop.dto.request.ProductUpdateRequest;
+import com.spring.nailshop.dto.request.ShopBannersRequest;
 import com.spring.nailshop.dto.request.ShopUpdateRequest;
 import com.spring.nailshop.dto.response.ApiResponse;
+import com.spring.nailshop.dto.response.ProductResponse;
 import com.spring.nailshop.dto.response.ShopResponse;
 import com.spring.nailshop.service.ShopService;
 import lombok.AccessLevel;
@@ -10,6 +13,10 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -26,6 +33,17 @@ public class AdminShopController {
         return ApiResponse.<Void>builder()
                 .code(HttpStatus.OK.value())
                 .message("Update shop successfully")
+                .build();
+    }
+
+    @PutMapping("/save-banner")
+    public ApiResponse<String> updateProduct(
+            @RequestPart(value = "banner", required = false) ShopBannersRequest banner,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images) {
+        return ApiResponse.<String>builder()
+                .result(shopService.updateBanner(banner, images))
+                .code(HttpStatus.OK.value())
+                .message("Save banner successfully")
                 .build();
     }
 

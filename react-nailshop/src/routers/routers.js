@@ -9,6 +9,10 @@ import SearchPage from "@pages/SearchPage/SearchPage";
 import AdminLayout from "@components/AdminLayout/AdminLayout";
 import ProductManage from "@pages/ProductManage/ProductManage";
 import OrderManage from "@pages/OrderManage/OrderManage";
+import ShopManage from "@pages/ShopManage/ShopManage";
+import SettingShopPage from "@pages/SettingShopPage/SettingShopPage";
+import PostCreatePage from "@pages/PostCreatePage/PostCreatePage";
+import PostManagePage from "@pages/PostManagePage/PostManagePage";
 import ProductCreatePage from "@pages/ProductCreatePage/ProductCreatePage";
 import ProductAdminDetail from "@pages/ProductAdminDetail/ProductAdminDetail";
 import UserManagerPage from "@pages/UserManagerPage/UserManagerPage";
@@ -78,6 +82,31 @@ const routers = [
     {
         path: "/admin/orders",
         component: OrderManage,
+        layout: AdminLayout,
+        roles: [ROLE.ADMIN, ROLE.STAFF]
+    },
+    ,
+    {
+        path: "/admin/shop",
+        component: ShopManage,
+        layout: AdminLayout,
+        roles: [ROLE.ADMIN, ROLE.STAFF]
+    },
+    {
+        path: "/admin/setting",
+        component: SettingShopPage,
+        layout: AdminLayout,
+        roles: [ROLE.ADMIN, ROLE.STAFF]
+    },
+    {
+        path: "/admin/post/create",
+        component: PostCreatePage,
+        layout: AdminLayout,
+        roles: [ROLE.ADMIN, ROLE.STAFF]
+    },
+    {
+        path: "/admin/post/manage",
+        component: PostManagePage,
         layout: AdminLayout,
         roles: [ROLE.ADMIN, ROLE.STAFF]
     },

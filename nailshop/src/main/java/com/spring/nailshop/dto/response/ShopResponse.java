@@ -28,4 +28,5 @@ public class ShopResponse {
     Integer boxWidth;
     Integer boxHeight;
     Integer boxWeight;
+    String banners;
 }
