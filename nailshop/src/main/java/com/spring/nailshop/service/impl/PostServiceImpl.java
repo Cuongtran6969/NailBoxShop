@@ -91,6 +91,7 @@ public class PostServiceImpl implements PostService {
                 .title(posts.getTitle())
                 .description(posts.getDescription())
                 .content(posts.getContent())
+                .createAt(posts.getCreateAt())
                 .build();
     }
 

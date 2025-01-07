@@ -1,0 +1,51 @@
+.detailContainer {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+}
+.detailImage {
+    flex: 1;
+}
+.detailImage img {
+    border-radius: 8px;
+}
+
+.detailContent {
+    flex: 1; /* Chiếm khoảng trống còn lại */
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.detailDate {
+    color: #888;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+}
+.dateValue {
+    margin-left: 10px;
+    margin-top: 3px;
+}
+
+.detailTitle {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.detailDescription {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* Media Queries cho màn hình nhỏ */
+@media (max-width: 768px) {
+    .detailContainer {
+        flex-direction: column; /* Đổi từ ngang sang dọc */
+    }
+
+    .detailImage img {
+        max-width: 100%; /* Đảm bảo ảnh chiếm hết chiều rộng màn hình */
+    }
+}

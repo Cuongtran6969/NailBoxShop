@@ -8,6 +8,8 @@ import DefaultLayout from "@components/DefaultLayout/DefaultLayout";
 import SearchPage from "@pages/SearchPage/SearchPage";
 import AdminLayout from "@components/AdminLayout/AdminLayout";
 import ProductManage from "@pages/ProductManage/ProductManage";
+import NewsPage from "@pages/NewsPage/NewsPage";
+import NewsDetailPage from "@pages/NewsDetailPage/NewsDetailPage";
 import OrderManage from "@pages/OrderManage/OrderManage";
 import ShopManage from "@pages/ShopManage/ShopManage";
 import SettingShopPage from "@pages/SettingShopPage/SettingShopPage";
@@ -62,6 +64,16 @@ const routers = [
         component: OrderResultPage,
         layout: DefaultLayout,
         roles: [ROLE.USER]
+    },
+    {
+        path: "/blog",
+        component: NewsPage,
+        layout: DefaultLayout
+    },
+    {
+        path: "/blog/:id",
+        component: NewsDetailPage,
+        layout: DefaultLayout
     },
     {
         path: "/payment",

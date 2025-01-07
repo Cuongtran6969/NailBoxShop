@@ -16,15 +16,19 @@ function NewsItem({ data }) {
             <div className={newsItem}>
                 <div
                     className={newsImage}
-                    onClick={() => navigate(`/news/${data.id}`)}
+                    onClick={() => navigate(`/blog/${data.id}`)}
                 >
-                    <img src={data.image} alt="" />
+                    <img
+                        src={data.image}
+                        alt=""
+                        onClick={() => navigate(`/blog/${data.id}`)}
+                    />
                 </div>
                 <div className={newsContent}>
                     <span className={newsType}>Tin tức</span>
                     <h5
                         className={newsTitle}
-                        onClick={() => navigate(`/news/${data.id}`)}
+                        onClick={() => navigate(`/blog/${data.id}`)}
                     >
                         {data.title}
                     </h5>
