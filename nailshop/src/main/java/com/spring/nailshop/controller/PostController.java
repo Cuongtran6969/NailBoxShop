@@ -1,7 +1,10 @@
 package com.spring.nailshop.controller;
 
 import com.spring.nailshop.dto.request.PostCreateRequest;
+import com.spring.nailshop.dto.request.PostUpdateRequest;
 import com.spring.nailshop.dto.response.ApiResponse;
+import com.spring.nailshop.dto.response.PageResponse;
+import com.spring.nailshop.dto.response.PostResponse;
 import com.spring.nailshop.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,20 +39,51 @@ public class PostController {
 
     }
 
+    @PutMapping("/post/update")
+    public ApiResponse<Void> updatePost(
+            @RequestPart(value = "post") PostUpdateRequest request,
+            @RequestPart(value = "image", required = false) MultipartFile image
+    ) {
+        postService.updatePost(request, image);
+        return ApiResponse.<Void>builder()
+                .message("Update post successfully")
+                .code(HttpStatus.OK.value())
+                .build();
+    }
+
     @GetMapping("/posts")
-    public ApiResponse<Void> getPosts(
-            @RequestParam(value = "title", required = false, defaultValue = "1") String title,
+    public ApiResponse<PageResponse<List<PostResponse>>> getPosts(
+            @RequestParam(value = "title", required = false) String title,
             @RequestParam(defaultValue = "createAt:desc") String[] sort,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "size", required = false, defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page - 1, size, getSortOrder(sort));
-        return ApiResponse.<Void>builder()
+        return ApiResponse.<PageResponse<List<PostResponse>>>builder()
                 .result(postService.getAllPosts(title, pageable))
-                .message("Create post successfully")
+                .message("Get posts successfully")
                 .code(HttpStatus.OK.value())
                 .build();
 
+    }
+
+    @GetMapping("/post/{id}")
+    public ApiResponse<PostResponse> getPostDetail(@PathVariable Integer id) {
+        return ApiResponse.<PostResponse>builder()
+                .result(postService.getPostById(id))
+                .message("Get posts successfully")
+                .code(HttpStatus.OK.value())
+                .build();
+
+    }
+
+    @DeleteMapping("/post/{id}")
+    public ApiResponse<Void> deletePost(@PathVariable Integer id) {
+                postService.deletePostById(id);
+        return ApiResponse.<Void>builder()
+                .message("Delete posts successfully")
+                .code(HttpStatus.OK.value())
+                .build();
     }
 
     private Sort getSortOrder(String[] sort) {

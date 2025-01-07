@@ -1,10 +1,13 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { htmlToMarkdown, markdownToHtml } from "./Parser";
+import { htmlToMarkdown, markdownToHtml } from "@/utils/Parser";
 import uploadToCloudinary from "@/apis/uploadToCloudinary";
 
-function Editor({ value: initialValue = "", onChange }) {
+function Editor({ initialValue = "", onChange }) {
+    console.log("in: " + initialValue);
+    console.log("markdownToHtml: " + markdownToHtml(initialValue));
+
     const [value, setValue] = useState(markdownToHtml(initialValue));
     const reactQuillRef = useRef(null);
     const fontSize = ["small", false, "large", "huge"];
@@ -20,6 +23,9 @@ function Editor({ value: initialValue = "", onChange }) {
             });
         }
     };
+    useEffect(() => {
+        setValue(markdownToHtml(initialValue)); // Cập nhật khi initialValue thay đổi
+    }, [initialValue]);
 
     const imageHandler = useCallback(() => {
         const input = document.createElement("input");

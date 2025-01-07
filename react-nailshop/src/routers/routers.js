@@ -12,6 +12,7 @@ import OrderManage from "@pages/OrderManage/OrderManage";
 import ShopManage from "@pages/ShopManage/ShopManage";
 import SettingShopPage from "@pages/SettingShopPage/SettingShopPage";
 import PostCreatePage from "@pages/PostCreatePage/PostCreatePage";
+import PostEditPage from "@pages/PostEditPage/PostEditPage";
 import PostManagePage from "@pages/PostManagePage/PostManagePage";
 import ProductCreatePage from "@pages/ProductCreatePage/ProductCreatePage";
 import ProductAdminDetail from "@pages/ProductAdminDetail/ProductAdminDetail";
@@ -101,6 +102,12 @@ const routers = [
     {
         path: "/admin/post/create",
         component: PostCreatePage,
+        layout: AdminLayout,
+        roles: [ROLE.ADMIN, ROLE.STAFF]
+    },
+    {
+        path: "/admin/post/edit/:id",
+        component: PostEditPage,
         layout: AdminLayout,
         roles: [ROLE.ADMIN, ROLE.STAFF]
     },

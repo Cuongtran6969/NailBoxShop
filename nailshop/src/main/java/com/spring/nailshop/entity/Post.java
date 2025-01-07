@@ -27,7 +27,10 @@ public class Post{
 
     private String description;
 
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
+    @Column(name = "create_at")
+    @CreationTimestamp
     private LocalDateTime createAt;
 }

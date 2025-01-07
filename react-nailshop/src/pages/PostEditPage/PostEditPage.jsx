@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import Editor from "@components/Editor/Editor";
 import styles from "./styles.module.scss";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, CloseOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Upload, notification } from "antd";
 import { createPost, getPostDetail, updatePost } from "@/apis/postService";
+import { useParams } from "react-router-dom";
 const normFile = (e) => {
     if (Array.isArray(e)) {
         return e;
@@ -11,8 +12,10 @@ const normFile = (e) => {
     return e?.fileList;
 };
 function PostCreatePage() {
+    const { id } = useParams();
     const [form] = Form.useForm();
     const { container } = styles;
+    const [loading, setLoading] = useState(true);
     const [content, setContent] = useState("");
     const [fileList, setFileList] = useState([]);
     const [api, contextHolder] = notification.useNotification();
@@ -22,20 +25,47 @@ function PostCreatePage() {
             description: desc
         });
     };
-    const fetchApiCreate = async (data) => {
-        await createPost(data)
+
+    const [oldImage, setOldImages] = useState("");
+    useEffect(() => {
+        if (id) {
+            setLoading(true);
+            getPostDetail(id)
+                .then((res) => {
+                    form.setFieldsValue({
+                        title: res.result.title,
+                        description: res.result.description
+                    });
+                    setOldImages(res.result.image);
+                    const formattedFileList = {
+                        uid: `0`,
+                        url: res.result.image,
+                        name: `Image`
+                    };
+                    setFileList([formattedFileList]);
+                    setContent(res.result.content);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+            setLoading(false);
+        }
+    }, [id]);
+
+    const fetchApiUpdate = async (data) => {
+        await updatePost(data)
             .then((res) => {
                 openNotificationWithIcon(
                     "success",
-                    "Tạo bài viết",
-                    "Tạo bài viết thành công"
+                    "Cập nhật bài viết",
+                    "Cập nhật bài viết thành công"
                 );
             })
             .catch((err) => {
                 openNotificationWithIcon(
                     "error",
-                    "Tạo bài viết",
-                    "Tạo bài viết thất bại"
+                    "Cập nhật bài viết",
+                    "Cập nhật bài viết thất bại"
                 );
             });
     };
@@ -50,22 +80,28 @@ function PostCreatePage() {
             new Blob(
                 [
                     JSON.stringify({
+                        id: id,
                         title: value.title,
                         description: value.description,
-                        content: content
+                        content: content,
+                        image: oldImage
                     })
                 ],
                 { type: "application/json" }
             )
         );
 
-        formData.append("image", value.image[0].originFileObj);
+        fileList.forEach((file) => {
+            formData.append("image", file.originFileObj);
+        });
 
-        fetchApiCreate(formData);
+        fetchApiUpdate(formData);
     };
     const handleRemoveImage = () => {
         setFileList([]);
     };
+    console.log(content);
+    if (loading) return <div>...</div>;
     return (
         <div className={container}>
             {contextHolder}
@@ -79,20 +115,15 @@ function PostCreatePage() {
                 }}
                 onFinish={handleSubmit}
             >
-                <Form.Item
-                    name="image"
-                    label="Picture"
-                    valuePropName="fileList"
-                    getValueFromEvent={normFile}
-                >
+                <Form.Item name="image" label="Picture">
                     <Upload
-                        maxCount={1}
                         listType="picture-card"
-                        multiple={true}
-                        beforeUpload={() => false}
                         fileList={fileList}
                         onChange={({ fileList }) => setFileList(fileList)}
                         onRemove={handleRemoveImage}
+                        beforeUpload={() => false}
+                        maxCount={1}
+                        min
                     >
                         <button
                             style={{
@@ -126,7 +157,7 @@ function PostCreatePage() {
                 </Form.Item>
                 <Form.Item>
                     <Button type="primary" htmlType="submit">
-                        Tạo bài viết
+                        Cập nhật bài viết
                     </Button>
                 </Form.Item>
             </Form>

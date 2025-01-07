@@ -1,6 +1,7 @@
 package com.spring.nailshop.service.impl;
 
 import com.spring.nailshop.dto.request.PostCreateRequest;
+import com.spring.nailshop.dto.request.PostUpdateRequest;
 import com.spring.nailshop.dto.response.PageResponse;
 import com.spring.nailshop.dto.response.PostResponse;
 import com.spring.nailshop.dto.response.UserResponse;
@@ -43,8 +44,27 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public void updatePost(PostUpdateRequest request, MultipartFile image) {
+        Post post = postRepository.findById(request.getId()).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
+        if(image != null && !image.isEmpty()) {
+            String cloudImg = cloudinaryService.uploadImage(image);
+            post.setImage(cloudImg);
+        }
+        post.setTitle(request.getTitle());
+        post.setDescription(request.getDescription());
+        post.setContent(request.getContent());
+        postRepository.save(post);
+    }
+
+    @Override
     public PageResponse<List<PostResponse>> getAllPosts(String title, Pageable pageable) {
-        Page<Post> posts = postRepository.findByTitleContainingIgnoreCase(title, pageable);
+        Page<Post> posts = null;
+        if(title != null && title.trim().length() > 0) {
+            posts = postRepository.findByTitleContainingIgnoreCase(title, pageable);
+        } else  {
+            posts = postRepository.findAll(pageable);
+
+        }
 
         List<PostResponse> postResponses = posts.getContent().stream()
                 .map(post -> new PostResponse(
@@ -57,6 +77,7 @@ public class PostServiceImpl implements PostService {
                 .items(postResponses)
                 .page(pageable.getPageNumber() + 1)
                 .total(posts.getTotalElements())
+                .size(posts.getSize())
                 .totalPages(posts.getTotalPages())
                 .build();
     }
