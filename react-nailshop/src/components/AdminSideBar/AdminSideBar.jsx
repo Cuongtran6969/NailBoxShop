@@ -18,7 +18,7 @@ const items = [
         key: "sub1",
         label: "Analytics",
         icon: <GrAnalytics />,
-        path: "/analytics"
+        path: "/admin/analytics"
     },
     {
         key: "sub2",
@@ -173,7 +173,7 @@ const items = [
 
 const AdminSideBar = () => {
     const navigate = useNavigate();
-    const location = useLocation(); // Lấy thông tin đường dẫn hiện tại
+    const location = useLocation();
     const [selectedKey, setSelectedKey] = useState("");
     const [openKeys, setOpenKeys] = useState([]);
     const [openNavMenu, setOpenNavMenu] = useState(true);

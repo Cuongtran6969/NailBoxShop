@@ -17,6 +17,8 @@ import {
 import { useSelector } from "react-redux";
 const { confirm } = Modal;
 function OrderItem({ data }) {
+    const dispatch = useDispatch();
+
     const handleChangeQuantity = (quantity) => {
         dispatch(
             updateQuantity({
@@ -42,7 +44,6 @@ function OrderItem({ data }) {
         );
     };
 
-    const dispatch = useDispatch();
     const parseMoneyFormat = (price) => {
         return new Intl.NumberFormat("vi-VN").format(price);
     };

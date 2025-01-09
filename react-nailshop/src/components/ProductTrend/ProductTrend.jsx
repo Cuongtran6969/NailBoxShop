@@ -4,12 +4,14 @@ import Button from "@components/Button/Button";
 import ProductItem from "@components/ProductItem/ProductItem";
 import { getProductPublic } from "@/apis/productService";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 let sort = "sold:desc";
 let page = 1;
 let size = 5;
 function ProductTrend() {
     const { productBox, trendHeading, trendBottom } = styles;
     const [products, setProducts] = useState(null);
+    const navigate = useNavigate();
     // const targetDate = "2024-12-17T06:00:00";
     useEffect(() => {
         const fetchProductCampaign = async () => {
@@ -40,7 +42,10 @@ function ProductTrend() {
                             })}
                         </Row>
                         <div className={trendBottom}>
-                            <Button content={"View more"} />
+                            <Button
+                                content={"View more"}
+                                onClick={() => navigate("/search")}
+                            />
                         </div>
                     </div>
                 </Container>

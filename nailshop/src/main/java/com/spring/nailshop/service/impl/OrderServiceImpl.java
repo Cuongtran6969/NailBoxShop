@@ -7,27 +7,35 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.spring.nailshop.dto.request.OrderItemRequest;
 import com.spring.nailshop.dto.request.OrderRequest;
-import com.spring.nailshop.dto.response.OrderCreateSuccess;
-import com.spring.nailshop.dto.response.OrderInfoResponse;
-import com.spring.nailshop.dto.response.OrderPaymentInfoResponse;
+import com.spring.nailshop.dto.response.*;
+import com.spring.nailshop.dto.response.admin.Admin_ProductResponse;
 import com.spring.nailshop.entity.*;
 import com.spring.nailshop.exception.AppException;
 import com.spring.nailshop.exception.ErrorCode;
+import com.spring.nailshop.mapper.ProductMapper;
+import com.spring.nailshop.model.TimeRange;
 import com.spring.nailshop.repository.*;
 import com.spring.nailshop.service.CouponService;
 import com.spring.nailshop.service.OrderService;
 import com.spring.nailshop.service.ShippingFeeService;
 import com.spring.nailshop.util.CouponType;
 import com.spring.nailshop.util.OrderStatus;
+import com.spring.nailshop.util.TimeRangeUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -51,6 +59,10 @@ public class OrderServiceImpl implements OrderService {
 
     private final CouponService couponService;
 
+    private final OrderItemRepository orderItemRepository;
+
+    private final ProductMapper productMapper;
+
     @Transactional
     @Override
     public OrderCreateSuccess createOrder(OrderRequest request) {
@@ -72,9 +84,9 @@ public class OrderServiceImpl implements OrderService {
 
             // Kiểm tra stock
             if (product.getStock() < itemRequest.getQuantity()) {
-                    String customMessage = product.getName() + " đã hết hàng, vui lòng chọn sản phẩm khác.";
-                    ErrorCode.PRODUCT_EMPTY.setMessage(customMessage);
-                    throw new AppException(ErrorCode.PRODUCT_EMPTY);
+                String customMessage = product.getName() + " đã hết hàng, vui lòng chọn sản phẩm khác.";
+                ErrorCode.PRODUCT_EMPTY.setMessage(customMessage);
+                throw new AppException(ErrorCode.PRODUCT_EMPTY);
             }
             // Tính giá tiền cho sản phẩm sau dicount
             Double unitPrice = product.getPrice().doubleValue();
@@ -84,7 +96,7 @@ public class OrderServiceImpl implements OrderService {
             }
 
             Design design = null;
-            if(itemRequest.getDesignId() != null) {
+            if (itemRequest.getDesignId() != null) {
                 design = designRepository.findById(itemRequest.getDesignId())
                         .orElseThrow(() -> new AppException(ErrorCode.DESIGN_NOT_EXISTED));
             }
@@ -120,8 +132,8 @@ public class OrderServiceImpl implements OrderService {
         String code = generateUniqueCouponCode();
 
         Integer shipFee = shippingFeeService.calculateShippingFee(
-                2, shop.getDistrict_id(), shop.getWard_code()+"",
-                request.getDistrict_id(), request.getWard_code()+"",
+                2, shop.getDistrict_id(), shop.getWard_code() + "",
+                request.getDistrict_id(), request.getWard_code() + "",
                 shop.getBoxLength(), shop.getBoxWidth(),
                 shop.getBoxHeight(), shop.getBoxWeight(),
                 totalPrice, shop.getToken(), shop.getShop_id());
@@ -150,19 +162,19 @@ public class OrderServiceImpl implements OrderService {
         for (OrderItem orderItem : orderItems) {
             orderItem.setOrder(order); // Gán order cho orderItem
         }
-         orderRepository.save(order);
-         return OrderCreateSuccess.builder()
-                 .id(order.getId())
-                 .total_fee(totalPrice)
-                 .shipping_fee(shipFee)
-                 .code(code)
-                 .build();
+        orderRepository.save(order);
+        return OrderCreateSuccess.builder()
+                .id(order.getId())
+                .total_fee(totalPrice)
+                .shipping_fee(shipFee)
+                .code(code)
+                .build();
     }
 
     @Override
     public OrderInfoResponse getOrderToPaymentInfo(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
-        if(order.getPayment().getId() != 1 || !order.getStatus().equals(OrderStatus.PENDING)) {
+        if (order.getPayment().getId() != 1 || !order.getStatus().equals(OrderStatus.PENDING)) {
             throw new AppException(ErrorCode.ORDER_PAYMENT_INVALID);
         }
         return OrderInfoResponse.builder()
@@ -199,6 +211,99 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
+    @Override
+    public List<Order> getOrdersByPeriod(String period) {
+        TimeRange timeRange = TimeRangeUtil.getTimeRange(period);
+        return orderRepository.findOrdersByPeriod(timeRange.getStartDate(), timeRange.getEndDate());
+    }
+
+    @Override
+    public RevenueResponse getRevenueGrowth(String period) {
+        TimeRange currentRange = TimeRangeUtil.getTimeRange(period);
+        TimeRange previousRange = TimeRangeUtil.getPreviousTimeRange(period);
+
+        BigDecimal currentRevenue = orderRepository.getRevenue(currentRange.getStartDate(), currentRange.getEndDate());
+        BigDecimal previousRevenue = orderRepository.getRevenue(previousRange.getStartDate(), previousRange.getEndDate());
+
+        currentRevenue = currentRevenue != null ? currentRevenue : BigDecimal.ZERO;
+        previousRevenue = previousRevenue != null ? previousRevenue : BigDecimal.ZERO;
+
+
+        List<RevenueData> currentListRevenue = orderRepository.findRevenueBetweenDates(currentRange.getStartDate(), currentRange.getEndDate());
+        List<RevenueData> previousListRevenue = orderRepository.findRevenueBetweenDates(previousRange.getStartDate(), previousRange.getEndDate());
+
+
+        List<Date> allDatesCurrent = getAllDatesInRange(currentRange.getStartDate(), currentRange.getEndDate());
+        List<Date> allDatesPrevious = getAllDatesInRange(previousRange.getStartDate(), previousRange.getEndDate());
+
+
+        currentListRevenue = fillMissingRevenueData(currentListRevenue, allDatesCurrent);
+        previousListRevenue = fillMissingRevenueData(previousListRevenue, allDatesPrevious);
+
+        return RevenueResponse.builder()
+                .currentRevenue(currentRevenue)
+                .previousRevenue(previousRevenue)
+                .listRevenueData(currentListRevenue)
+                .previousListRevenueData(previousListRevenue)
+                .build();
+    }
+
+    private List<Date> getAllDatesInRange(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Date> allDates = new ArrayList<>();
+        LocalDateTime currentDate = startDate;
+        while (!currentDate.isAfter(endDate)) {
+            allDates.add(java.sql.Date.valueOf(currentDate.toLocalDate()));
+            currentDate = currentDate.plusDays(1);
+        }
+        return allDates;
+    }
+
+    // Hàm điền doanh thu cho các ngày không có doanh thu
+    private List<RevenueData> fillMissingRevenueData(List<RevenueData> revenueList, List<Date> allDates) {
+        Map<Date, Double> revenueMap = new HashMap<>();
+        for (RevenueData revenueData : revenueList) {
+            revenueMap.put(revenueData.getCreateAt(), revenueData.getRevenue());
+        }
+
+        List<RevenueData> resultList = new ArrayList<>();
+        for (Date date : allDates) {
+            Double revenue = revenueMap.getOrDefault(date, 0.0); // Nếu không có doanh thu, gán 0
+            resultList.add(new RevenueData(date, revenue));
+        }
+        return resultList;
+    }
+
+    @Override
+    public OrderSummaryResponse getOrderSummary(String period) {
+        log.info("get in"+period);
+        TimeRange currentRange = TimeRangeUtil.getTimeRange(period);
+        TimeRange previousRange = TimeRangeUtil.getPreviousTimeRange(period);
+
+        List<Order> currentOrders = orderRepository.findOrdersByPeriod(currentRange.getStartDate(), currentRange.getEndDate());
+        List<Order> previousOrders = orderRepository.findOrdersByPeriod(previousRange.getStartDate(), previousRange.getEndDate());
+        Long currentNumber = 0L;
+        Long beforeNumber = 0L;
+        for (Order order : currentOrders) {
+            currentNumber += calculateTotalQuantity(order.getOrderItems());
+        }
+        for (Order order : previousOrders) {
+            beforeNumber += calculateTotalQuantity(order.getOrderItems());
+        }
+        return OrderSummaryResponse.builder()
+                .currentOrder(currentNumber)
+                .previousOrder(beforeNumber)
+                .build();
+    }
+
+    public int calculateTotalQuantity(List<OrderItem> orderItems) {
+        if (orderItems == null || orderItems.isEmpty()) {
+            return 0;
+        }
+        return orderItems.stream()
+                .mapToInt(OrderItem::getQuantity)
+                .sum();
+    }
+
     public boolean isCodeUnique(String code) {
         return orderRepository.findByCode(code).isEmpty();
     }
@@ -216,6 +321,27 @@ public class OrderServiceImpl implements OrderService {
         SecureRandom secureRandom = new SecureRandom();
         String couponCode = NanoIdUtils.randomNanoId(secureRandom, alphabet, 6);
         return couponCode;
+    }
+
+
+    @Override
+    public List<Admin_ProductResponse> getTopProductSeller(String period) {
+        TimeRange currentRange = TimeRangeUtil.getTimeRange(period);
+        List<Admin_ProductResponse> list = new ArrayList<>();
+        // Tạo Pageable với số lượng tối đa là 10
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("quantity")));
+        List<Object[]> results = orderItemRepository.findTopSellingProducts(currentRange.getStartDate(), currentRange.getEndDate(), pageable);
+        for (Object[] obj : results) {
+            Long productId = (Long) obj[0];
+            Integer totalQuantity = (Integer) obj[1];
+            Product product = productRepository.findById(productId).orElse(null);  // Lấy sản phẩm từ DB
+            if (product != null) {
+                Admin_ProductResponse response = productMapper.toAdminProductResponse(product);
+                response.setSold(totalQuantity);
+                list.add(response);
+            }
+        }
+        return list;
     }
 
 }

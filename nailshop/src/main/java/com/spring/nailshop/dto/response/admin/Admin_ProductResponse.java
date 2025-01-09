@@ -21,6 +21,7 @@ public class Admin_ProductResponse {
     BigDecimal price;
     Integer stock;
     Integer discount;
+    Integer sold;//
     Boolean isActive;
     String pictures;
     LocalDateTime createAt;

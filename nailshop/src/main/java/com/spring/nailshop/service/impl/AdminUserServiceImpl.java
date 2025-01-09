@@ -2,13 +2,16 @@ package com.spring.nailshop.service.impl;
 
 import com.spring.nailshop.dto.response.PageResponse;
 import com.spring.nailshop.dto.response.UserResponse;
+import com.spring.nailshop.dto.response.UserSummaryResponse;
 import com.spring.nailshop.entity.User;
 import com.spring.nailshop.exception.AppException;
 import com.spring.nailshop.exception.ErrorCode;
 import com.spring.nailshop.mapper.UserMapper;
+import com.spring.nailshop.model.TimeRange;
 import com.spring.nailshop.repository.UserRepository;
 import com.spring.nailshop.repository.specification.UserSpecification;
 import com.spring.nailshop.service.AdminUserService;
+import com.spring.nailshop.util.TimeRangeUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Slf4j
@@ -77,6 +81,21 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Override
     public UserResponse getUserInfo(Long userId) {
         return userMapper.toUserResponse(userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+    }
+
+    @Override
+    public UserSummaryResponse getUserSummary(String period) {
+        TimeRange currentRange = TimeRangeUtil.getTimeRange(period);
+        TimeRange previousRange = TimeRangeUtil.getPreviousTimeRange(period);
+        log.info("currentRange: "+currentRange.getStartDate()+"/"+currentRange.getEndDate());
+        log.info("previousRange: "+previousRange.getStartDate()+"/"+previousRange.getEndDate());
+        Long currentUser = userRepository.findNumberUsersRegister(currentRange.getStartDate(), currentRange.getEndDate());
+        Long previousUser = userRepository.findNumberUsersRegister(previousRange.getStartDate(), previousRange.getEndDate());
+
+        return UserSummaryResponse.builder()
+                .currentTotalUsers(currentUser)
+                .previousTotalUsers(previousUser)
+                .build();
     }
 
     private PageResponse<?> convertToPageResponse(Page<User> users, Pageable pageable) {

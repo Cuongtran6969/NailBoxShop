@@ -100,7 +100,8 @@ function SearchPage() {
                 <Col sm={12}>
                     <div>
                         <p className="fs-4 text-center">
-                            Kết quả tìm kiếm: “{searchData.keyword}”
+                            {searchData.keyword.length > 0 &&
+                                `Kết quả tìm kiếm: “${searchData.keyword}”`}
                         </p>
                     </div>
                 </Col>

@@ -1,5 +1,11 @@
 import { IoCloseCircleOutline } from "react-icons/io5";
 import styles from "./styles.module.scss";
+import {
+    updateQuantity,
+    removeItem,
+    changeListBuy
+} from "@redux/slice/cartSlice";
+import { useDispatch } from "react-redux";
 function CartItem({ data }) {
     const {
         imageBox,
@@ -10,6 +16,16 @@ function CartItem({ data }) {
         removeBox,
         boxItem
     } = styles;
+    const dispatch = useDispatch();
+
+    const handleRemoveItem = () => {
+        dispatch(
+            removeItem({
+                ...data
+            })
+        );
+    };
+
     return (
         <>
             <div className={boxItem}>
@@ -27,7 +43,10 @@ function CartItem({ data }) {
                     </span>
                 </div>
                 <div className={removeBox}>
-                    <IoCloseCircleOutline className="text-danger" />
+                    <IoCloseCircleOutline
+                        className="text-danger"
+                        onClick={() => handleRemoveItem(data)}
+                    />
                 </div>
             </div>
         </>

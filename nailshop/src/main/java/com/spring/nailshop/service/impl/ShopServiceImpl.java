@@ -3,13 +3,17 @@ package com.spring.nailshop.service.impl;
 import com.spring.nailshop.dto.request.ShopBannersRequest;
 import com.spring.nailshop.dto.request.ShopUpdateRequest;
 import com.spring.nailshop.dto.response.ShopResponse;
+import com.spring.nailshop.dto.response.VisitorSummaryResponse;
+import com.spring.nailshop.entity.Order;
 import com.spring.nailshop.entity.Shop;
 import com.spring.nailshop.exception.AppException;
 import com.spring.nailshop.exception.ErrorCode;
 import com.spring.nailshop.mapper.ShopMapper;
+import com.spring.nailshop.model.TimeRange;
 import com.spring.nailshop.repository.ShopRepository;
 import com.spring.nailshop.service.CloudinaryService;
 import com.spring.nailshop.service.ShopService;
+import com.spring.nailshop.util.TimeRangeUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -79,4 +83,5 @@ public class ShopServiceImpl implements ShopService {
         shopRepository.save(shop);
         return banners;
     }
+
 }

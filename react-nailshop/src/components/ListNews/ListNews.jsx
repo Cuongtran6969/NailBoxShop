@@ -4,7 +4,9 @@ import { Container, Row } from "react-bootstrap";
 import Button from "@components/Button/Button";
 import { getPosts } from "@/apis/postService";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 function ListNews() {
+    const navigate = useNavigate();
     const { newsHeading, newsBottom } = styles;
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState({
@@ -40,7 +42,10 @@ function ListNews() {
                         })}
                 </Row>
                 <div className={newsBottom}>
-                    <Button content={"View more"} />
+                    <Button
+                        content={"View more"}
+                        onClick={() => navigate("/blog")}
+                    />
                 </div>
             </div>
         </Container>

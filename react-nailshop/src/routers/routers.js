@@ -12,6 +12,9 @@ import NewsPage from "@pages/NewsPage/NewsPage";
 import NewsDetailPage from "@pages/NewsDetailPage/NewsDetailPage";
 import OrderManage from "@pages/OrderManage/OrderManage";
 import ShopManage from "@pages/ShopManage/ShopManage";
+
+import Dashboard from "@pages/Dashboard/Dashboard";
+
 import SettingShopPage from "@pages/SettingShopPage/SettingShopPage";
 import PostCreatePage from "@pages/PostCreatePage/PostCreatePage";
 import PostEditPage from "@pages/PostEditPage/PostEditPage";
@@ -98,7 +101,12 @@ const routers = [
         layout: AdminLayout,
         roles: [ROLE.ADMIN, ROLE.STAFF]
     },
-    ,
+    {
+        path: "/admin/analytics",
+        component: Dashboard,
+        layout: AdminLayout,
+        roles: [ROLE.ADMIN, ROLE.STAFF]
+    },
     {
         path: "/admin/shop",
         component: ShopManage,

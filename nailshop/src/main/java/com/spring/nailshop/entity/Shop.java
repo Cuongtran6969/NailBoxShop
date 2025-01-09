@@ -53,4 +53,6 @@ public class Shop {
 
     @Column(name = "banners", columnDefinition = "TEXT")
     private String banners;
+
+    private Long visits = 0L;
 }
