@@ -13,12 +13,15 @@ import java.util.List;
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     List<OrderItem> findByOrderId(Long orderId);
 
-    @Query("SELECT oi.product.id, SUM(oi.quantity) " +
-            "FROM OrderItem oi " +
-            "WHERE oi.createAt BETWEEN :startDate AND :endDate " +
-            "GROUP BY oi.product.id " +
-            "ORDER BY SUM(oi.quantity) DESC")
+    @Query(value = "SELECT o.product_id, SUM(o.quantity) AS quantity " +
+            "FROM order_items o " +
+            "WHERE o.create_at BETWEEN :startDate AND :endDate " +
+            "GROUP BY o.product_id " +
+            "ORDER BY quantity DESC " +
+            "LIMIT :limit", nativeQuery = true)
     List<Object[]> findTopSellingProducts(@Param("startDate") LocalDateTime startDate,
-                                          @Param("endDate") LocalDateTime endDate,
-                                          Pageable pageable);
+                                                @Param("endDate") LocalDateTime endDate,
+                                                @Param("limit") int limit);
+
+
 }

@@ -329,11 +329,11 @@ public class OrderServiceImpl implements OrderService {
         TimeRange currentRange = TimeRangeUtil.getTimeRange(period);
         List<Admin_ProductResponse> list = new ArrayList<>();
         // Tạo Pageable với số lượng tối đa là 10
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("quantity")));
-        List<Object[]> results = orderItemRepository.findTopSellingProducts(currentRange.getStartDate(), currentRange.getEndDate(), pageable);
+        int limit = 10;
+        List<Object[]> results = orderItemRepository.findTopSellingProducts(currentRange.getStartDate(), currentRange.getEndDate(), limit);
         for (Object[] obj : results) {
             Long productId = (Long) obj[0];
-            Integer totalQuantity = (Integer) obj[1];
+            Integer totalQuantity = ((Number) obj[1]).intValue();
             Product product = productRepository.findById(productId).orElse(null);  // Lấy sản phẩm từ DB
             if (product != null) {
                 Admin_ProductResponse response = productMapper.toAdminProductResponse(product);

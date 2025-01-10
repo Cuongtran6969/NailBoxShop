@@ -4,19 +4,17 @@ function formatPrice(price) {
     return new Intl.NumberFormat("vi-VN").format(price);
 }
 function calculateGrowthPercentage(currentValue, previousValue) {
-    if (currentValue == 0) {
-        return -100;
+    if (currentValue === 0 && previousValue === 0) {
+        return 0;
     }
 
-    if (previousValue == 0) {
+    if (previousValue === 0) {
         return 100;
     }
 
     const growth = ((currentValue - previousValue) / previousValue) * 100;
 
-    const formattedGrowth = growth.toFixed(2); // Làm tròn đến 2 chữ số thập phân
-    // Thêm dấu "+" nếu giá trị dương
-    return growth;
+    return parseFloat(growth.toFixed(2));
 }
 
 function TotalStatics({ revenue, order, user, time }) {
@@ -28,6 +26,7 @@ function TotalStatics({ revenue, order, user, time }) {
                         <Statistic
                             title="Doanh thu"
                             value={formatPrice(revenue.currentRevenue)}
+                            suffix="₫"
                         />
                         {!time.includes(" - ") && (
                             <Statistic

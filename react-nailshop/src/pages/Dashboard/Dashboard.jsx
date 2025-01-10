@@ -51,7 +51,13 @@ function Dashboard() {
                     />
                 </Col>
                 <Col sm={12}>
-                    <ProductManage onProductSelection={() => {}} />
+                    <div className="mt-5">
+                        <h3>Best Seller</h3>
+                        <ProductManage
+                            onProductSelection={() => {}}
+                            initProduct={data.bestProducts}
+                        />
+                    </div>
                 </Col>
             </Row>
         </div>

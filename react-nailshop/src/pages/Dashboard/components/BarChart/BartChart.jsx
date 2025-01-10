@@ -33,7 +33,7 @@ function BarChart({ value }) {
                     labels: label,
                     datasets: [
                         {
-                            label: "Doanh thu (triệu đồng)",
+                            label: "Doanh thu (vnd đồng)",
                             backgroundColor: [
                                 "#d9e6fe",
                                 "#d9e6fe",

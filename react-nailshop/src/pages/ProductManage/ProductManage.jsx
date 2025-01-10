@@ -27,7 +27,11 @@ const sortOptions = [
     { id: 2, type: "asc", icon: TiArrowSortedUp },
     { id: 3, type: "desc", icon: TiArrowSortedDown }
 ];
-function ProductManage({ onProductSelection = () => {}, initCheckList = [] }) {
+function ProductManage({
+    onProductSelection = () => {},
+    initCheckList = [],
+    initProduct
+}) {
     const navigate = useNavigate();
     const [filters, setFilters] = useState({
         searchName: "",
@@ -45,7 +49,7 @@ function ProductManage({ onProductSelection = () => {}, initCheckList = [] }) {
 
     const [checkedList, setCheckedList] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState(initProduct ?? []);
 
     const handleSortChange = (field) => {
         setFilters((prev) => {
@@ -102,7 +106,9 @@ function ProductManage({ onProductSelection = () => {}, initCheckList = [] }) {
     console.log("loading:" + loading);
 
     useEffect(() => {
-        fetchProducts();
+        if (!initProduct) {
+            fetchProducts();
+        }
     }, [
         filters.searchName,
         filters.sortPrice,
