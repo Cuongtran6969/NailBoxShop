@@ -3,7 +3,7 @@ package com.spring.nailshop.service.impl;
 import com.spring.nailshop.constant.PredefinedRole;
 import com.spring.nailshop.dto.request.EmailRequest;
 import com.spring.nailshop.dto.request.UserCreationRequest;
-import com.spring.nailshop.dto.request.UserUpdateRequest;
+import com.spring.nailshop.dto.request.UserInfoUpdateRequest;
 import com.spring.nailshop.dto.response.UserProfileResponse;
 import com.spring.nailshop.dto.response.UserResponse;
 import com.spring.nailshop.dto.response.UserUpdateResponse;
@@ -128,7 +128,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserUpdateResponse updateUser(UserUpdateRequest request, MultipartFile file) {
+    public UserUpdateResponse updateUser(UserInfoUpdateRequest request, MultipartFile file) {
         SecurityContext contextHolder = SecurityContextHolder.getContext();
         String email = contextHolder.getAuthentication().getName();
         User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));

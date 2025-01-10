@@ -6,14 +6,16 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+
 @Setter
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserInfoUpdateRequest {
+public class UserUpdateRequest {
+    Long userId;
+
     @NotBlank(message = "FIRST_NAME_NOT_BLANK")
     String firstName;
 
@@ -22,4 +24,6 @@ public class UserInfoUpdateRequest {
 
     @PhoneNumber
     String phone;
+
+    Long roleId;
 }

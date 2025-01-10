@@ -22,6 +22,7 @@ import PostManagePage from "@pages/PostManagePage/PostManagePage";
 import ProductCreatePage from "@pages/ProductCreatePage/ProductCreatePage";
 import ProductAdminDetail from "@pages/ProductAdminDetail/ProductAdminDetail";
 import UserManagerPage from "@pages/UserManagerPage/UserManagerPage";
+import UserEditPage from "@pages/UserEditPage/UserEditPage";
 import CampaignPage from "@pages/CampaignPage/CampaignPage";
 import CampaignManage from "@pages/CampaignManage/CampaignManage";
 import CampaignUpdate from "@pages/CampaignUpdate/CampaignUpdate";
@@ -152,6 +153,12 @@ const routers = [
     {
         path: "admin/users",
         component: UserManagerPage,
+        layout: AdminLayout,
+        roles: [ROLE.ADMIN]
+    },
+    {
+        path: "admin/users/edit/:id",
+        component: UserEditPage,
         layout: AdminLayout,
         roles: [ROLE.ADMIN]
     },

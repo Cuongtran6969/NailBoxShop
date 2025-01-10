@@ -1,9 +1,11 @@
 package com.spring.nailshop.service;
 
+import com.spring.nailshop.dto.request.UserUpdateRequest;
 import com.spring.nailshop.dto.response.PageResponse;
 import com.spring.nailshop.dto.response.UserResponse;
 import com.spring.nailshop.dto.response.UserSummaryResponse;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -19,4 +21,6 @@ public interface AdminUserService {
     UserResponse getUserInfo(Long userId);
 
     UserSummaryResponse getUserSummary(String period);
+
+    UserResponse updateUser(UserUpdateRequest request, MultipartFile file);
 }

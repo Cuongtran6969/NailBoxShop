@@ -2,7 +2,7 @@ package com.spring.nailshop.service;
 
 import com.spring.nailshop.dto.request.EmailRequest;
 import com.spring.nailshop.dto.request.UserCreationRequest;
-import com.spring.nailshop.dto.request.UserUpdateRequest;
+import com.spring.nailshop.dto.request.UserInfoUpdateRequest;
 import com.spring.nailshop.dto.response.UserProfileResponse;
 import com.spring.nailshop.dto.response.UserResponse;
 import com.spring.nailshop.dto.response.UserUpdateResponse;
@@ -24,5 +24,5 @@ public interface UserService {
 
     void sendOtpRegister(EmailRequest request) throws MessagingException, UnsupportedEncodingException;
 
-    UserUpdateResponse updateUser(UserUpdateRequest request, MultipartFile file);
+    UserUpdateResponse updateUser(UserInfoUpdateRequest request, MultipartFile file);
 }

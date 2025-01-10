@@ -14,7 +14,11 @@ import {
 const { Search } = Input;
 import { useEffect, useMemo, useState } from "react";
 import { getUsers, banUser, unBanUser } from "@/apis/userService";
+import { MdOutlineEdit } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+
 function UserManagerPage() {
+    const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [keyword, setKeyword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -102,6 +106,18 @@ function UserManagerPage() {
             {
                 title: "Role",
                 dataIndex: "role"
+            },
+            {
+                title: "Setting",
+                dataIndex: "",
+                render: (t, r) => (
+                    <div className="">
+                        <MdOutlineEdit
+                            fontSize={22}
+                            onClick={() => navigate(`edit/${r.id}`)}
+                        />
+                    </div>
+                )
             }
         ],
         [filters]

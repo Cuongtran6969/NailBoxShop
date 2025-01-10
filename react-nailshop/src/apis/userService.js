@@ -30,5 +30,27 @@ const updateInfo = async (formData) => {
     });
     return res.data;
 };
+const getUserById = async (id) => {
+    let urlApi = `admin/users/info/${id}`;
+    const res = await axiosClient.get(urlApi);
+    return res.data;
+};
 
-export { getUsers, banUser, unBanUser, updateInfo, getProfile };
+const updateUser = async (formData) => {
+    let urlApi = "admin/users/info/update";
+    const res = await axiosClient.put(urlApi, formData, {
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    });
+    return res.data;
+};
+export {
+    getUsers,
+    banUser,
+    unBanUser,
+    updateInfo,
+    getProfile,
+    getUserById,
+    updateUser
+};

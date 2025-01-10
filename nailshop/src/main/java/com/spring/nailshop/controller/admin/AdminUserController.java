@@ -1,23 +1,21 @@
 package com.spring.nailshop.controller.admin;
 
-import com.spring.nailshop.dto.request.ProductStatusRequest;
+import com.spring.nailshop.dto.request.UserUpdateRequest;
 import com.spring.nailshop.dto.response.*;
-import com.spring.nailshop.entity.User;
 import com.spring.nailshop.service.AdminUserService;
-import com.spring.nailshop.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -87,4 +85,14 @@ public class AdminUserController {
         return apiResponse;
     }
 
+    @PutMapping("/info/update")
+    public ApiResponse<UserResponse> updateUserInfo(
+            @RequestPart("user") @Valid UserUpdateRequest request,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+        return ApiResponse.<UserResponse>builder()
+                .result(adminUserService.updateUser(request, file))
+                .message("Update User info Successfully")
+                .code(HttpStatus.OK.value())
+                .build();
+    }
 }
