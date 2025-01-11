@@ -1,5 +1,5 @@
 import styles from "../styles.module.scss";
-function OrderItem() {
+function OrderItem({ item }) {
     const {
         orderItemBox,
         orderItemInfo,
@@ -13,28 +13,40 @@ function OrderItem() {
         orderImgBox,
         orderItemPrice
     } = styles;
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat("vi-VN").format(Math.floor(price)) + "₫";
+    };
     return (
         <div className={orderItemBox}>
             <div className={orderImgBox}>
-                <img src="https://res.cloudinary.com/doslvje9p/image/upload/v1734195371/upload/file_debo0p.jpg" />
+                <img src={item.picture} />
             </div>
             <div className={orderItemInfo}>
-                <div className={orderName}>
-                    Combo 2 bộ Nail box Trắng gạo + Cute trendy mắt mèo
-                </div>
+                <div className={orderName}>{item.productName}</div>
                 <div className={orderValue}>
                     <p className={orderType}>
-                        <span>Do</span>
-                        <span className={space}>|</span>
-                        <span>M</span>
+                        <span>{item.designName}</span>
+                        {item.designName ? (
+                            <span className={space}>|</span>
+                        ) : (
+                            ""
+                        )}
+                        <span>Size {item.size}</span>
                     </p>
                     <div className={orderItemPrice}>
-                        <span className={originPrice}>240.000d</span>
-                        <span className={price}>240.000d</span>
+                        <span className={originPrice}>
+                            {formatPrice(item.unitPrice)}
+                        </span>
+                        <span className={price}>
+                            {formatPrice(
+                                item.unitPrice -
+                                    item.unitPrice * 0.01 * item.discount
+                            )}
+                        </span>
                     </div>
                 </div>
 
-                <div className={orderCount}>x3</div>
+                <div className={orderCount}>x{item.quantity}</div>
             </div>
         </div>
     );

@@ -58,21 +58,27 @@ function Login() {
             password: values.password
         })
             .then((res) => {
-                console.log(res);
+                if (res.code == 401) {
+                    openNotificationWithIcon(
+                        "error",
+                        "Đăng nhập không thành công",
+                        "Email hoặc password chưa chính xác"
+                    );
+                } else if (res.code == 200) {
+                    openNotificationWithIcon(
+                        "success",
+                        "Đăng nhập thành công",
+                        "Chào bạn đến với website NailLabox"
+                    );
 
-                openNotificationWithIcon(
-                    "success",
-                    "Đăng nhập thành công",
-                    "Chào bạn đến với website NailLabox"
-                );
-
-                const { userId, accessToken, refreshToken } = res.result;
-                Cookies.set("accessToken", accessToken);
-                Cookies.set("refreshToken", refreshToken);
-                Cookies.set("userId", userId);
-                setIsLoading(false);
-                setIsOpen(false);
-                refresh();
+                    const { userId, accessToken, refreshToken } = res.result;
+                    Cookies.set("accessToken", accessToken);
+                    Cookies.set("refreshToken", refreshToken);
+                    Cookies.set("userId", userId);
+                    setIsLoading(false);
+                    setIsOpen(false);
+                    refresh();
+                }
             })
             .catch((err) => {
                 console.log(err);

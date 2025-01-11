@@ -1,5 +1,6 @@
 package com.spring.nailshop.mapper;
 
+import com.spring.nailshop.dto.response.OrderResponse;
 import com.spring.nailshop.dto.response.admin.Admin_OrderResponse;
 import com.spring.nailshop.entity.Order;
 import com.spring.nailshop.entity.OrderItem;
@@ -18,6 +19,9 @@ public interface OrderMapper {
     @Mapping(target = "quantity", source = "orderItems", qualifiedByName = "calculateTotalQuantity")
     Admin_OrderResponse toAdminOrderResponse(Order order);
 
+    @Mapping(target = "coupon", source = "coupon")
+    @Mapping(target = "payment", source = "payment")
+    OrderResponse toOrderResponse(Order order);
 
     @Named("calculateTotalQuantity")
     default int calculateTotalQuantity(List<OrderItem> orderItems) {

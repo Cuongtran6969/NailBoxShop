@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styles from "./styles.module.scss";
 import classNames from "classnames";
 import SideBar from "@pages/ProfilePage/components/SideBar";
@@ -6,17 +6,22 @@ import UserInfo from "@pages/ProfilePage/components/UserInfo";
 import MyOrder from "@pages/ProfilePage/components/MyOrder";
 import { LuMoveLeft } from "react-icons/lu";
 import { Container, Col, Row } from "react-bootstrap";
-import MyAddress from "./components/MyAddress";
 import { Divider, Drawer } from "antd";
+import { logout } from "@/apis/authService";
+import { AuthContext } from "@contexts/AuthContext";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
+
 function ProfilePage() {
     const [open, setOpen] = useState(false);
     const [placement, setPlacement] = useState("left");
-
+    const navigate = useNavigate();
     const [isNavVisible, setNavVisible] = useState(true);
     const [type, setType] = useState("myInfo");
     const [content, setContent] = useState(null);
     const [width, setWidth] = useState(window.innerWidth);
     const [drawerStatus, setDrawerStatus] = useState(false);
+    const { authenticated, refresh } = useContext(AuthContext);
 
     useEffect(() => {
         function updateWidth() {
@@ -35,6 +40,24 @@ function ProfilePage() {
     const onClose = () => {
         setOpen(false);
     };
+    const handleLogout = async () => {
+        const token = Cookies.get("accessToken");
+        if (!token) {
+            console.log("No token found");
+            navigate("/");
+            return;
+        }
+        try {
+            await logout(token);
+            Cookies.remove("accessToken");
+            Cookies.remove("refreshToken");
+            Cookies.remove("userId");
+            await refresh();
+            navigate("/", { state: { logoutMessage: "Logout thành công" } });
+        } catch (err) {
+            console.log("Logout error: ", err);
+        }
+    };
 
     const handleRenderContent = (value) => {
         switch (value) {
@@ -42,6 +65,9 @@ function ProfilePage() {
                 return <MyOrder />;
             case "myAddress":
                 return <MyAddress />;
+            case "logout":
+                handleLogout();
+                return "";
             default:
                 return <UserInfo />;
         }

@@ -2,6 +2,8 @@ package com.spring.nailshop.repository;
 
 import com.spring.nailshop.dto.response.RevenueData;
 import com.spring.nailshop.entity.Order;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -29,5 +31,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
             "GROUP BY CAST(o.createAt AS DATE) ORDER BY CAST(o.createAt AS DATE)")
     List<RevenueData> findRevenueBetweenDates(@Param("startDate") LocalDateTime startDate,
                                               @Param("endDate") LocalDateTime endDate);
+
+    Page<Order> findOrderByUserId(Long userId, Pageable pageable);
 
 }

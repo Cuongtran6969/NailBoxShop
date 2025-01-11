@@ -29,11 +29,6 @@ const items = [
                 icon: <BsCart4 />
             },
             {
-                key: "myAddress",
-                label: "Địa chỉ",
-                icon: <BsPinMap />
-            },
-            {
                 key: "logout",
                 label: "Thoát",
                 icon: <MdLogout />

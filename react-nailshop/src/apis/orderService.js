@@ -33,3 +33,23 @@ export const saveShipCode = async (id, code) => {
         throw error;
     }
 };
+export const getMyOrders = async (page, size) => {
+    let urlApi = `/api/v1/order/my-order?page=${page}&size=${size}`;
+    const res = await axiosClient.get(urlApi);
+    return res.data;
+};
+export const cancelOrder = async (orderId) => {
+    let urlApi = `/api/v1/order/cancel`;
+    const res = await axiosClient.put(urlApi, {
+        id: orderId
+    });
+    return res.data;
+};
+export const updateStatusOrder = async (orderId, status) => {
+    let urlApi = `/api/v1/order/update-status`;
+    const res = await axiosClient.put(urlApi, {
+        id: orderId,
+        status: status
+    });
+    return res.data;
+};

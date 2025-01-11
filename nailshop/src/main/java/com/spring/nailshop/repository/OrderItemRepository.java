@@ -23,5 +23,6 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
                                                 @Param("endDate") LocalDateTime endDate,
                                                 @Param("limit") int limit);
 
-
+    @Query("SELECT oi FROM OrderItem oi WHERE oi.order.id IN :orderIds")
+    List<OrderItem> findByOrderIds(@Param("orderIds") List<Long> orderIds);
 }

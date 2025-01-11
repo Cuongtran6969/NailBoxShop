@@ -7,11 +7,14 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.spring.nailshop.dto.request.OrderItemRequest;
 import com.spring.nailshop.dto.request.OrderRequest;
+import com.spring.nailshop.dto.request.OrderUpdateRequest;
 import com.spring.nailshop.dto.response.*;
 import com.spring.nailshop.dto.response.admin.Admin_ProductResponse;
 import com.spring.nailshop.entity.*;
 import com.spring.nailshop.exception.AppException;
 import com.spring.nailshop.exception.ErrorCode;
+import com.spring.nailshop.mapper.OrderItemMapper;
+import com.spring.nailshop.mapper.OrderMapper;
 import com.spring.nailshop.mapper.ProductMapper;
 import com.spring.nailshop.model.TimeRange;
 import com.spring.nailshop.repository.*;
@@ -23,6 +26,7 @@ import com.spring.nailshop.util.OrderStatus;
 import com.spring.nailshop.util.TimeRangeUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -62,6 +66,10 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemRepository orderItemRepository;
 
     private final ProductMapper productMapper;
+
+    private final OrderMapper orderMapper;
+
+    private final OrderItemMapper orderItemMapper;
 
     @Transactional
     @Override
@@ -342,6 +350,62 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         return list;
+    }
+
+    @Override
+    public PageResponse<List<OrderResponse>> getMyOrder(Pageable pageable) {
+        SecurityContext contextHolder = SecurityContextHolder.getContext();
+        String email = contextHolder.getAuthentication().getName();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        Page<Order> orders = orderRepository.findOrderByUserId(
+                user.getId(),
+                pageable
+        );
+
+        List<OrderResponse> orderResponses = orders.getContent().stream().map(orderMapper::toOrderResponse).toList();
+        for (OrderResponse od : orderResponses) {
+            List<OrderItemResponse> orderItems = orderItemRepository.findByOrderId(od.getId()).stream().map(this::convertToOrderItemResponse).toList();
+            od.setItems(orderItems);
+        }
+        return PageResponse.<List<OrderResponse>>builder()
+                .size(pageable.getPageSize())
+                .page(pageable.getPageNumber() + 1)
+                .totalPages(orders.getTotalPages())
+                .total(orders.getTotalElements())
+                .items(orderResponses)
+                .build();
+    }
+
+    @Override
+    public void cancelOrder(Long orderId) {
+        SecurityContext contextHolder = SecurityContextHolder.getContext();
+        String email = contextHolder.getAuthentication().getName();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        if(order.getUser().getId().equals(user.getId())) {
+            order.setCancelAt(LocalDateTime.now());
+            order.setStatus(OrderStatus.CANCELLED);
+            orderRepository.save(order);
+        } else {
+            throw new AppException(ErrorCode.NOT_PERMISSION);
+        }
+    }
+    @Override
+    public void updateStatus(OrderUpdateRequest request) {
+            Order order = orderRepository.findById(request.getId()).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+            order.setStatus(request.getStatus());
+            if(request.getStatus() == OrderStatus.PAYMENT_SUCCESS) {
+                order.setPaymentAt(LocalDateTime.now());
+            } else if(request.getStatus() == OrderStatus.CANCELLED) {
+                order.setPaymentAt(LocalDateTime.now());
+            } else if(request.getStatus() == OrderStatus.COMPLETED) {
+                order.setCompleteAt(LocalDateTime.now());
+            }
+            orderRepository.save(order);
+    }
+
+    private OrderItemResponse convertToOrderItemResponse(OrderItem item) {
+        return orderItemMapper.toOrderItemResponse(item);
     }
 
 }

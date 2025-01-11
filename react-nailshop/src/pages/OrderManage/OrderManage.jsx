@@ -32,13 +32,18 @@ import {
     MinusCircleOutlined,
     SyncOutlined
 } from "@ant-design/icons";
+import { IoMdMore } from "react-icons/io";
 
 import {
     getShipStatus,
     createOrderShip,
     cancelShip
 } from "@/apis/shipmentService";
-import { getAllOrders, saveShipCode } from "@/apis/orderService";
+import {
+    getAllOrders,
+    saveShipCode,
+    updateStatusOrder
+} from "@/apis/orderService";
 import { LiaShippingFastSolid } from "react-icons/lia";
 import { getShopInfo } from "@/apis/shopService";
 const sortOptions = [
@@ -67,6 +72,7 @@ const shipStatusInfo = {
     return: { label: "Đã trả", color: "geekblue" },
     cancel: { label: "Đã hủy ship", color: "red" }
 };
+
 function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
     const navigate = useNavigate();
     const { table, shipRequireBtn, shipCancelBtn, detailBtn } = styles;
@@ -123,6 +129,7 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
             key: "COMPLETED"
         }
     ];
+    const itemStatus = [];
     const handleMenuClick = (e) => {
         setFilter((prev) => ({
             ...prev,
@@ -130,10 +137,50 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
             status: e.key
         }));
     };
+
+    const handleUpdateSatus = (e, id) => {
+        console.log({ e, id });
+    };
     const menuProps = {
         items,
         onClick: handleMenuClick
     };
+    const handleChangeStatus = async (id, status) => {
+        await updateStatusOrder(id, status)
+            .then((res) => {
+                openNotificationWithIcon(
+                    "success",
+                    "Trạng thái đơn hàng",
+                    "Đơn hàng đã cập nhật thành công"
+                );
+                fetchApiShopInfo();
+            })
+            .catch((err) => {
+                openNotificationWithIcon(
+                    "error",
+                    "Trạng thái đơn hàng",
+                    "Đơn hàng đã cập nhật thất bại"
+                );
+            });
+    };
+
+    const menuPropsForRow = (id) => ({
+        items: [
+            {
+                label: <a>Giao hàng</a>,
+                key: "PROCESSING"
+            },
+            {
+                label: <a>Hủy</a>,
+                key: "CANCELLED"
+            },
+            {
+                label: <a>Hoàn thành</a>,
+                key: "COMPLETED"
+            }
+        ],
+        onClick: (e) => handleChangeStatus(id, e.key)
+    });
     const [order, setOrder] = useState();
     console.log("initCheckList: " + initCheckList);
 
@@ -435,6 +482,7 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
                             menu={menuProps}
                             trigger={["click"]}
                             placement="bottom"
+                            className="text-black"
                         >
                             <span style={{ color: "red !important" }}>
                                 <Space>
@@ -447,11 +495,28 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
                     </div>
                 ),
                 dataIndex: "status",
-                render: (status) =>
-                    status ? (
-                        <Tag color={statusInfo[status]?.color}>
-                            {statusInfo[status]?.label}
-                        </Tag>
+                render: (t, r) =>
+                    r.status ? (
+                        <>
+                            <Tag color={statusInfo[r.status]?.color}>
+                                {statusInfo[r.status]?.label}
+                            </Tag>
+                            <Dropdown
+                                menu={menuPropsForRow(r.id)}
+                                onClick={(e) => {
+                                    handleUpdateSatus(e, r.id);
+                                }}
+                                trigger={["click"]}
+                                placement="bottom"
+                                className="text-black"
+                            >
+                                <span style={{ color: "red !important" }}>
+                                    <Space>
+                                        <IoMdMore />
+                                    </Space>
+                                </span>
+                            </Dropdown>
+                        </>
                     ) : null
             },
             {
