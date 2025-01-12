@@ -73,6 +73,7 @@ public class AuthenticationController {
                 .message("Register Successfully")
                 .build();
     }
+
     @PostMapping("/send-otp-register")
     public ApiResponse<Void> sendOtpRegister(@RequestBody EmailRequest request)
             throws MessagingException, UnsupportedEncodingException {

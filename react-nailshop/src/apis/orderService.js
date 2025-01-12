@@ -46,7 +46,7 @@ export const cancelOrder = async (orderId) => {
     return res.data;
 };
 export const updateStatusOrder = async (orderId, status) => {
-    let urlApi = `/api/v1/order/update-status`;
+    let urlApi = `/admin/orders/update-status`;
     const res = await axiosClient.put(urlApi, {
         id: orderId,
         status: status

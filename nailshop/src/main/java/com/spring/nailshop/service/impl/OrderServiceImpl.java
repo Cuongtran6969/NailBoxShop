@@ -30,6 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -65,14 +66,13 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderItemRepository orderItemRepository;
 
-    private final ProductMapper productMapper;
-
     private final OrderMapper orderMapper;
 
     private final OrderItemMapper orderItemMapper;
 
     @Transactional
     @Override
+    @PreAuthorize("isAuthenticated() and hasAuthority('USER')")
     public OrderCreateSuccess createOrder(OrderRequest request) {
         SecurityContext contextHolder = SecurityContextHolder.getContext();
         String email = contextHolder.getAuthentication().getName();
@@ -180,6 +180,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAuthority('USER')")
     public OrderInfoResponse getOrderToPaymentInfo(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
         if (order.getPayment().getId() != 1 || !order.getStatus().equals(OrderStatus.PENDING)) {
@@ -194,6 +195,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAuthority('USER')")
     public void savePaymentQr(Long orderId, String image) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
         order.setQr_img(image);
@@ -201,6 +203,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAuthority('USER')")
     public OrderPaymentInfoResponse getOrderPaymentInfo(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
         Shop shop = shopRepository.findAll()
@@ -217,99 +220,6 @@ public class OrderServiceImpl implements OrderService {
                 .status(order.getStatus().name())
                 .createdAt(order.getCreateAt())
                 .build();
-    }
-
-    @Override
-    public List<Order> getOrdersByPeriod(String period) {
-        TimeRange timeRange = TimeRangeUtil.getTimeRange(period);
-        return orderRepository.findOrdersByPeriod(timeRange.getStartDate(), timeRange.getEndDate());
-    }
-
-    @Override
-    public RevenueResponse getRevenueGrowth(String period) {
-        TimeRange currentRange = TimeRangeUtil.getTimeRange(period);
-        TimeRange previousRange = TimeRangeUtil.getPreviousTimeRange(period);
-
-        BigDecimal currentRevenue = orderRepository.getRevenue(currentRange.getStartDate(), currentRange.getEndDate());
-        BigDecimal previousRevenue = orderRepository.getRevenue(previousRange.getStartDate(), previousRange.getEndDate());
-
-        currentRevenue = currentRevenue != null ? currentRevenue : BigDecimal.ZERO;
-        previousRevenue = previousRevenue != null ? previousRevenue : BigDecimal.ZERO;
-
-
-        List<RevenueData> currentListRevenue = orderRepository.findRevenueBetweenDates(currentRange.getStartDate(), currentRange.getEndDate());
-        List<RevenueData> previousListRevenue = orderRepository.findRevenueBetweenDates(previousRange.getStartDate(), previousRange.getEndDate());
-
-
-        List<Date> allDatesCurrent = getAllDatesInRange(currentRange.getStartDate(), currentRange.getEndDate());
-        List<Date> allDatesPrevious = getAllDatesInRange(previousRange.getStartDate(), previousRange.getEndDate());
-
-
-        currentListRevenue = fillMissingRevenueData(currentListRevenue, allDatesCurrent);
-        previousListRevenue = fillMissingRevenueData(previousListRevenue, allDatesPrevious);
-
-        return RevenueResponse.builder()
-                .currentRevenue(currentRevenue)
-                .previousRevenue(previousRevenue)
-                .listRevenueData(currentListRevenue)
-                .previousListRevenueData(previousListRevenue)
-                .build();
-    }
-
-    private List<Date> getAllDatesInRange(LocalDateTime startDate, LocalDateTime endDate) {
-        List<Date> allDates = new ArrayList<>();
-        LocalDateTime currentDate = startDate;
-        while (!currentDate.isAfter(endDate)) {
-            allDates.add(java.sql.Date.valueOf(currentDate.toLocalDate()));
-            currentDate = currentDate.plusDays(1);
-        }
-        return allDates;
-    }
-
-    // Hàm điền doanh thu cho các ngày không có doanh thu
-    private List<RevenueData> fillMissingRevenueData(List<RevenueData> revenueList, List<Date> allDates) {
-        Map<Date, Double> revenueMap = new HashMap<>();
-        for (RevenueData revenueData : revenueList) {
-            revenueMap.put(revenueData.getCreateAt(), revenueData.getRevenue());
-        }
-
-        List<RevenueData> resultList = new ArrayList<>();
-        for (Date date : allDates) {
-            Double revenue = revenueMap.getOrDefault(date, 0.0); // Nếu không có doanh thu, gán 0
-            resultList.add(new RevenueData(date, revenue));
-        }
-        return resultList;
-    }
-
-    @Override
-    public OrderSummaryResponse getOrderSummary(String period) {
-        log.info("get in"+period);
-        TimeRange currentRange = TimeRangeUtil.getTimeRange(period);
-        TimeRange previousRange = TimeRangeUtil.getPreviousTimeRange(period);
-
-        List<Order> currentOrders = orderRepository.findOrdersByPeriod(currentRange.getStartDate(), currentRange.getEndDate());
-        List<Order> previousOrders = orderRepository.findOrdersByPeriod(previousRange.getStartDate(), previousRange.getEndDate());
-        Long currentNumber = 0L;
-        Long beforeNumber = 0L;
-        for (Order order : currentOrders) {
-            currentNumber += calculateTotalQuantity(order.getOrderItems());
-        }
-        for (Order order : previousOrders) {
-            beforeNumber += calculateTotalQuantity(order.getOrderItems());
-        }
-        return OrderSummaryResponse.builder()
-                .currentOrder(currentNumber)
-                .previousOrder(beforeNumber)
-                .build();
-    }
-
-    public int calculateTotalQuantity(List<OrderItem> orderItems) {
-        if (orderItems == null || orderItems.isEmpty()) {
-            return 0;
-        }
-        return orderItems.stream()
-                .mapToInt(OrderItem::getQuantity)
-                .sum();
     }
 
     public boolean isCodeUnique(String code) {
@@ -331,28 +241,8 @@ public class OrderServiceImpl implements OrderService {
         return couponCode;
     }
 
-
     @Override
-    public List<Admin_ProductResponse> getTopProductSeller(String period) {
-        TimeRange currentRange = TimeRangeUtil.getTimeRange(period);
-        List<Admin_ProductResponse> list = new ArrayList<>();
-        // Tạo Pageable với số lượng tối đa là 10
-        int limit = 10;
-        List<Object[]> results = orderItemRepository.findTopSellingProducts(currentRange.getStartDate(), currentRange.getEndDate(), limit);
-        for (Object[] obj : results) {
-            Long productId = (Long) obj[0];
-            Integer totalQuantity = ((Number) obj[1]).intValue();
-            Product product = productRepository.findById(productId).orElse(null);  // Lấy sản phẩm từ DB
-            if (product != null) {
-                Admin_ProductResponse response = productMapper.toAdminProductResponse(product);
-                response.setSold(totalQuantity);
-                list.add(response);
-            }
-        }
-        return list;
-    }
-
-    @Override
+    @PreAuthorize("isAuthenticated() and hasAuthority('USER')")
     public PageResponse<List<OrderResponse>> getMyOrder(Pageable pageable) {
         SecurityContext contextHolder = SecurityContextHolder.getContext();
         String email = contextHolder.getAuthentication().getName();
@@ -377,6 +267,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAuthority('USER')")
     public void cancelOrder(Long orderId) {
         SecurityContext contextHolder = SecurityContextHolder.getContext();
         String email = contextHolder.getAuthentication().getName();
@@ -390,19 +281,7 @@ public class OrderServiceImpl implements OrderService {
             throw new AppException(ErrorCode.NOT_PERMISSION);
         }
     }
-    @Override
-    public void updateStatus(OrderUpdateRequest request) {
-            Order order = orderRepository.findById(request.getId()).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
-            order.setStatus(request.getStatus());
-            if(request.getStatus() == OrderStatus.PAYMENT_SUCCESS) {
-                order.setPaymentAt(LocalDateTime.now());
-            } else if(request.getStatus() == OrderStatus.CANCELLED) {
-                order.setPaymentAt(LocalDateTime.now());
-            } else if(request.getStatus() == OrderStatus.COMPLETED) {
-                order.setCompleteAt(LocalDateTime.now());
-            }
-            orderRepository.save(order);
-    }
+
 
     private OrderItemResponse convertToOrderItemResponse(OrderItem item) {
         return orderItemMapper.toOrderItemResponse(item);

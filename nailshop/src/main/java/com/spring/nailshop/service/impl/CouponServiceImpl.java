@@ -13,6 +13,7 @@ import com.spring.nailshop.service.CouponService;
 import com.spring.nailshop.util.CouponType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -29,6 +30,7 @@ public class CouponServiceImpl implements CouponService {
     private final CouponRepository couponRepository;
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
     public void createCoupon(CouponRequest request) {
         List<Coupon> coupons = generateCoupons(request);
         couponRepository.saveAll(coupons);
@@ -36,6 +38,7 @@ public class CouponServiceImpl implements CouponService {
 
 
     @Override
+    @PreAuthorize("isAuthenticated()")
     public CouponAvailableResponse getCouponByCode(String code) {
         Coupon coupon = couponRepository.findByCodeToUse(code)
                 .orElseThrow(() -> new AppException(ErrorCode.COUPON_CODE_INVALID));

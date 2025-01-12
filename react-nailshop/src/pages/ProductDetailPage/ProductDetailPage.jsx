@@ -630,7 +630,7 @@ const ProductDetailPage = () => {
                                                             Mua ngay
                                                         </Button>
                                                     </div>
-                                                    <div>
+                                                    {/* <div>
                                                         <Space
                                                             style={{
                                                                 marginTop:
@@ -651,7 +651,7 @@ const ProductDetailPage = () => {
                                                                 keo, miếng dán
                                                             </p>
                                                         </Space>
-                                                    </div>
+                                                    </div> */}
                                                 </div>
                                             </Col>
                                         </Row>

@@ -16,6 +16,7 @@ import com.spring.nailshop.service.ShopService;
 import com.spring.nailshop.util.TimeRangeUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,6 +38,7 @@ public class ShopServiceImpl implements ShopService {
     private final CloudinaryService cloudinaryService;
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN')")
     public void updateShop(ShopUpdateRequest request) {
         Shop shop = shopRepository.findAll()
                 .stream()
@@ -56,6 +58,7 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
     public String updateBanner(ShopBannersRequest banner, List<MultipartFile> images) {
         Shop shop = shopRepository.findAll()
                 .stream()

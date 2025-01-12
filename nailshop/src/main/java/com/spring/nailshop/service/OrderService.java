@@ -21,18 +21,8 @@ public interface OrderService {
 
     OrderPaymentInfoResponse getOrderPaymentInfo(Long orderId);
 
-    List<Order> getOrdersByPeriod(String period);
-
-    RevenueResponse getRevenueGrowth(String period);
-
-    OrderSummaryResponse getOrderSummary(String period);
-
-    List<Admin_ProductResponse> getTopProductSeller(String period);
-
     PageResponse<List<OrderResponse>> getMyOrder(Pageable pageable);
 
     void cancelOrder(Long orderId);
-
-    void updateStatus(OrderUpdateRequest request);
 
 }

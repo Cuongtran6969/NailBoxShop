@@ -48,16 +48,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     ResponseEntity<ApiResponse<?>> handlingMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        ErrorCode errorCode = ErrorCode.INVALID_KEY;
         Map<String, String> errors = new HashMap<>();
         for(ObjectError error : e.getBindingResult().getAllErrors()) {
-            try {
-                errorCode = ErrorCode.valueOf(error.getDefaultMessage());
-            } catch (IllegalArgumentException ex) {
-
-            }
             String fieldName = ((FieldError) error).getField();
-            String errorMessage = errorCode.getMessage();
+            String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         }
         ApiResponse<Map<String, String>> apiResponse = new ApiResponse<>();

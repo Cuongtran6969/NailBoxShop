@@ -56,7 +56,7 @@ public class AdminUserController {
        return ApiResponse.<PageResponse<List<UserResponse>>>builder()
                .code(HttpStatus.CREATED.value())
                .result(adminUserService.searchUser(pageable, keyword))
-               .message("Create design for product successfully")
+               .message("Get user list successfully")
                .build();
     }
 

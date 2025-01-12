@@ -48,14 +48,7 @@ public class OrderController {
                 .build();
     }
 
-    @PutMapping("/update-status")
-    public ApiResponse<Void> updateStatus(@RequestBody OrderUpdateRequest request) {
-        orderService.updateStatus(request);
-        return ApiResponse.<Void>builder()
-                .code(HttpStatus.OK.value())
-                .message("Update order status successfully")
-                .build();
-    }
+
 
     @GetMapping("/payment-info/{orderId}")
     public ApiResponse<OrderPaymentInfoResponse> createOrder(@PathVariable(value = "orderId") Long orderId) {

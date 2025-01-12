@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,6 +33,7 @@ public class PostServiceImpl implements PostService {
     private final CloudinaryService cloudinaryService;
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
     public void createPost(PostCreateRequest request, MultipartFile image) {
         String cloudImg = cloudinaryService.uploadImage(image);
         Post post = Post.builder()
@@ -44,6 +46,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
     public void updatePost(PostUpdateRequest request, MultipartFile image) {
         Post post = postRepository.findById(request.getId()).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
         if(image != null && !image.isEmpty()) {
@@ -63,16 +66,13 @@ public class PostServiceImpl implements PostService {
             posts = postRepository.findByTitleContainingIgnoreCase(title, pageable);
         } else  {
             posts = postRepository.findAll(pageable);
-
         }
-
         List<PostResponse> postResponses = posts.getContent().stream()
                 .map(post -> new PostResponse(
                         post.getId(), post.getImage(),
                         post.getTitle(), post.getDescription(),
                         post.getContent(), post.getCreateAt()))
                 .toList();
-
         return PageResponse.<List<PostResponse>>builder()
                 .items(postResponses)
                 .page(pageable.getPageNumber() + 1)
@@ -96,6 +96,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
     public void deletePostById(Integer id) {
         Post posts = postRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
         postRepository.delete(posts);

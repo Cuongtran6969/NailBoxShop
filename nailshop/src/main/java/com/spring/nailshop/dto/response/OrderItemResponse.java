@@ -16,6 +16,8 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderItemResponse {
+    Long productId;
+
     String productName;
 
     String designName;

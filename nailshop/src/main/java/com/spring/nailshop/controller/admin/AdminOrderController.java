@@ -1,6 +1,7 @@
 package com.spring.nailshop.controller.admin;
 
 import com.spring.nailshop.dto.request.OrderShipCodeRequest;
+import com.spring.nailshop.dto.request.OrderUpdateRequest;
 import com.spring.nailshop.dto.response.ApiResponse;
 import com.spring.nailshop.dto.response.PageResponse;
 import com.spring.nailshop.dto.response.admin.Admin_OrderResponse;
@@ -64,6 +65,15 @@ public class AdminOrderController {
         return ApiResponse.<Void>builder()
                 .code(HttpStatus.OK.value())
                 .message("Save ship code successfully")
+                .build();
+    }
+
+    @PutMapping("/update-status")
+    public ApiResponse<Void> updateStatus(@RequestBody OrderUpdateRequest request) {
+        adminOrderService.updateStatus(request);
+        return ApiResponse.<Void>builder()
+                .code(HttpStatus.OK.value())
+                .message("Update order status successfully")
                 .build();
     }
 

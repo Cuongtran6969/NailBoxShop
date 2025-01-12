@@ -1,5 +1,7 @@
+import { useNavigate } from "react-router-dom";
 import styles from "../styles.module.scss";
 function OrderItem({ item }) {
+    const navigate = useNavigate();
     const {
         orderItemBox,
         orderItemInfo,
@@ -19,10 +21,18 @@ function OrderItem({ item }) {
     return (
         <div className={orderItemBox}>
             <div className={orderImgBox}>
-                <img src={item.picture} />
+                <img
+                    src={item.picture}
+                    onClick={() => navigate(`/detail/${item.productId}`)}
+                />
             </div>
             <div className={orderItemInfo}>
-                <div className={orderName}>{item.productName}</div>
+                <div
+                    className={orderName}
+                    onClick={() => navigate(`/detail/${item.productId}`)}
+                >
+                    {item.productName}
+                </div>
                 <div className={orderValue}>
                     <p className={orderType}>
                         <span>{item.designName}</span>

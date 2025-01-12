@@ -10,6 +10,7 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { CiLogout } from "react-icons/ci";
 import { FaPeopleCarryBox } from "react-icons/fa6";
 import { BsShop } from "react-icons/bs";
+import { BsPostcard } from "react-icons/bs";
 import Logo from "@icons/images/nailLaBoxLogo.png";
 import styles from "./styles.module.scss";
 import classNames from "classnames";
@@ -78,21 +79,6 @@ const items = [
                         path: "/admin/campaigns/create"
                     }
                 ]
-            },
-            {
-                key: "sub5",
-                label: "Shipment",
-                icon: <MdOutlineLocalShipping />,
-                children: [
-                    {
-                        key: "7",
-                        label: "Manager ship"
-                    },
-                    {
-                        key: "8",
-                        label: "Create ship"
-                    }
-                ]
             }
         ]
     },
@@ -129,7 +115,7 @@ const items = [
             {
                 key: "sub7",
                 label: "Post",
-                icon: <FaPeopleCarryBox />,
+                icon: <BsPostcard />,
                 children: [
                     {
                         key: "10",

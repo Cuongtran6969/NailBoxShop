@@ -20,15 +20,11 @@ function ProfilePage() {
     const [type, setType] = useState("myInfo");
     const [content, setContent] = useState(null);
     const [width, setWidth] = useState(window.innerWidth);
-    const [drawerStatus, setDrawerStatus] = useState(false);
     const { authenticated, refresh } = useContext(AuthContext);
 
     useEffect(() => {
         function updateWidth() {
             setWidth(window.innerWidth);
-            if (window.innerWidth <= 768) {
-                setDrawerStatus(true);
-            }
         }
         window.addEventListener("resize", updateWidth);
         return () => window.removeEventListener("resize", updateWidth);
@@ -74,9 +70,9 @@ function ProfilePage() {
     };
 
     useEffect(() => {
-        if (drawerStatus) {
-            onClose();
-        }
+        // if (drawerStatus) {
+        //     onClose();
+        // }
         setContent(handleRenderContent(type));
     }, [type]);
 
@@ -102,23 +98,17 @@ function ProfilePage() {
 
     return (
         <Container>
-            {drawerStatus && (
-                <Drawer
-                    placement={placement}
-                    closable={false}
-                    onClose={onClose}
-                    open={open}
-                    key={placement}
-                    width={280}
-                    style={{ background: "#f8f9fa" }}
-                >
-                    <SideBar
-                        toggleNav={onClose}
-                        setType={setType}
-                        type={type}
-                    />
-                </Drawer>
-            )}
+            <Drawer
+                placement={placement}
+                closable={false}
+                onClose={onClose}
+                open={open}
+                key={placement}
+                width={280}
+                style={{ background: "#f8f9fa" }}
+            >
+                <SideBar toggleNav={onClose} setType={setType} type={type} />
+            </Drawer>
 
             <div className={appContainer}>
                 {isNavVisible && (
@@ -142,7 +132,7 @@ function ProfilePage() {
                         [contentBorder]: !isNavVisible
                     })}
                 >
-                    {!isNavVisible && (
+                    {!isNavVisible && width > 768 && (
                         <>
                             <div className={headerMenu} onClick={toggleNav}>
                                 <span className="me-2">

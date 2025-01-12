@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,8 +38,11 @@ public class AdminUserServiceImpl implements AdminUserService {
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
     private final CloudinaryService cloudinaryService;
+
     @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
     public PageResponse<List<UserResponse>> searchUser(Pageable pageable, String keyword) {
+        log.info("get info here");
         Specification<User> spec = UserSpecification.containsKeyword(keyword);
 
         Page<User> userPage = userRepository.findAll(spec, pageable);
@@ -60,6 +64,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
     public void banUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -73,6 +78,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
     public void unBanUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -86,6 +92,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
     public UserResponse getUserInfo(Long userId) {
         return userMapper.toUserResponse(userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
@@ -106,6 +113,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
     public UserResponse updateUser(UserUpdateRequest request, MultipartFile file) {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));

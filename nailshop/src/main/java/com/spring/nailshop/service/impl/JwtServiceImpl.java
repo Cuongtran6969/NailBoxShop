@@ -21,10 +21,13 @@ import java.util.stream.Collectors;
 
 @Service
 public class JwtServiceImpl implements JwtService {
+    @NonFinal
+    @Value("${jwt.secret-key}")
+    private String SECRET_KEY;
 
-    private static final String SECRET_KEY= "803ccb9767523d85485cb85e6310e73b34929e7df240d51fb5c9606a9cd94148";
-
-    private static final String REFRESH_KEY = "04efcb14e6e81940dde1c386ad894d63fc5428a3749185aa70b1e5b82faf8ed7";
+    @NonFinal
+    @Value("${jwt.refresh-key}")
+    private String REFRESH_KEY;
 
     private long expiryTime = 1;
 
@@ -67,7 +70,7 @@ public class JwtServiceImpl implements JwtService {
                 .setClaims(claims)//thong tin bi mat khong public (ma hoa thong tin)
                 .setSubject(userDetails.getUsername())//khong trung lap
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date((System.currentTimeMillis() + 1000*60*60*expiryTime)))
+                .setExpiration(new Date((System.currentTimeMillis() + 1000*60*expiryTime)))
                 .signWith(getKey(TokenType.ACCESS_TOKEN), SignatureAlgorithm.HS256)//dinh nghia thuat toan
                 .compact();
     }

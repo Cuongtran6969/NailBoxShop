@@ -10,6 +10,8 @@ import { UploadOutlined } from "@ant-design/icons";
 import { updateInfo, getProfile } from "@/apis/userService";
 const defaultAvatar =
     "https://res.cloudinary.com/doslvje9p/image/upload/v1735407308/avatar-trang-4_bnhcac.jpg";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 function UserInfo() {
     const [avatarUpdate, setAvatarUpdate] = useState({
         avatar: null,
@@ -40,26 +42,37 @@ function UserInfo() {
         userName,
         saveInfoBtn
     } = styles;
-
-    useEffect(() => {
-        const getUserInfo = async () => {
-            setLoading(true);
-            await getProfile()
-                .then((res) => {
-                    console.log(res);
-                    setUserInfo({
-                        email: res.result.email ?? "",
-                        firstName: res.result.firstName ?? "",
-                        lastName: res.result.lastName ?? "",
-                        phone: res.result.phone ?? "",
-                        avatar: res.result.avatar ?? defaultAvatar
-                    });
-                })
-                .catch((error) => {
-                    console.log(error);
+    const renderSkeletons = () => (
+        <div>
+            <div className="d-flex align-items-center">
+                <Skeleton width={120} height={120} circle={true} />
+                <Skeleton width={90} height={25} className="ms-3" />
+            </div>
+            <Skeleton width="100%" height={40} className="mt-4" />
+            <Skeleton width="100%" height={40} className="mt-5" />
+            <Skeleton width="100%" height={40} className="mt-5" />
+            <Skeleton width="10%" height={40} className="mt-5" />
+        </div>
+    );
+    const getUserInfo = async () => {
+        setLoading(true);
+        await getProfile()
+            .then((res) => {
+                console.log(res);
+                setUserInfo({
+                    email: res.result.email ?? "",
+                    firstName: res.result.firstName ?? "",
+                    lastName: res.result.lastName ?? "",
+                    phone: res.result.phone ?? "",
+                    avatar: res.result.avatar ?? defaultAvatar
                 });
-            setLoading(false);
-        };
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        setLoading(false);
+    };
+    useEffect(() => {
         getUserInfo();
     }, []);
 
@@ -115,7 +128,7 @@ function UserInfo() {
                     openNotificationWithIcon(
                         "success",
                         "Thành công",
-                        res.message
+                        "Cập nhật thông tin thành công"
                     );
                     setAvatarUpdate({
                         avatar: null,
@@ -136,6 +149,7 @@ function UserInfo() {
                     "Cập nhật thông tin thất bại"
                 );
             });
+        getUserInfo();
     };
 
     const handleFileUpload = (event) => {
@@ -146,92 +160,97 @@ function UserInfo() {
         }
     };
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
-
     return (
         <>
             {contextHolder}
-            <div className={container}>
-                <div>
-                    <div className="d-flex align-items-center">
-                        <div>
-                            <div className={avatarBox}>
-                                <img
-                                    src={avatarUpdate.avatar ?? userInfo.avatar}
+            {loading ? (
+                renderSkeletons()
+            ) : (
+                <div className={container}>
+                    <div>
+                        <div className="d-flex align-items-center">
+                            <div>
+                                <div className={avatarBox}>
+                                    <img
+                                        src={
+                                            avatarUpdate.avatar ??
+                                            userInfo.avatar
+                                        }
+                                    />
+                                </div>
+                                <p className={userName}>
+                                    {userInfo.firstName +
+                                        " " +
+                                        userInfo.lastName}
+                                </p>
+                            </div>
+                            <div className={uploadBox}>
+                                <Button
+                                    icon={<UploadOutlined />}
+                                    className={uploadBtn}
+                                >
+                                    Thay đổi ảnh
+                                </Button>
+                                <input
+                                    id="file"
+                                    name="file"
+                                    type="file"
+                                    accept="image/*"
+                                    className={hiddenUpload}
+                                    onChange={handleFileUpload}
                                 />
                             </div>
-                            <p className={userName}>
-                                {userInfo.firstName + " " + userInfo.lastName}
-                            </p>
-                        </div>
-                        <div className={uploadBox}>
-                            <Button
-                                icon={<UploadOutlined />}
-                                className={uploadBtn}
-                            >
-                                Thay đổi ảnh
-                            </Button>
-                            <input
-                                id="file"
-                                name="file"
-                                type="file"
-                                accept="image/*"
-                                className={hiddenUpload}
-                                onChange={handleFileUpload}
-                            />
                         </div>
                     </div>
+                    <Divider />
+                    <form onSubmit={formik.handleSubmit}>
+                        <div className="position-relative mb-5">
+                            <InputCommon
+                                id="email"
+                                formik={formik}
+                                label={"Email"}
+                                isRequire={true}
+                                className="mb-0"
+                                readOnly={true}
+                            />
+                        </div>
+                        <div className="d-flex justify-content-between">
+                            <div className="w-50 me-1">
+                                <InputCommon
+                                    formik={formik}
+                                    id="firstName"
+                                    label={"First Name"}
+                                    isRequire={true}
+                                />
+                            </div>
+                            <div className="w-50 ms-1">
+                                <InputCommon
+                                    formik={formik}
+                                    id="lastName"
+                                    label={"Last Name"}
+                                    isRequire={true}
+                                />
+                            </div>
+                        </div>
+                        <div className="">
+                            <InputCommon
+                                id="phone"
+                                formik={formik}
+                                label={"Phone"}
+                                isRequire={true}
+                                className="mb-0"
+                            />
+                        </div>
+                        <Button
+                            type="primary"
+                            htmlType={"submit"}
+                            className={saveInfoBtn}
+                        >
+                            Lưu
+                        </Button>
+                    </form>
                 </div>
-                <Divider />
-                <form onSubmit={formik.handleSubmit}>
-                    <div className="position-relative mb-5">
-                        <InputCommon
-                            id="email"
-                            formik={formik}
-                            label={"Email"}
-                            isRequire={true}
-                            className="mb-0"
-                            readOnly={true}
-                        />
-                    </div>
-                    <div className="d-flex justify-content-between">
-                        <div className="w-50 me-1">
-                            <InputCommon
-                                formik={formik}
-                                id="firstName"
-                                label={"First Name"}
-                                isRequire={true}
-                            />
-                        </div>
-                        <div className="w-50 ms-1">
-                            <InputCommon
-                                formik={formik}
-                                id="lastName"
-                                label={"Last Name"}
-                                isRequire={true}
-                            />
-                        </div>
-                    </div>
-                    <div className="">
-                        <InputCommon
-                            id="phone"
-                            formik={formik}
-                            label={"Phone"}
-                            isRequire={true}
-                            className="mb-0"
-                        />
-                    </div>
-                    <Button
-                        type="primary"
-                        htmlType={"submit"}
-                        className={saveInfoBtn}
-                    >
-                        Lưu
-                    </Button>
-                </form>
-            </div>
+            )}
         </>
     );
 }

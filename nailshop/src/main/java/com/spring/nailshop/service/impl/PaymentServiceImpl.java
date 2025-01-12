@@ -10,6 +10,7 @@ import com.spring.nailshop.repository.PaymentRepository;
 import com.spring.nailshop.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,12 +38,14 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN')")
     public void createPaymentMethod(PaymentRequest paymentRequest) {
         Payment payment = paymentMapper.toPayment(paymentRequest);
         paymentRepository.save(payment);
     }
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN')")
     public void deleteMethod(Integer id) {
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.PAYMENT_ID_INVALID));

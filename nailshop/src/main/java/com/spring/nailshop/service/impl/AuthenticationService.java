@@ -13,7 +13,6 @@ import com.spring.nailshop.model.RedisToken;
 import com.spring.nailshop.repository.UserRepository;
 import com.spring.nailshop.security.UserSecurity;
 import com.spring.nailshop.service.JwtService;
-import com.spring.nailshop.service.JwtTokenService;
 import com.spring.nailshop.service.RedisTokenService;
 import com.spring.nailshop.util.TokenType;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,8 +39,6 @@ public class AuthenticationService {
 
     JwtService jwtService;
 
-    JwtTokenService jwtTokenService;
-
     RedisTokenService redisTokenService;
 
     private final AuthenticationManager authenticationManager;
@@ -50,12 +47,11 @@ public class AuthenticationService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow(() ->
-                new UsernameNotFoundException("Username or password incorrect"));
+                new AppException(ErrorCode.USER_NOT_EXISTED));
 
         UserSecurity userSecurity = new UserSecurity(user);
         var accessToken = jwtService.generateToken(userSecurity);
         var refreshToken = jwtService.generateRefreshToken(userSecurity);
-
 
         redisTokenService.save(RedisToken.builder()
                         .id(user.getEmail())

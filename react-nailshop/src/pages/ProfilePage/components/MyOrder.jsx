@@ -13,6 +13,7 @@ const statusInfo = {
     COMPLETED: { label: "Hoàn thành", color: "volcano" }
 };
 import { Container, Row } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 function MyOrder() {
     const {
         orderHeader,
@@ -37,6 +38,7 @@ function MyOrder() {
     const [chooseId, setChooseId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [api, contextHolder] = notification.useNotification();
+    const navigate = useNavigate();
     const handlePageChange = (page) => {
         setPagination((prev) => ({ ...prev, page: page }));
     };
@@ -253,15 +255,18 @@ function MyOrder() {
                                         <Button
                                             type="default"
                                             className={buyAgainBtn}
+                                            onClick={() => navigate("/")}
                                         >
                                             Buy Again
                                         </Button>
-                                        <Button
-                                            type="default"
-                                            className={contactBtn}
-                                        >
-                                            Contact Sale
-                                        </Button>
+                                        <a href="https://zalo.me/0383459560">
+                                            <Button
+                                                type="default"
+                                                className={contactBtn}
+                                            >
+                                                Contact Sale
+                                            </Button>
+                                        </a>
                                     </div>
                                 </div>
                             </div>

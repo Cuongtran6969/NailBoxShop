@@ -16,7 +16,6 @@ import java.util.List;
 
 
 public interface UserService {
-    List<UserResponse> getAllUsers();
 
     UserResponse createUser(UserCreationRequest request, String otp);
 
