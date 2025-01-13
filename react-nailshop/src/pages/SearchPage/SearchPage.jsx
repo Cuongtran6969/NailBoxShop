@@ -10,9 +10,17 @@ import { HeaderSearchContext } from "@contexts/HeaderSearchProvider";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import styles from "./styles.module.scss";
+import { useLocation } from "react-router-dom";
 function SearchPage() {
-    const [tags, setTags] = useState([]);
-    const [checkedKeys, setCheckedKeys] = useState([]);
+    const location = useLocation();
+    console.log(location.state?.categoryId);
+    const [tags, setTags] = useState(() => {
+        return location.state?.id
+            ? [{ id: location.state.id, name: location.state.name }]
+            : [];
+    });
+    console.log(tags);
+
     const [loading, setLoading] = useState(true);
     const { keyword, setKeyword } = useContext(HeaderSearchContext);
     const [searchData, setSearchData] = useState({
@@ -23,7 +31,7 @@ function SearchPage() {
     });
     const [data, setData] = useState(null);
     const { cardSketelon } = styles;
-
+    const [categories, setCategories] = useState([]);
     const renderSkeletons = () => (
         <Row className="gx-3 gy-4">
             <Col className="col-12">
@@ -60,6 +68,14 @@ function SearchPage() {
             </Col>
         </Row>
     );
+    const handleChoose = (checkedKeys) => {
+        // Cập nhật tags với cả id và name
+        const updatedTags = checkedKeys.map((id) => {
+            const category = categories.find((cate) => cate.id === id);
+            return { id, name: category?.name || id };
+        });
+        setTags(updatedTags);
+    };
 
     useEffect(() => {
         setSearchData((prevData) => ({
@@ -74,6 +90,13 @@ function SearchPage() {
             let filterQuery = "";
             if (searchData.keyword) {
                 filterQuery += `name~'${searchData.keyword}'`;
+            }
+            if (tags.length > 0) {
+                filterQuery += `& (`;
+                filterQuery += tags
+                    .map((tag) => `categories:'${tag.id}'`)
+                    .join(" or ");
+                filterQuery += `)`;
             }
             console.log(
                 searchData.page,
@@ -100,12 +123,9 @@ function SearchPage() {
         searchData.keyword,
         searchData.page,
         searchData.size,
-        searchData.orderBy
+        searchData.orderBy,
+        tags.length
     ]);
-
-    const handleTag = (value) => {
-        setTags([...value]);
-    };
 
     const forMap = (tag) => (
         <span key={tag}>
@@ -116,7 +136,7 @@ function SearchPage() {
                     handleClose(tag);
                 }}
             >
-                {tag}
+                {tag.name}
             </Tag>
         </span>
     );
@@ -172,6 +192,7 @@ function SearchPage() {
                                 <FilterBox
                                     currentValue={searchData.orderBy}
                                     handleChange={setSearchData}
+                                    updateCategories={setCategories}
                                 />
                             </span>
                         </div>
@@ -179,8 +200,11 @@ function SearchPage() {
                     <Col md={3} className="col-12">
                         <div className="mb-3 mb-sm-0">
                             <CateFilter
-                                handleChoose={handleTag}
-                                checkedKeys={tags}
+                                handleChoose={(checkedKeys) =>
+                                    handleChoose(checkedKeys)
+                                }
+                                checkedKeys={tags.map((tag) => tag.id)}
+                                updateCategories={setCategories}
                             />
                         </div>
                         <div className="d-md-block d-none">

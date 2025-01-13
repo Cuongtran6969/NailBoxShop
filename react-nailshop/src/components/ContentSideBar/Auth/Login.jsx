@@ -64,6 +64,7 @@ function Login() {
                         "Đăng nhập không thành công",
                         "Email hoặc password chưa chính xác"
                     );
+                    console.log("runherrr");
                 } else if (res.code == 200) {
                     openNotificationWithIcon(
                         "success",
@@ -78,11 +79,12 @@ function Login() {
                     setIsLoading(false);
                     setIsOpen(false);
                     refresh();
+                    console.log("runherrr");
                 }
             })
             .catch((err) => {
                 console.log(err);
-
+                console.log("runherrr");
                 openNotificationWithIcon(
                     "error",
                     "Đăng nhập không thành công",

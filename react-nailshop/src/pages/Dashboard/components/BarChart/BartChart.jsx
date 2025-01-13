@@ -1,18 +1,29 @@
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS } from "chart.js/auto";
 import { useEffect, useState } from "react";
-
-function BarChart({ value }) {
+const weekLabel = [
+    "Thứ 2",
+    "Thứ 3",
+    "Thứ 4",
+    "Thứ 5",
+    "Thứ 6",
+    "Thứ 7",
+    "Chủ nhật"
+];
+function BarChart({ value, time }) {
     const [data, setData] = useState([]);
     const [label, setLabel] = useState([]);
     useEffect(() => {
         if (value) {
-            const labels = [];
+            let labels = [];
             const datas = [];
             value.forEach((item) => {
                 labels.push(item.createAt);
                 datas.push(item.revenue);
             });
+            if (time === "Weekly") {
+                labels = weekLabel;
+            }
             setData(datas);
             setLabel(labels);
         }

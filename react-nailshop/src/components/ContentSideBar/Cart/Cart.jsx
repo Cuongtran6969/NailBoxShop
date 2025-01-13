@@ -5,13 +5,21 @@ import Cookies from "js-cookie";
 import CartItem from "./CartItem";
 import { Button, ConfigProvider, Flex } from "antd";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Divider } from "antd";
 import { useNavigate } from "react-router-dom";
 import { SideBarContext } from "@contexts/SideBarProvider";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
+import {
+    removeItem,
+    updateCartItem,
+    removeVoucher
+} from "@redux/slice/cartSlice";
+import { getProductById } from "@/apis/productService";
+import { getVoucherByCode } from "@/apis/voucherService";
 function Cart() {
     const [api, contextHolder] = notification.useNotification();
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const openNotificationWithIcon = (type, mess, desc) => {
         api[type]({
@@ -20,8 +28,34 @@ function Cart() {
         });
     };
     const { container, title, cartContent, cartBody, cartFooter } = styles;
-    const { list, total } = useSelector((state) => state.cart);
+    const { list, total, voucher } = useSelector((state) => state.cart);
     const { setIsOpen, setType } = useContext(SideBarContext);
+
+    const updateCartFromAPI = async () => {
+        if (voucher) {
+            dispatch(removeVoucher());
+        }
+        for (let item of list) {
+            const res = await getProductById(item.productId);
+            const product = res.result;
+            if (product.stock === 0) {
+                dispatch(
+                    removeItem({
+                        ...item
+                    })
+                );
+            } else {
+                dispatch(
+                    updateCartItem({
+                        ...item
+                    })
+                );
+            }
+        }
+    };
+    useEffect(() => {
+        updateCartFromAPI();
+    }, []);
 
     const directToViewCart = () => {
         setIsOpen(false);

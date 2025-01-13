@@ -159,10 +159,24 @@ function MyOrder() {
                                             ).toLocaleString()}
                                         </p>
                                     </div>
-                                    <div>
+                                    <div className="d-flex flex-column">
                                         <span className={orderStatus}>
-                                            {statusInfo[order.status].label}
+                                            {order.status === "PAYMENT_SUCCESS"
+                                                ? statusInfo["PENDING"].label
+                                                : statusInfo[order.status]
+                                                      .label}
                                         </span>
+                                        <p
+                                            style={{
+                                                fontSize: "14px",
+                                                marginTop: "5px",
+                                                color: "#f57224"
+                                            }}
+                                        >
+                                            {order.status ===
+                                                "PAYMENT_SUCCESS" &&
+                                                statusInfo[order.status].label}
+                                        </p>
                                     </div>
                                 </div>
                                 <Divider className="my-1" />

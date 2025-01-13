@@ -5,7 +5,12 @@ import com.spring.nailshop.dto.request.CouponCodeRequest;
 import com.spring.nailshop.dto.request.CouponRequest;
 import com.spring.nailshop.dto.response.CouponAvailableResponse;
 import com.spring.nailshop.dto.response.CouponResponse;
+import com.spring.nailshop.dto.response.OrderItemResponse;
+import com.spring.nailshop.dto.response.PageResponse;
+import com.spring.nailshop.dto.response.admin.Admin_ProductResponse;
 import com.spring.nailshop.entity.Coupon;
+import com.spring.nailshop.entity.OrderItem;
+import com.spring.nailshop.entity.Product;
 import com.spring.nailshop.exception.AppException;
 import com.spring.nailshop.exception.ErrorCode;
 import com.spring.nailshop.repository.CouponRepository;
@@ -13,6 +18,9 @@ import com.spring.nailshop.service.CouponService;
 import com.spring.nailshop.util.CouponType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +28,7 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -30,7 +39,7 @@ public class CouponServiceImpl implements CouponService {
     private final CouponRepository couponRepository;
 
     @Override
-    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public void createCoupon(CouponRequest request) {
         List<Coupon> coupons = generateCoupons(request);
         couponRepository.saveAll(coupons);
@@ -61,18 +70,55 @@ public class CouponServiceImpl implements CouponService {
         if (randomValue >= 20) {
             return null;
         }
-        Coupon coupon = couponRepository.findRandomValidCoupon()
-                .orElseThrow(() -> new AppException(ErrorCode.NO_COUPONS_AVAILABLE));
+        Optional<Coupon> couponOp = couponRepository.findRandomValidCoupon();
+        if(couponOp.isPresent()) {
+            Coupon coupon = couponOp.get();
+            return CouponResponse.builder()
+                    .id(coupon.getId())
+                    .code(coupon.getCode())
+                    .type(coupon.getType().getName())
+                    .startTime(coupon.getStartTime())
+                    .endTime(coupon.getEndTime())
+                    .amount(coupon.getAmount())
+                    .build();
+        }
+        return null;
+    }
+
+    @Override
+    public PageResponse<List<CouponResponse>> getAllCoupon(Specification<Coupon> spec, Pageable pageable) {
+        Page<Coupon> products = couponRepository.findAll(spec, pageable);
+        List<CouponResponse> couponResponse = products.getContent()
+                .stream().map(this::convertToCouponResponse)
+                .toList();
+
+        return PageResponse.<List<CouponResponse>>builder()
+                .page(pageable.getPageNumber() + 1)
+                .totalPages(products.getTotalPages())
+                .size(pageable.getPageSize())
+                .total(products.getTotalElements())
+                .items(couponResponse)
+                .build();
+    }
+
+    @Override
+    public void deleteCoupon(Long couponId) {
+        Coupon coupon = couponRepository.findById(couponId)
+                .orElseThrow(() -> new AppException(ErrorCode.COUPON_CODE_INVALID));
+        couponRepository.delete(coupon);
+    }
+
+    private CouponResponse convertToCouponResponse(Coupon coupon) {
         return CouponResponse.builder()
                 .id(coupon.getId())
                 .code(coupon.getCode())
+                .isUsed(coupon.getIs_used())
                 .type(coupon.getType().getName())
                 .startTime(coupon.getStartTime())
                 .endTime(coupon.getEndTime())
                 .amount(coupon.getAmount())
                 .build();
     }
-
     private List<Coupon> generateCoupons(CouponRequest request) {
         List<Coupon> coupons = new ArrayList<>();
         double amount = request.getAmount();

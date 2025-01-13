@@ -1,6 +1,7 @@
 package com.spring.nailshop.exception;
 
 import com.spring.nailshop.dto.response.ApiResponse;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

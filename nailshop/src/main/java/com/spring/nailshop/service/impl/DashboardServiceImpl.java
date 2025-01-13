@@ -18,7 +18,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final UserService userService;
 
     @Override
-    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public DashboardResponse getDashboardResponse(String period) {
         return DashboardResponse.builder()
                 .revenueResponse(adminOrderService.getRevenueGrowth(period))

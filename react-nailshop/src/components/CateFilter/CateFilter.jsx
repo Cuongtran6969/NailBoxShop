@@ -4,14 +4,18 @@ import { BiSolidCategory } from "react-icons/bi";
 import styles from "./styles.module.scss";
 const { SubMenu } = Menu;
 import { getCategory } from "@/apis/categoryService";
-function CateFilter({ checkedKeys = [] }) {
+function CateFilter({
+    handleChoose = () => {},
+    checkedKeys = [],
+    updateCategories = () => {}
+}) {
     const { cateViewBtn } = styles;
     const [visibleItems, setVisibleItems] = useState(4);
     const [categories, setCategories] = useState([]);
-    const [checkedList, setCheckedList] = useState(checkedKeys);
     useEffect(() => {
         getCategory().then((res) => {
             setCategories(res.result);
+            updateCategories(res.result);
         });
     }, []);
 
@@ -20,9 +24,9 @@ function CateFilter({ checkedKeys = [] }) {
             ? checkedKeys.filter((item) => item !== key)
             : [...checkedKeys, key];
 
-        setCheckedList(newCheckedKeys); // Gửi danh sách mới lên cha
+        handleChoose(newCheckedKeys); // Gửi danh sách mới lên cha
     };
-    //
+
     // Xử lý khi nhấn "Load More"
     const handleLoadMore = () => {
         if (visibleItems >= categories.length) {
@@ -46,9 +50,9 @@ function CateFilter({ checkedKeys = [] }) {
             >
                 {/* Render các mục con với Checkbox */}
                 {categories.slice(0, visibleItems).map((category) => (
-                    <Menu.Item key={category.id}>
+                    <Menu.Item key={category.id} style={{ height: "100%" }}>
                         <Checkbox
-                            checked={checkedList.includes(category.id)}
+                            checked={checkedKeys.includes(category.id)}
                             onChange={() => handleCheckboxChange(category.id)}
                         >
                             {category.name}

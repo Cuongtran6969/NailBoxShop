@@ -29,7 +29,7 @@ import {
     getStatusPaymentQR,
     cancelPaymentQR
 } from "@/apis/paymentService";
-import { removeVoucher } from "@redux/slice/cartSlice";
+import { removeVoucher, removeItem } from "@redux/slice/cartSlice";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 const steps = [
@@ -69,17 +69,7 @@ function CheckoutPage() {
     const [currentWardId, setCurrentWardId] = useState(null);
     const [shipFee, setShipFee] = useState(null);
     const [shipDate, setShipDay] = useState(null);
-    const [userInfo, setUserInfo] = useState({
-        name: "",
-        phone: ""
-    });
     const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({
-        province: "",
-        district: "",
-        ward: "",
-        detail: ""
-    });
     const [shopInfo, setShopInfo] = useState(null);
     const navigate = useNavigate();
     const [paymentMethod, setPaymentMethod] = useState(null);
@@ -116,7 +106,6 @@ function CheckoutPage() {
         const fetchData = async () => {
             try {
                 setLoading(true);
-
                 // Gọi API song song
                 const [
                     provinceRes,
@@ -139,10 +128,6 @@ function CheckoutPage() {
                 setShopInfo(shopInfoRes.result);
                 setPaymentMethod(paymentMethodRes.result);
 
-                // setUserInfo({
-                //     name: userInfoRes.result.name ?? "",
-                //     phone: userInfoRes.result.phone ?? ""
-                // });
                 setInitForm((prev) => ({
                     ...prev,
                     name: userInfoRes.result.name ?? "",
@@ -274,12 +259,6 @@ function CheckoutPage() {
 
     const handleChangeProvince = (value) => {
         const provinceChoose = province.find((item) => item.value === value);
-        //save name in db
-        // let data = provinceChoose?.label ?? "";
-        // setFormData((prev) => {
-        //     return { ...prev, province: data, district: "", ward: "" };
-        // });
-
         setInitForm((prev) => ({
             ...prev,
             provinceId: provinceChoose?.value ?? "",
@@ -289,8 +268,6 @@ function CheckoutPage() {
             districtName: "",
             wardName: ""
         }));
-
-        // setCurrentProvinceId(value);
     };
 
     const handleChangeDistrict = (value) => {
@@ -323,10 +300,6 @@ function CheckoutPage() {
         }));
     };
 
-    const handleChangeDetail = (value) => {
-        // setDetail(value);
-    };
-
     const handleOrderRequest = () => {
         for (const key in initForm) {
             if (!initForm[key]) {
@@ -335,11 +308,21 @@ function CheckoutPage() {
                     "Nhập đầy đủ thông tin",
                     "Yêu cầu nhập đầy đủ thông tin"
                 );
-                return; // Nếu có trường trống, ngừng submit
+                return;
             }
         }
 
         fetchApiOrder(initForm);
+    };
+
+    const handleRemoveBuyList = () => {
+        for (const item of listBuy) {
+            dispatch(
+                removeItem({
+                    ...item
+                })
+            );
+        }
     };
 
     const fetchApiOrder = async (data) => {
@@ -372,6 +355,7 @@ function CheckoutPage() {
         await createOrder(formData)
             .then((res) => {
                 if (res.code == 200) {
+                    handleRemoveBuyList();
                     const orderId = res.result.id;
 
                     if (formData.payment_id == 1) {
@@ -402,12 +386,7 @@ function CheckoutPage() {
                     if (res.message === "Voucher đã hết lượt sử dụng") {
                         dispatch(removeVoucher());
                     }
-                    // let result = "error";
-                    // navigate("/order-result", {
-                    //     state: { result }
-                    // });
                 }
-
                 console.log(res);
             })
             .catch((err) => {
@@ -424,230 +403,249 @@ function CheckoutPage() {
             navigate("/cart");
         }
     };
-    if (loading) {
-        return <div>...</div>;
-    }
-
     return (
         <Container>
             {contextHolder}
-            <Steps
-                current={current}
-                style={{
-                    marginBottom: "40px",
-                    marginTop: "40px"
-                }}
-                onChange={onChangeStep}
-                items={items}
-            />
-            <Row>
-                <Col sm={6}>
-                    <h5>Thông tin thanh toán</h5>
-                    <form>
-                        <Row>
-                            <div className={containerInput}>
-                                <div className={labelInput}>Họ và tên</div>
-                                <div className={boxInput}>
-                                    <Input
-                                        name="name"
-                                        className={inputForm}
-                                        placeholder="Tên người nhận hàng"
-                                        value={initForm.name}
-                                        onChange={(e) =>
-                                            setInitForm((prev) => ({
-                                                ...prev,
-                                                name: e.target.value
-                                            }))
-                                        }
-                                    />
-                                </div>
-                            </div>
-                        </Row>
-                        <Row className="mt-4">
-                            <div className={containerInput}>
-                                <div className={labelInput}>Số điện thoại</div>
-                                <div className={boxInput}>
-                                    <Input
-                                        name="phone"
-                                        className={inputForm}
-                                        placeholder="Số điện thoại người nhận"
-                                        value={initForm.phone}
-                                        onChange={(e) =>
-                                            setInitForm((prev) => ({
-                                                ...prev,
-                                                phone: e.target.value
-                                            }))
-                                        }
-                                    />
-                                </div>
-                            </div>
-                        </Row>
-                        <Row className="mt-4">
-                            <Col sm={12}>
-                                <label
-                                    htmlFor="province"
-                                    className={labelSelect}
-                                >
-                                    Tỉnh/Thành phố
-                                </label>
-                                <Select
-                                    id="province"
-                                    name="province"
-                                    showSearch
-                                    style={{ width: "100%" }}
-                                    size="large"
-                                    placeholder="Chọn tỉnh/thành phố"
-                                    optionFilterProp="label"
-                                    filterSort={(optionA, optionB) =>
-                                        (optionA?.label ?? "")
-                                            .toLowerCase()
-                                            .localeCompare(
-                                                (
-                                                    optionB?.label ?? ""
-                                                ).toLowerCase()
-                                            )
-                                    }
-                                    onChange={handleChangeProvince}
-                                    options={province}
-                                    value={initForm.provinceId}
-                                />
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col sm={6} className="mt-4">
-                                <label
-                                    htmlFor="district"
-                                    className={labelSelect}
-                                >
-                                    Quận/Huyện
-                                </label>
-                                <Select
-                                    id="district"
-                                    name="district"
-                                    showSearch
-                                    style={{ width: "100%" }}
-                                    size="large"
-                                    placeholder="Chọn quận/huyện"
-                                    optionFilterProp="label"
-                                    filterSort={(optionA, optionB) =>
-                                        (optionA?.label ?? "")
-                                            .toLowerCase()
-                                            .localeCompare(
-                                                (
-                                                    optionB?.label ?? ""
-                                                ).toLowerCase()
-                                            )
-                                    }
-                                    onChange={handleChangeDistrict}
-                                    options={district}
-                                    value={initForm.districtId}
-                                    disabled={!initForm.provinceId}
-                                />
-                            </Col>
-                            <Col sm={6} className="mt-4">
-                                <label htmlFor="ward" className={labelSelect}>
-                                    Xã/Phường
-                                </label>
-                                <Select
-                                    id="ward"
-                                    name="ward"
-                                    showSearch
-                                    style={{ width: "100%" }}
-                                    size="large"
-                                    placeholder="Chọn xã/phường"
-                                    optionFilterProp="label"
-                                    filterSort={(optionA, optionB) =>
-                                        (optionA?.label ?? "")
-                                            .toLowerCase()
-                                            .localeCompare(
-                                                (
-                                                    optionB?.label ?? ""
-                                                ).toLowerCase()
-                                            )
-                                    }
-                                    onChange={handleChangeWard}
-                                    options={ward}
-                                    value={initForm.wardId}
-                                    disabled={!initForm.districtId}
-                                />
-                            </Col>
-                        </Row>
-                        <Row className="mt-4">
-                            <Col sm={12}>
-                                <label htmlFor="detail" className={labelSelect}>
-                                    Địa chỉ chi tiết
-                                </label>
-                                <TextArea
-                                    id="detail"
-                                    name="detail"
-                                    size="large"
-                                    rows={4}
-                                    value={initForm.detail}
-                                    onChange={(e) =>
-                                        setInitForm((prev) => ({
-                                            ...prev,
-                                            detail: e.target.value
-                                        }))
-                                    }
-                                    placeholder="Nhập địa chỉ cụ thể (số nhà, đường, thôn/xóm, ...)"
-                                />
-                            </Col>
-                        </Row>
-                        {shipDate && (
-                            <Row className="mt-4">
-                                <Col sm={12}>
-                                    <label
-                                        htmlFor="detail"
-                                        className={labelSelect}
-                                    >
-                                        <FaPeopleCarryBox fontSize={40} />{" "}
-                                        <span className="ms-3">
-                                            Dự kiến nhận hàng sau{" "}
-                                            <strong>{shipDate}</strong> ngày
-                                        </span>
-                                    </label>
-                                </Col>
-                            </Row>
-                        )}
-                        <Row className="mt-4">
-                            <div className="fs-6 mt-1">
-                                Phương thức thanh toán
-                            </div>
-
-                            <Radio.Group
-                                onChange={handleChangePayment}
-                                value={initForm.paymentId}
-                            >
-                                <Space direction="vertical">
-                                    {paymentMethod &&
-                                        paymentMethod.map((item) => {
-                                            return (
-                                                <Radio
-                                                    value={item.id}
-                                                    className="fs-6"
-                                                >
-                                                    <Tooltip
-                                                        placement="right"
-                                                        title={item.description}
-                                                    >
-                                                        <span>{item.name}</span>
-                                                    </Tooltip>
-                                                </Radio>
-                                            );
-                                        })}
-                                </Space>
-                            </Radio.Group>
-                        </Row>
-                    </form>
-                </Col>
-                <Col sm={6}>
-                    <h5 className="mt-sm-0 mt-5">Đơn hàng của bạn</h5>
-                    <PurchaseSummary
-                        shipFee={shipFee}
-                        handleOrderRequest={handleOrderRequest}
+            {loading ? (
+                <></>
+            ) : (
+                <>
+                    <Steps
+                        current={current}
+                        style={{
+                            marginBottom: "40px",
+                            marginTop: "40px"
+                        }}
+                        onChange={onChangeStep}
+                        items={items}
                     />
-                </Col>
-            </Row>
+                    <Row>
+                        <Col sm={6}>
+                            <h5>Thông tin thanh toán</h5>
+                            <form>
+                                <Row>
+                                    <div className={containerInput}>
+                                        <div className={labelInput}>
+                                            Họ và tên
+                                        </div>
+                                        <div className={boxInput}>
+                                            <Input
+                                                name="name"
+                                                className={inputForm}
+                                                placeholder="Tên người nhận hàng"
+                                                value={initForm.name}
+                                                onChange={(e) =>
+                                                    setInitForm((prev) => ({
+                                                        ...prev,
+                                                        name: e.target.value
+                                                    }))
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+                                </Row>
+                                <Row className="mt-4">
+                                    <div className={containerInput}>
+                                        <div className={labelInput}>
+                                            Số điện thoại
+                                        </div>
+                                        <div className={boxInput}>
+                                            <Input
+                                                name="phone"
+                                                className={inputForm}
+                                                placeholder="Số điện thoại người nhận"
+                                                value={initForm.phone}
+                                                onChange={(e) =>
+                                                    setInitForm((prev) => ({
+                                                        ...prev,
+                                                        phone: e.target.value
+                                                    }))
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+                                </Row>
+                                <Row className="mt-4">
+                                    <Col sm={12}>
+                                        <label
+                                            htmlFor="province"
+                                            className={labelSelect}
+                                        >
+                                            Tỉnh/Thành phố
+                                        </label>
+                                        <Select
+                                            id="province"
+                                            name="province"
+                                            showSearch
+                                            style={{ width: "100%" }}
+                                            size="large"
+                                            placeholder="Chọn tỉnh/thành phố"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA, optionB) =>
+                                                (optionA?.label ?? "")
+                                                    .toLowerCase()
+                                                    .localeCompare(
+                                                        (
+                                                            optionB?.label ?? ""
+                                                        ).toLowerCase()
+                                                    )
+                                            }
+                                            onChange={handleChangeProvince}
+                                            options={province}
+                                            value={initForm.provinceId}
+                                        />
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col sm={6} className="mt-4">
+                                        <label
+                                            htmlFor="district"
+                                            className={labelSelect}
+                                        >
+                                            Quận/Huyện
+                                        </label>
+                                        <Select
+                                            id="district"
+                                            name="district"
+                                            showSearch
+                                            style={{ width: "100%" }}
+                                            size="large"
+                                            placeholder="Chọn quận/huyện"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA, optionB) =>
+                                                (optionA?.label ?? "")
+                                                    .toLowerCase()
+                                                    .localeCompare(
+                                                        (
+                                                            optionB?.label ?? ""
+                                                        ).toLowerCase()
+                                                    )
+                                            }
+                                            onChange={handleChangeDistrict}
+                                            options={district}
+                                            value={initForm.districtId}
+                                            disabled={!initForm.provinceId}
+                                        />
+                                    </Col>
+                                    <Col sm={6} className="mt-4">
+                                        <label
+                                            htmlFor="ward"
+                                            className={labelSelect}
+                                        >
+                                            Xã/Phường
+                                        </label>
+                                        <Select
+                                            id="ward"
+                                            name="ward"
+                                            showSearch
+                                            style={{ width: "100%" }}
+                                            size="large"
+                                            placeholder="Chọn xã/phường"
+                                            optionFilterProp="label"
+                                            filterSort={(optionA, optionB) =>
+                                                (optionA?.label ?? "")
+                                                    .toLowerCase()
+                                                    .localeCompare(
+                                                        (
+                                                            optionB?.label ?? ""
+                                                        ).toLowerCase()
+                                                    )
+                                            }
+                                            onChange={handleChangeWard}
+                                            options={ward}
+                                            value={initForm.wardId}
+                                            disabled={!initForm.districtId}
+                                        />
+                                    </Col>
+                                </Row>
+                                <Row className="mt-4">
+                                    <Col sm={12}>
+                                        <label
+                                            htmlFor="detail"
+                                            className={labelSelect}
+                                        >
+                                            Địa chỉ chi tiết
+                                        </label>
+                                        <TextArea
+                                            id="detail"
+                                            name="detail"
+                                            size="large"
+                                            rows={4}
+                                            value={initForm.detail}
+                                            onChange={(e) =>
+                                                setInitForm((prev) => ({
+                                                    ...prev,
+                                                    detail: e.target.value
+                                                }))
+                                            }
+                                            placeholder="Nhập địa chỉ cụ thể (số nhà, đường, thôn/xóm, ...)"
+                                        />
+                                    </Col>
+                                </Row>
+                                {shipDate && (
+                                    <Row className="mt-4">
+                                        <Col sm={12}>
+                                            <label
+                                                htmlFor="detail"
+                                                className={labelSelect}
+                                            >
+                                                <FaPeopleCarryBox
+                                                    fontSize={40}
+                                                />{" "}
+                                                <span className="ms-3">
+                                                    Dự kiến nhận hàng sau{" "}
+                                                    <strong>{shipDate}</strong>{" "}
+                                                    ngày
+                                                </span>
+                                            </label>
+                                        </Col>
+                                    </Row>
+                                )}
+                                <Row className="mt-4">
+                                    <div className="fs-6 mt-1">
+                                        Phương thức thanh toán
+                                    </div>
+
+                                    <Radio.Group
+                                        onChange={handleChangePayment}
+                                        value={initForm.paymentId}
+                                    >
+                                        <Space direction="vertical">
+                                            {paymentMethod &&
+                                                paymentMethod.map((item) => {
+                                                    return (
+                                                        <Radio
+                                                            value={item.id}
+                                                            className="fs-6"
+                                                        >
+                                                            <Tooltip
+                                                                placement="right"
+                                                                title={
+                                                                    item.description
+                                                                }
+                                                            >
+                                                                <span>
+                                                                    {item.name}
+                                                                </span>
+                                                            </Tooltip>
+                                                        </Radio>
+                                                    );
+                                                })}
+                                        </Space>
+                                    </Radio.Group>
+                                </Row>
+                            </form>
+                        </Col>
+                        <Col sm={6}>
+                            <h5 className="mt-sm-0 mt-5">Đơn hàng của bạn</h5>
+                            <PurchaseSummary
+                                shipFee={shipFee}
+                                handleOrderRequest={handleOrderRequest}
+                            />
+                        </Col>
+                    </Row>
+                </>
+            )}
         </Container>
     );
 }

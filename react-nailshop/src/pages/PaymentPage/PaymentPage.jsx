@@ -38,24 +38,16 @@ function PaymentPage() {
     };
 
     useEffect(() => {
-        if (!orderId) {
-            navigate("/");
-        }
-    }, [orderId]);
-
-    useEffect(() => {
         if (orderId) {
             const fetchApiOrderPayment = async () => {
                 setLoading(true);
                 await getOrderPaymentInfo(orderId)
                     .then((res) => {
-                        console.log(res.result);
                         setPaymentInfo(res.result);
                         setPaymentStatus(res.result.status);
                         const createdAt = new Date(res.result.createdAt);
                         createdAt.setMinutes(createdAt.getMinutes() + 5);
                         setTargetDate(createdAt);
-                        console.log("time " + createdAt);
                         const timeoutId = setTimeout(() => {
                             hanleCancelPayment();
                         }, createdAt.getTime() - new Date().getTime());
@@ -67,6 +59,8 @@ function PaymentPage() {
                 setLoading(false);
             };
             fetchApiOrderPayment();
+        } else {
+            navigate("/");
         }
     }, [orderId]);
 

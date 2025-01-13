@@ -38,7 +38,7 @@ public class ShopServiceImpl implements ShopService {
     private final CloudinaryService cloudinaryService;
 
     @Override
-    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public void updateShop(ShopUpdateRequest request) {
         Shop shop = shopRepository.findAll()
                 .stream()
@@ -58,7 +58,7 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public String updateBanner(ShopBannersRequest banner, List<MultipartFile> images) {
         Shop shop = shopRepository.findAll()
                 .stream()

@@ -31,7 +31,7 @@ public class JwtServiceImpl implements JwtService {
 
     private long expiryTime = 1;
 
-    private long expiryDay = 14;
+    private long expiryDay = 7;
 
     @Override
     public String generateToken(UserDetails userDetails) {
@@ -70,7 +70,7 @@ public class JwtServiceImpl implements JwtService {
                 .setClaims(claims)//thong tin bi mat khong public (ma hoa thong tin)
                 .setSubject(userDetails.getUsername())//khong trung lap
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date((System.currentTimeMillis() + 1000*60*expiryTime)))
+                .setExpiration(new Date((System.currentTimeMillis() + 1000*60*60*expiryTime)))
                 .signWith(getKey(TokenType.ACCESS_TOKEN), SignatureAlgorithm.HS256)//dinh nghia thuat toan
                 .compact();
     }
@@ -80,7 +80,7 @@ public class JwtServiceImpl implements JwtService {
                 .setClaims(claims)//thong tin bi mat khong public (ma hoa thong tin)
                 .setSubject(userDetails.getUsername())//khong trung lap
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date((System.currentTimeMillis() + 1000*60*60*24*expiryDay)))
+                .setExpiration(new Date((System.currentTimeMillis() + 1000*60*60*expiryDay)))
                 .signWith(getKey(TokenType.REFRESH_TOKEN), SignatureAlgorithm.HS256)//dinh nghia thuat toan
                 .compact();
     }

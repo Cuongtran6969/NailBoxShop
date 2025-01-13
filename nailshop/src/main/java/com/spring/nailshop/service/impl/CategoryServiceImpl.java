@@ -27,7 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
 
     @Override
-    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public void addCategories(CategoryRequest request) {
         categoryRepository.findByName(request.getName())
                 .ifPresent(category -> { throw new AppException(ErrorCode.CATEGORIES_EXISTED); });

@@ -12,7 +12,8 @@ import NewsPage from "@pages/NewsPage/NewsPage";
 import NewsDetailPage from "@pages/NewsDetailPage/NewsDetailPage";
 import OrderManage from "@pages/OrderManage/OrderManage";
 import ShopManage from "@pages/ShopManage/ShopManage";
-
+import TicketManagePage from "@pages/TicketManagePage/TicketManagePage";
+import TicketCreatePage from "@pages/TicketCreatePage/TicketCreatePage";
 import Dashboard from "@pages/Dashboard/Dashboard";
 
 import SettingShopPage from "@pages/SettingShopPage/SettingShopPage";
@@ -44,7 +45,7 @@ const routers = [
         path: "/profile",
         component: ProfilePage,
         layout: DefaultLayout,
-        roles: [ROLE.USER, ROLE.ADMIN]
+        roles: [ROLE.USER, ROLE.ADMIN, ROLE.STAFF]
     },
     {
         path: "/detail/:id",
@@ -177,6 +178,18 @@ const routers = [
     {
         path: "admin/campaigns",
         component: CampaignManage,
+        layout: AdminLayout,
+        roles: [ROLE.ADMIN, ROLE.STAFF]
+    },
+    {
+        path: "admin/ticket/manage",
+        component: TicketManagePage,
+        layout: AdminLayout,
+        roles: [ROLE.ADMIN, ROLE.STAFF]
+    },
+    {
+        path: "admin/ticket/create",
+        component: TicketCreatePage,
         layout: AdminLayout,
         roles: [ROLE.ADMIN, ROLE.STAFF]
     }

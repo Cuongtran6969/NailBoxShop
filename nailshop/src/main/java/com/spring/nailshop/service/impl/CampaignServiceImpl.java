@@ -38,7 +38,7 @@ public class CampaignServiceImpl implements CampaignService {
     private final AdminProductService adminProductService;
 
     @Override
-    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public CampaignDetailResponse addCampaign(CampaignRequest request) {
         Campaign campaign = campaignMapper.toCampaign(request);
         List<Product> products = adminProductService.getProductsByIds(request.getProductIds());
@@ -48,7 +48,7 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public CampaignDetailResponse updateCampaign(CampaignRequest request, Long id) {
         Campaign campaign = campaignRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.CAMPAIGN_ID_INVALID));
         campaignMapper.updateCampaign(request, campaign);
@@ -59,14 +59,14 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public CampaignDetailResponse getCampaignById(Long id) {
         Campaign campaign = campaignRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.CAMPAIGN_ID_INVALID));
         return campaignMapper.toCampaignResponseDetail(campaign);
     }
 
     @Override
-    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public void updateCampaignStatus(CampaignStatusUpdate request) {
         Campaign campaign = campaignRepository.findById(request.getId()).orElseThrow(() -> new AppException(ErrorCode.CAMPAIGN_ID_INVALID));
         campaign.setStatus(request.getStatus());
@@ -74,14 +74,14 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public void deleteCampaign(Long id) {
         Campaign campaign = campaignRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.CAMPAIGN_ID_INVALID));
         campaignRepository.delete(campaign);
     }
 
     @Override
-    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public PageResponse<List<CampaignResponse>> getAllCampaign(Specification<Campaign> spec, Pageable pageable) {
         Page<Campaign> campaigns = campaignRepository.findAll(spec, pageable);
 

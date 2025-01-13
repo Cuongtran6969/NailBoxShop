@@ -37,6 +37,8 @@ import { useDispatch } from "react-redux";
 import { addToCart, buyNowToCart } from "@redux/slice/cartSlice";
 import { notification } from "antd";
 const ProductDetailPage = () => {
+    const [tags, setTags] = useState([]);
+    const [categories, setCategories] = useState([]);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [api, contextHolder] = notification.useNotification();
@@ -87,6 +89,16 @@ const ProductDetailPage = () => {
         price: "",
         discount: ""
     });
+
+    const handleChoose = (checkedKeys) => {
+        // Cập nhật tags với cả id và name
+        checkedKeys.map((id) => {
+            const category = categories.find((cate) => cate.id === id);
+            navigate(`/search`, {
+                state: { id, name: category?.name || id }
+            });
+        });
+    };
     const renderSkeletons = () => (
         <Row className="gx-3 gy-2">
             <Col className="col-12">
@@ -679,7 +691,12 @@ const ProductDetailPage = () => {
                                 </Row>
                             </Col>
                             <Col sm={3}>
-                                <CateFilter />
+                                <CateFilter
+                                    handleChoose={(checkedKeys) =>
+                                        handleChoose(checkedKeys)
+                                    }
+                                    updateCategories={setCategories}
+                                />
                                 <>
                                     <ProductSuggest />
                                 </>

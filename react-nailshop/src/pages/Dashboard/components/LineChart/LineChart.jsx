@@ -1,13 +1,21 @@
 import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
-
-function LineChart({ current, previous }) {
+const weekLabel = [
+    "Thứ 2",
+    "Thứ 3",
+    "Thứ 4",
+    "Thứ 5",
+    "Thứ 6",
+    "Thứ 7",
+    "Chủ nhật"
+];
+function LineChart({ current, previous, time }) {
     const [previousData, setPreviousData] = useState([]);
     const [currentData, setCurrentData] = useState([]);
     const [label, setLabel] = useState([]);
     useEffect(() => {
         if (current && previous) {
-            const labels = [];
+            let labels = [];
             const datas_one = [];
             const datas_two = [];
 
@@ -15,6 +23,9 @@ function LineChart({ current, previous }) {
                 labels.push(item.createAt);
                 datas_one.push(item.revenue);
             });
+            if (time === "Weekly") {
+                labels = weekLabel;
+            }
             previous.forEach((item) => {
                 datas_two.push(item.revenue);
             });

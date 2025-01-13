@@ -105,7 +105,8 @@ function UserManagerPage() {
             },
             {
                 title: "Role",
-                dataIndex: "role"
+                dataIndex: "role",
+                render: (t, r) => r.role.name
             },
             {
                 title: "Setting",

@@ -42,10 +42,14 @@ function Dashboard() {
             />
             <Row className="mt-5">
                 <Col sm={6}>
-                    <BarChart value={data.revenueResponse.listRevenueData} />
+                    <BarChart
+                        time={time}
+                        value={data.revenueResponse.listRevenueData}
+                    />
                 </Col>
                 <Col sm={6}>
                     <LineChart
+                        time={time}
                         current={data.revenueResponse.listRevenueData}
                         previous={data.revenueResponse.previousListRevenueData}
                     />

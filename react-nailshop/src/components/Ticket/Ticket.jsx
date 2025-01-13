@@ -81,13 +81,16 @@ function Ticket() {
 
             try {
                 const res = await getRandomTicket();
-                const newTicket = {
-                    date: res.result.endTime,
-                    code: res.result.code,
-                    amount: res.result.amount
-                };
-                setTicket(newTicket);
-                storeTicket(newTicket); // Lưu ticket mới vào localStorage
+                if (res.result) {
+                    const newTicket = {
+                        date: res.result.endTime,
+                        code: res.result.code,
+                        amount: res.result.amount
+                    };
+                    setTicket(newTicket);
+                    storeTicket(newTicket);
+                }
+                // Lưu ticket mới vào localStorage
             } catch (err) {
                 console.log(err);
             }

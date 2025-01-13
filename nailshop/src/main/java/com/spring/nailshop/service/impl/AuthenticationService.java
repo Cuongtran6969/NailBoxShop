@@ -69,7 +69,7 @@ public class AuthenticationService {
     public TokenResponse refresh(RefreshTokenRequest request) {
         String refreshToken = request.getToken();
         if(StringUtils.isBlank(refreshToken)) {
-            throw new AppException(ErrorCode.INVALID_TOKEN);
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
         final String userName = jwtService.extractUsername(refreshToken, TokenType.REFRESH_TOKEN);
         User user = userRepository.findByEmail(userName)

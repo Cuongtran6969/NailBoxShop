@@ -16,7 +16,7 @@ public enum ErrorCode {
     INVALID_PASSWORD(400, "Password must be at least 6 characters", HttpStatus.BAD_REQUEST),
     INVALID_KEY(1001, "Uncategorized error", HttpStatus.BAD_REQUEST),
     INVALID_OTP(400, "OTP is invalid or expired", HttpStatus.BAD_REQUEST),
-    INVALID_TOKEN(400, "OTP is invalid or expired", HttpStatus.BAD_REQUEST),
+    INVALID_TOKEN(400, "Token invalid or expired", HttpStatus.BAD_REQUEST),
     UNAUTHENTICATED(401, "You need to log in to perform this action.", HttpStatus.UNAUTHORIZED),
     EXPIRED_TOKEN(401, "EXPIRED_TOKEN", HttpStatus.UNAUTHORIZED),
     CATEGORIES_EXISTED(400, "Category existed", HttpStatus.BAD_REQUEST),

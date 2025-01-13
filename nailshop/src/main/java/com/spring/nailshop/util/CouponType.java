@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public enum CouponType {
     FREE_SHIP("Miễn phí vận chuyển"),
-    Discount("Giảm giá");
+    DISCOUNT("Giảm giá");
 
     private String name;
 

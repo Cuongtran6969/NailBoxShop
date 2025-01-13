@@ -33,7 +33,7 @@ public class PostServiceImpl implements PostService {
     private final CloudinaryService cloudinaryService;
 
     @Override
-    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public void createPost(PostCreateRequest request, MultipartFile image) {
         String cloudImg = cloudinaryService.uploadImage(image);
         Post post = Post.builder()
@@ -46,7 +46,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public void updatePost(PostUpdateRequest request, MultipartFile image) {
         Post post = postRepository.findById(request.getId()).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
         if(image != null && !image.isEmpty()) {
@@ -96,7 +96,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public void deletePostById(Integer id) {
         Post posts = postRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
         postRepository.delete(posts);

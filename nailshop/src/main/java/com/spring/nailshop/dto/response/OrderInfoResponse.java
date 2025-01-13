@@ -14,4 +14,6 @@ public class OrderInfoResponse {
   Integer totalPrice;
   String orderCode;
   String status;
+  Integer shipFee;
+  Boolean isFreeShip;
 }

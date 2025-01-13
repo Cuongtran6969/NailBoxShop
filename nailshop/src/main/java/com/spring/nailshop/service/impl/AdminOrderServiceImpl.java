@@ -51,7 +51,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     private final ProductMapper productMapper;
 
     @Override
-    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public PageResponse<List<Admin_OrderResponse>> getAllOrder(Specification<Order> spec, Pageable pageable) {
         Page<Order> orders = orderRepository.findAll(spec, pageable);
 
@@ -72,7 +72,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     }
 
     @Override
-    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public void saveOrderShipCode(Long id, OrderShipCodeRequest request) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
         order.setShip_code(request.getCode());
@@ -85,7 +85,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     }
 
     @Override
-    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public RevenueResponse getRevenueGrowth(String period) {
         TimeRange currentRange = TimeRangeUtil.getTimeRange(period);
         TimeRange previousRange = TimeRangeUtil.getPreviousTimeRange(period);
@@ -142,7 +142,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     }
 
     @Override
-    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public OrderSummaryResponse getOrderSummary(String period) {
         log.info("get in"+period);
         TimeRange currentRange = TimeRangeUtil.getTimeRange(period);
@@ -174,7 +174,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     }
 
     @Override
-    @PreAuthorize("isAuthenticated() and hasAuthority('ADMIN, STAFF')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public List<Admin_ProductResponse> getTopProductSeller(String period) {
         TimeRange currentRange = TimeRangeUtil.getTimeRange(period);
         List<Admin_ProductResponse> list = new ArrayList<>();

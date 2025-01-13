@@ -6,6 +6,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [authenticated, setAuthenticated] = useState(false);
+    const [user, setUser] = useState(null);
     const refresh = async () => {
         const token = Cookies.get("accessToken");
 
@@ -26,7 +27,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ authenticated, refresh }}>
+        <AuthContext.Provider value={{ authenticated, refresh, user, setUser }}>
             {children}
         </AuthContext.Provider>
     );

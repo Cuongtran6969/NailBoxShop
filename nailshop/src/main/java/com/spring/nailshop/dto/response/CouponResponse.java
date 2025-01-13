@@ -16,6 +16,7 @@ public class CouponResponse {
     String code;
     String type;
     Double amount;
+    Boolean isUsed;
     LocalDateTime startTime;
     LocalDateTime endTime;
 }

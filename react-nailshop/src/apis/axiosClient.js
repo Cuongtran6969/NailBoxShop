@@ -10,12 +10,12 @@ const instance = axios.create({
 const refreshToken = async () => {
     try {
         const response = await instance.post("/auth/refresh", {
-            token: Cookies.get("accessToken")
+            token: Cookies.get("refreshToken")
         });
         if (response.status === 200) {
-            const refreshToken = response.data.result.token;
-            Cookies.set("accessToken", refreshToken);
-            return refreshToken;
+            const accessToken = response.data.result.accessToken;
+            Cookies.set("accessToken", accessToken);
+            return accessToken;
         } else {
             throw new Error("Failed to refresh token");
         }
@@ -46,12 +46,7 @@ instance.interceptors.response.use(
     },
     async (error) => {
         const originalRequest = error.config;
-        if (
-            error.response &&
-            error.response.status === 401 &&
-            error.response.data.message === "EXPIRED_TOKEN" &&
-            !originalRequest._retry
-        ) {
+        if (error.response.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
             if (!refreshingFunc) {
                 refreshingFunc = refreshToken();
@@ -65,6 +60,8 @@ instance.interceptors.response.use(
             } catch (refreshError) {
                 refreshingFunc = undefined;
                 Cookies.remove("accessToken");
+                Cookies.remove("refreshToken");
+                Cookies.remove("userId");
                 window.location = `/`;
                 return Promise.reject(refreshError);
             }

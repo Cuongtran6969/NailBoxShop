@@ -31,7 +31,9 @@ export const getStatusPaymentQR = async (orderId) => {
 
 export const cancelPaymentQR = async (orderId) => {
     try {
-        const response = await axiosClient.put(`/api/v1/paymentQR/${orderId}`);
+        const response = await axiosClient.put(
+            `/api/v1/paymentQR/cancel/${orderId}`
+        );
         return response.data;
     } catch (error) {
         throw error;

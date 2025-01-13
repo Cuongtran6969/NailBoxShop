@@ -53,13 +53,13 @@ public class PaymentController {
         ObjectNode response = objectMapper.createObjectNode();
         try {
             OrderInfoResponse order = orderService.getOrderToPaymentInfo(request.getOrderId());
-            final int price = order.getTotalPrice();
-//            long currentTime = System.currentTimeMillis() / 1000;
-//            int expiredAt = (int) (currentTime + (paymentMinus * 60));
+            int price = order.getTotalPrice();
+            if(!order.getIsFreeShip()) {
+                price += order.getShipFee();
+            }
             PaymentData paymentData = PaymentData.builder().orderCode(order.getOrderId())
                     .cancelUrl("")
                     .returnUrl("")
-//                    .expiredAt(expiredAt)
                     .description(order.getOrderCode())
                     .amount(price).build();
             String qrImagePath = getQRImage(payOS.createPaymentLink(paymentData).getQrCode());
@@ -100,7 +100,9 @@ public class PaymentController {
 
         try {
             PaymentLinkData order = payOS.getPaymentLinkInformation(orderId);
-
+            if(order.getStatus().equals("PAID")) {
+              orderService.paymentSuccess(orderId);
+            }
             response.set("data", objectMapper.valueToTree(order));
             response.put("error", 0);
             response.put("message", "ok");
@@ -114,12 +116,13 @@ public class PaymentController {
 
     }
 
-    @PutMapping(path = "/paymentQR/{orderId}")
-    public ObjectNode cancelOrder(@PathVariable("orderId") int orderId) {
+    @PutMapping(path = "/paymentQR/cancel/{orderId}")
+    public ObjectNode cancelOrder(@PathVariable("orderId") long orderId) {
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode response = objectMapper.createObjectNode();
         try {
             PaymentLinkData order = payOS.cancelPaymentLink(orderId, null);
+            orderService.cancelOrder(orderId);
             response.set("data", objectMapper.valueToTree(order));
             response.put("error", 0);
             response.put("message", "ok");

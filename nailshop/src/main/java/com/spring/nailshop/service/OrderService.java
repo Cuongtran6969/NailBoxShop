@@ -25,4 +25,5 @@ public interface OrderService {
 
     void cancelOrder(Long orderId);
 
+    void paymentSuccess(Long orderId);
 }

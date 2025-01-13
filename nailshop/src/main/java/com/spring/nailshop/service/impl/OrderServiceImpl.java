@@ -186,10 +186,16 @@ public class OrderServiceImpl implements OrderService {
         if (order.getPayment().getId() != 1 || !order.getStatus().equals(OrderStatus.PENDING)) {
             throw new AppException(ErrorCode.ORDER_PAYMENT_INVALID);
         }
+        boolean isShipFree = false;
+        if(order.getCoupon() != null) {
+            isShipFree = order.getCoupon().getType().equals(CouponType.FREE_SHIP);
+        }
         return OrderInfoResponse.builder()
                 .orderId(order.getId())
                 .totalPrice((int) Math.round(order.getTotalPrice()))
                 .orderCode(order.getCode())
+                .shipFee((int) Math.round(order.getShipFee()))
+                .isFreeShip(isShipFree)
                 .status(order.getStatus().name())
                 .build();
     }
@@ -276,6 +282,22 @@ public class OrderServiceImpl implements OrderService {
         if(order.getUser().getId().equals(user.getId())) {
             order.setCancelAt(LocalDateTime.now());
             order.setStatus(OrderStatus.CANCELLED);
+            orderRepository.save(order);
+        } else {
+            throw new AppException(ErrorCode.NOT_PERMISSION);
+        }
+    }
+
+    @Override
+    @PreAuthorize("isAuthenticated() and hasAuthority('USER')")
+    public void paymentSuccess(Long orderId) {
+        SecurityContext contextHolder = SecurityContextHolder.getContext();
+        String email = contextHolder.getAuthentication().getName();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
+        if(order.getUser().getId().equals(user.getId())) {
+            order.setPaymentAt(LocalDateTime.now());
+            order.setStatus(OrderStatus.PAYMENT_SUCCESS);
             orderRepository.save(order);
         } else {
             throw new AppException(ErrorCode.NOT_PERMISSION);

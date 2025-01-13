@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button, message, Steps, theme } from "antd";
 import PaymentResult from "@cartPages/PaymentResult/PaymentResult";
 import OrderResult from "@cartPages/OrderResult/OrderResult";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { GiShoppingCart } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 const steps = [
@@ -37,6 +37,7 @@ const steps = [
 ];
 function CartPage() {
     const { token } = theme.useToken();
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [current, setCurrent] = useState(0);
     const { list, listBuy, totalCheckout } = useSelector((state) => state.cart);
@@ -44,11 +45,12 @@ function CartPage() {
         key: item.title,
         title: item.title
     }));
-const onChangeStep = (value) => {
-    if (value == 1 && listBuy.length > 0) {
-        navigate("/checkout");
-    }
-};
+    const onChangeStep = (value) => {
+        if (value == 1 && listBuy.length > 0) {
+            navigate("/checkout");
+        }
+    };
+
     return (
         <>
             <Container

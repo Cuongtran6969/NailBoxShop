@@ -1,14 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit";
+// Hàm helper: Lấy dữ liệu từ localStorage
+const loadFromLocalStorage = (key, defaultValue) => {
+    const savedData = localStorage.getItem(key);
+    return savedData ? JSON.parse(savedData) : defaultValue;
+};
+
+// Hàm helper: Lưu dữ liệu vào localStorage
+const saveToLocalStorage = (key, value) => {
+    localStorage.setItem(key, JSON.stringify(value));
+};
+
+// Khởi tạo trạng thái từ localStorage
+const initialState = loadFromLocalStorage("cart", {
+    list: [],
+    total: 0,
+    listBuy: [],
+    totalCheckout: 0,
+    totalAfterVoucher: 0,
+    voucher: null
+});
+
 const cartSlice = createSlice({
     name: "cart",
-    initialState: {
-        list: [],
-        total: 0,
-        listBuy: [],
-        totalCheckout: 0,
-        totalAfterVoucher: 0,
-        voucher: null
-    },
+    initialState,
     reducers: {
         addToCart(state, action) {
             const check = state.list.findIndex(
@@ -27,6 +41,7 @@ const cartSlice = createSlice({
                     product.price - product.price * 0.01 * product.discount;
                 return sum + price * product.quantity;
             }, 0);
+            saveToLocalStorage("cart", state);
         },
         updateQuantity(state, action) {
             const check = state.list.findIndex(
@@ -68,6 +83,50 @@ const cartSlice = createSlice({
                     state.totalAfterVoucher = state.totalCheckout;
                 }
             }
+            saveToLocalStorage("cart", state);
+        },
+        updateCartItem(state, action) {
+            const check = state.list.findIndex(
+                (order) =>
+                    order.productId === action.payload.productId &&
+                    order.size == action.payload.size &&
+                    order.designId == action.payload.designId
+            );
+            if (check !== -1) {
+                state.list[check].price = action.payload.price;
+                state.list[check].discount = action.payload.discount;
+            }
+
+            state.total = state.list.reduce((sum, product) => {
+                let price =
+                    product.price - product.price * 0.01 * product.discount;
+                return sum + price * product.quantity;
+            }, 0);
+
+            //buy list
+            const checkBuy = state.listBuy.findIndex(
+                (order) =>
+                    order.productId === action.payload.productId &&
+                    order.size == action.payload.size &&
+                    order.designId == action.payload.designId
+            );
+            if (checkBuy !== -1) {
+                state.listBuy[checkBuy].quantity = action.payload.quantity;
+                state.listBuy[checkBuy].discount = action.payload.discount;
+                state.totalCheckout = state.listBuy.reduce((sum, product) => {
+                    let price =
+                        product.price - product.price * 0.01 * product.discount;
+                    return sum + price * product.quantity;
+                }, 0);
+                if (state.voucher) {
+                    state.totalAfterVoucher =
+                        state.totalCheckout -
+                        0.01 * state.voucher.amount * state.totalCheckout;
+                } else {
+                    state.totalAfterVoucher = state.totalCheckout;
+                }
+            }
+            saveToLocalStorage("cart", state);
         },
         removeItem(state, action) {
             const { productId, size, designId } = action.payload;
@@ -110,6 +169,7 @@ const cartSlice = createSlice({
                     state.totalAfterVoucher = state.totalCheckout;
                 }
             }
+            saveToLocalStorage("cart", state);
         },
         changeListBuy(state, action) {
             //handle click checkbox choose buy
@@ -141,6 +201,7 @@ const cartSlice = createSlice({
             } else {
                 state.totalAfterVoucher = state.totalCheckout;
             }
+            saveToLocalStorage("cart", state);
         },
         resetBuyOrder(state, action) {
             if (state.listBuy.length < state.list.length) {
@@ -158,6 +219,7 @@ const cartSlice = createSlice({
                 state.totalCheckout = 0;
                 state.totalAfterVoucher = 0;
             }
+            saveToLocalStorage("cart", state);
         },
         removeOrderCart(state, action) {
             //remove cart order checkbox choose
@@ -180,6 +242,7 @@ const cartSlice = createSlice({
                     product.price - product.price * 0.01 * product.discount;
                 return sum + price * product.quantity;
             }, 0);
+            saveToLocalStorage("cart", state);
         },
         buyNowToCart(state, action) {
             //clic buy now so have a product buy
@@ -197,15 +260,18 @@ const cartSlice = createSlice({
             } else {
                 state.totalAfterVoucher = state.totalCheckout;
             }
+            saveToLocalStorage("cart", state);
         },
         applyVoucher(state, action) {
             state.voucher = action.payload;
             state.totalAfterVoucher =
                 state.totalCheckout * (1 - state.voucher.amount / 100);
+            saveToLocalStorage("cart", state);
         },
         removeVoucher(state) {
             state.voucher = null;
             state.totalAfterVoucher = state.totalCheckout;
+            saveToLocalStorage("cart", state);
         }
     }
 });
@@ -220,7 +286,8 @@ export const {
     removeOrderCart,
     buyNowToCart,
     applyVoucher,
-    removeVoucher
+    removeVoucher,
+    updateCartItem
 } = actions;
 
 export default reducer;
