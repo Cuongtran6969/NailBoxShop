@@ -101,26 +101,30 @@ function TimeLine({ time, setTime }) {
                 visible={visible}
                 onVisibleChange={(flag) => setVisible(flag)}
             >
-                <Button
-                    color="default"
-                    style={{
-                        background:
-                            time.includes(" - ") && selectedDate
-                                ? "#0d6efd"
-                                : "",
-                        color:
-                            time.includes(" - ") && selectedDate ? "#fff" : ""
-                    }}
-                    variant="outlined"
-                    icon={<FaAngleDown />}
-                    iconPosition="end"
-                >
-                    {selectedDate
-                        ? `${selectedDate[0].format(
-                              "DD/MM/YYYY"
-                          )} - ${selectedDate[1].format("DD/MM/YYYY")}`
-                        : "Tùy chỉnh"}
-                </Button>
+                <div style={{ color: "#333 !important" }}>
+                    <Button
+                        color=""
+                        style={{
+                            background:
+                                time.includes(" - ") && selectedDate
+                                    ? "#0d6efd"
+                                    : "",
+                            color:
+                                time.includes(" - ") && selectedDate
+                                    ? "#fff"
+                                    : ""
+                        }}
+                        variant="outlined"
+                        icon={<FaAngleDown />}
+                        iconPosition="end"
+                    >
+                        {selectedDate
+                            ? `${selectedDate[0].format(
+                                  "DD/MM/YYYY"
+                              )} - ${selectedDate[1].format("DD/MM/YYYY")}`
+                            : "Tùy chỉnh"}
+                    </Button>
+                </div>
             </Dropdown>
         </Flex>
     );

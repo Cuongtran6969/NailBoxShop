@@ -34,7 +34,7 @@ public enum ErrorCode {
     COUPON_ID_INVALID(400, "Voucher không hợp lệ", HttpStatus.BAD_REQUEST),
     COUPON_CODE_INVALID(400, "Mã voucher không được tìm thấy", HttpStatus.BAD_REQUEST),
     COUPON_CODE_USED(400, "Voucher đã hết lượt sử dụng", HttpStatus.BAD_REQUEST),
-    NO_COUPONS_AVAILABLE(400, "Coupon unavailable", HttpStatus.BAD_REQUEST),
+    NO_COUPONS_AVAILABLE(400, "Voucher không hợp lệ", HttpStatus.BAD_REQUEST),
     PAYMENT_ID_INVALID(400, "Payment id invalid", HttpStatus.BAD_REQUEST),
     SHOP_NOT_FOUND(400, "Shop not found", HttpStatus.BAD_REQUEST),
     PRODUCT_EMPTY(400, "Sản phẩm đã hết hàng, vui lòng chọn sản phẩm khác", HttpStatus.BAD_REQUEST),

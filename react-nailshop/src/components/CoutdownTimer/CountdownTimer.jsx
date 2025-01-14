@@ -5,6 +5,7 @@ const CountdownTimer = ({ targetDate }) => {
     const { box, timeSpace } = styles;
     const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
 
+    // Hàm tính thời gian còn lại
     function calculateTimeLeft() {
         const difference = +new Date(targetDate) - +new Date();
         let timeLeft = {};
@@ -22,12 +23,12 @@ const CountdownTimer = ({ targetDate }) => {
     }
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setTimeLeft(calculateTimeLeft());
+        const timer = setInterval(() => {
+            setTimeLeft(calculateTimeLeft()); // Cập nhật thời gian mỗi giây
         }, 1000);
 
-        return () => clearTimeout(timer);
-    });
+        return () => clearInterval(timer); // Dọn dẹp khi component bị unmount
+    }, [targetDate]); // Tính toán lại khi targetDate thay đổi
 
     const formatNumber = (number) => {
         return String(number).padStart(2, "0");
@@ -37,14 +38,24 @@ const CountdownTimer = ({ targetDate }) => {
 
     Object.keys(timeLeft).forEach((interval, index, array) => {
         if (timeLeft[interval] !== undefined) {
+            // Skip rendering Days or Hours if they are 00 and we don't need them
+            if (
+                (interval === "Days" && timeLeft[interval] === 0) ||
+                (interval === "Hours" &&
+                    timeLeft[interval] === 0 &&
+                    !timeLeft.Days)
+            ) {
+                return;
+            }
+
             timerComponents.push(
                 <>
                     <span key={interval} className={box}>
                         {formatNumber(timeLeft[interval])}
                     </span>
-                    <span className={timeSpace}>
-                        {index < array.length - 1 ? " : " : ""}
-                    </span>
+                    {index < array.length - 1 && (
+                        <span className={timeSpace}>:</span>
+                    )}
                 </>
             );
         }

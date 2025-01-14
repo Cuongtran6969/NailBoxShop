@@ -13,7 +13,8 @@ import { useContext, useEffect } from "react";
 import {
     removeItem,
     updateCartItem,
-    removeVoucher
+    removeVoucher,
+    resetBuyOrder
 } from "@redux/slice/cartSlice";
 import { getProductById } from "@/apis/productService";
 import { getVoucherByCode } from "@/apis/voucherService";
@@ -57,6 +58,10 @@ function Cart() {
         updateCartFromAPI();
     }, []);
 
+    const handleCheckout = () => {
+        dispatch(resetBuyOrder());
+        navigate("/checkout");
+    };
     const directToViewCart = () => {
         setIsOpen(false);
         navigate("/cart");
@@ -114,6 +119,7 @@ function Cart() {
                                 <ButtonDefault
                                     content={"Thanh toán"}
                                     style={{ marginTop: "10px" }}
+                                    onClick={handleCheckout}
                                 />
                             </div>
                         </>

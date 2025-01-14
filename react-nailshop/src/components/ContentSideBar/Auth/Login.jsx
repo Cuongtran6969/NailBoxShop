@@ -9,7 +9,9 @@ import { useFormik } from "formik";
 import { SideBarContext } from "@contexts/SideBarProvider";
 import { AuthContext } from "@contexts/AuthContext";
 import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 function Login() {
+    const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [isSendingOtp, setIsSendingOtp] = useState(false);
     const [api, contextHolder] = notification.useNotification();
@@ -53,6 +55,7 @@ function Login() {
     });
 
     const loginHandle = async (values) => {
+        setIsLoading(true);
         await login({
             email: values.email,
             password: values.password
@@ -71,15 +74,12 @@ function Login() {
                         "Đăng nhập thành công",
                         "Chào bạn đến với website NailLabox"
                     );
-
                     const { userId, accessToken, refreshToken } = res.result;
                     Cookies.set("accessToken", accessToken);
                     Cookies.set("refreshToken", refreshToken);
                     Cookies.set("userId", userId);
-                    setIsLoading(false);
                     setIsOpen(false);
                     refresh();
-                    console.log("runherrr");
                 }
             })
             .catch((err) => {
@@ -90,8 +90,8 @@ function Login() {
                     "Đăng nhập không thành công",
                     err
                 );
-                setIsLoading(false);
             });
+        setIsLoading(false);
     };
 
     return (
@@ -121,7 +121,10 @@ function Login() {
                         <input type="checkbox" />
                         <span>Remember me</span>
                     </div>
-                    <Button content={"LOGIN"} type={"submit"} />
+                    <Button
+                        content={isLoading ? "...Loading" : "LOGIN"}
+                        type={isLoading ? "" : "submit"}
+                    />
                 </form>
                 <Button
                     content={"Don't have an account?"}

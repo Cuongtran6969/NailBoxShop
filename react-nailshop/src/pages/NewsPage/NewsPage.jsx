@@ -24,12 +24,13 @@ function NewPage() {
     const [news, setNews] = useState([]);
     const [filter, setFilter] = useState({
         page: 1,
-        size: 2,
-        total: 10,
+        size: 5,
+        total: 5,
         title: ""
     });
     const [loading, setLoading] = useState(true);
-    const { createTime, cardDescription, timeValue, cardImg } = styles;
+    const { createTime, cardDescription, timeValue, cardImg, newsTitle } =
+        styles;
     const [hasMore, setHasMore] = useState(true);
     const fetchApiGetPost = async () => {
         if (hasMore) {
@@ -146,23 +147,40 @@ function NewPage() {
                         </div>
                     </div>
 
-                    <div className="row">
+                    <div className="row mt-5">
                         {news.length > 5 &&
-                            news.slice(6).map((news, index) => (
-                                <div className="col-12 mb-4" key={index}>
+                            news.slice(5).map((news, index) => (
+                                <div className="col-12 mb-3" key={index}>
                                     <div className={newsItem}>
                                         <img
                                             src={news.image}
                                             alt={news.title}
+                                            onClick={() =>
+                                                navigate(`/blog/${news.id}`)
+                                            }
                                         />
                                         <div className={newsContent}>
-                                            <h6 className="news-title">
+                                            <h6
+                                                className={newsTitle}
+                                                onClick={() =>
+                                                    navigate(`/blog/${news.id}`)
+                                                }
+                                            >
                                                 {news.title}
                                             </h6>
-                                            <p className="news-description">
-                                                This is a brief description of
-                                                the news item.
+                                            <p className={cardDescription}>
+                                                {news.description}
                                             </p>
+                                            <div className={createTime}>
+                                                <span>
+                                                    <IoTimeOutline
+                                                        fontSize={14}
+                                                    />
+                                                </span>
+                                                <span className={timeValue}>
+                                                    {timeSince(news.createAt)}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

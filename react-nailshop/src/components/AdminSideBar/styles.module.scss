@@ -31,6 +31,23 @@
     top: 20px;
     left: 20px;
     bottom: 20px;
+    &::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    &::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 2px transparent;
+        border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        background: #f77aac83;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: #ff90bc7e;
+    }
 
     .menuNavBtn {
         display: flex;

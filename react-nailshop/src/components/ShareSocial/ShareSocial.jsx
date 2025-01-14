@@ -19,7 +19,7 @@ function ShareSocial() {
                         fontWeight: "500"
                     }}
                 >
-                    Chia sẻ bài viết
+                    Chia sẻ nội dung
                 </span>
             </Divider>
             <FacebookShareButton url={shareUrl} className="me-2">

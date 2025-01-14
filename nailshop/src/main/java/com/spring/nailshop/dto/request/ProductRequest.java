@@ -19,6 +19,8 @@ public class ProductRequest {
     String description;
     Integer discount;
     Boolean isActive;
+    String size;
+    Integer sold;
     Set<DesignRequest> designs;
     Set<Long> categoryIds;
 }

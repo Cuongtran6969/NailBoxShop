@@ -4,6 +4,7 @@ import styles from "./styles.module.scss";
 import ProductItem from "@components/ProductItem/ProductItem";
 import { productCampaign } from "@/apis/productService";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 function SaleHomePage() {
     const {
         saleTitle,
@@ -18,17 +19,14 @@ function SaleHomePage() {
     } = styles;
     const [products, setProducts] = useState(null);
     const [targetDate, setTargetDate] = useState("2024-12-17T06:00:00");
-    // const targetDate = "2024-12-17T06:00:00";
+    const navigate = useNavigate();
     useEffect(() => {
         const fetchProductCampaign = async () => {
             try {
                 const data = await productCampaign();
-                console.log(data.result.products);
                 setProducts(data.result.products);
                 setTargetDate(data.result.endTime);
-            } catch (error) {
-                console.log(error);
-            }
+            } catch (error) {}
         };
         fetchProductCampaign();
     }, []);
@@ -53,7 +51,10 @@ function SaleHomePage() {
                                 </div>
                             </div>
                             <div className="d-md-block d-none">
-                                <button className={saleHeaderButton}>
+                                <button
+                                    className={saleHeaderButton}
+                                    onClick={() => navigate("/search")}
+                                >
                                     SHOP ALL PRODUCTS
                                 </button>
                             </div>

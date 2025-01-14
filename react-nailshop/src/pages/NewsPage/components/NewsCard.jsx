@@ -16,7 +16,7 @@ const NewsCard = ({ id, image, title, description, createAt }) => {
             />
             <div className="p-2">
                 <h6
-                    className="card-title"
+                    className={cardTitle}
                     style={{ cursor: "pointer" }}
                     onClick={() => navigate(`/blog/${id}`)}
                 >

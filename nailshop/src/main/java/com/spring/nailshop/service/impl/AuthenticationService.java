@@ -114,6 +114,8 @@ public class AuthenticationService {
         var token = request.getToken();
         boolean isValid = true;
         String scope =  null;
+        String username = "";
+        String avatar = "";
         try {
             if(StringUtils.isBlank(token)) {
                 throw new AppException(ErrorCode.INVALID_TOKEN);
@@ -123,6 +125,8 @@ public class AuthenticationService {
 
             User user = userRepository.findByEmail(userName)
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+            username = user.getName();
+            avatar = user.getAvatar();
             UserSecurity userSecurity = new UserSecurity(user);
 
             if(!jwtService.isValid(token, TokenType.ACCESS_TOKEN, userSecurity)) {
@@ -134,6 +138,8 @@ public class AuthenticationService {
         }
         return IntrospectResponse.builder()
                 .valid(isValid)
+                .name(username)
+                .avatar(avatar)
                 .role(scope)
                 .build();
     }

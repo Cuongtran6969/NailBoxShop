@@ -44,14 +44,11 @@ public class User extends AbstractEntity<Long>{
     private Long points;
 
     @Column(name = "enabled")
-    Boolean enabled;//false = ban
+    Boolean enabled=true; //false = ban
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
-    private Set<Address> addresses;
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore

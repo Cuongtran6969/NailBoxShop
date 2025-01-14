@@ -2,18 +2,16 @@ import Header from "@components/Header/Header";
 import InputNumberBox from "@components/InputNumberBox/InputNumberBox";
 import { Container, Row, Col } from "react-bootstrap";
 import styles from "./styles.module.scss";
-
 import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-
 // import required modules
 import { Navigation } from "swiper/modules";
 import { useContext, useEffect, useState } from "react";
 import DiscountTicket from "@components/DiscountTicket/DiscountTicket";
-
+import ShareSocial from "@components/ShareSocial/ShareSocial";
 import {
     Select,
     Space,
@@ -170,15 +168,17 @@ const ProductDetailPage = () => {
         const fetchInitialData = async () => {
             try {
                 setLoading(true);
-                console.log("Fetching product data for id:", id);
                 const data = await getProductById(id);
-                console.log(data);
+                if (data.result == null) {
+                    navigate("/");
+                    return;
+                }
 
                 let pictures = data.result.pictures
                     ? data.result.pictures.split(",")
                     : [];
                 let designs = data.result.designs ? data.result.designs : [];
-                let firstPicture = "";
+                let firstPicture;
                 designs.forEach((design, index) => {
                     if (design.picture) {
                         if (index === 0) {
@@ -209,8 +209,6 @@ const ProductDetailPage = () => {
         fetchInitialData();
     }, [id]);
     useEffect(() => {
-        console.log("deeee");
-
         setOrderData({
             ...orderData,
             quantity: currentQuantity
@@ -226,7 +224,6 @@ const ProductDetailPage = () => {
             product.designs.find((design) => design.id === value)?.picture ||
             null;
         setCurrentImage(picture);
-        console.log(value);
         let design = product.designs.find((design) => design.id == value);
         setOrderData({
             ...orderData,
@@ -256,7 +253,6 @@ const ProductDetailPage = () => {
             "Thành công",
             "Thêm vào giỏ hàng thành công"
         );
-        console.log(orderData);
     };
 
     const handleBuyNow = () => {
@@ -272,7 +268,6 @@ const ProductDetailPage = () => {
         );
         navigate("/cart");
     };
-    // if (loading) return <div>Loading...</div>;
     return (
         <div>
             {contextHolder}
@@ -311,14 +306,14 @@ const ProductDetailPage = () => {
                                                         items={[
                                                             {
                                                                 title: (
-                                                                    <a href="">
+                                                                    <a href="/">
                                                                         Home
                                                                     </a>
                                                                 )
                                                             },
                                                             {
                                                                 title: (
-                                                                    <a href="">
+                                                                    <a href="/search?type=Nail Box">
                                                                         Nail Box
                                                                     </a>
                                                                 )
@@ -664,28 +659,24 @@ const ProductDetailPage = () => {
                                                             </p>
                                                         </Space>
                                                     </div> */}
+                                                    <div>
+                                                        <ShareSocial />
+                                                    </div>
                                                 </div>
                                             </Col>
                                         </Row>
                                     </Col>
                                     <Col sm={12}>
-                                        <Description />
+                                        <Description
+                                            text={product.description}
+                                        />
                                     </Col>
                                     <Col sm={12}>
                                         <div className={productRelation}>
                                             <h4 className={relationTitle}>
-                                                Sản phẩm tương tự
+                                                {/* Sản phẩm tương tự */}
                                             </h4>
-                                            <Row className="gx-3 gy-5">
-                                                {/* <ProductItem numberDisplay={4} />
-                                            <ProductItem numberDisplay={4} />
-                                            <ProductItem numberDisplay={4} />
-                                            <ProductItem numberDisplay={4} />
-                                            <ProductItem numberDisplay={4} />
-                                            <ProductItem numberDisplay={4} />
-                                            <ProductItem numberDisplay={4} />
-                                            <ProductItem numberDisplay={4} /> */}
-                                            </Row>
+                                            <Row className="gx-3 gy-5"></Row>
                                         </div>
                                     </Col>
                                 </Row>

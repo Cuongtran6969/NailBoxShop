@@ -45,7 +45,6 @@ function ProductManage({
         currentPage: 1,
         totalItems: 0
     });
-    console.log("initCheckList: " + initCheckList);
 
     const [checkedList, setCheckedList] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -83,7 +82,6 @@ function ProductManage({
             let query = `name~'${searchName}'`;
             if (sortPrice.type) query += `&sort=price:${sortPrice.type}`;
             if (sortStock.type) query += `&sort=stock:${sortStock.type}`;
-            await new Promise((resolve) => setTimeout(resolve, 2000)); // Delay 2 giây
             const response = await getProduct(currentPage, query);
             setProducts(
                 response.result.items.map((item) => {
@@ -103,8 +101,6 @@ function ProductManage({
             setLoading(false); // Tắt loading
         }
     };
-    console.log("loading:" + loading);
-
     useEffect(() => {
         if (!initProduct) {
             fetchProducts();
@@ -124,7 +120,6 @@ function ProductManage({
         }
     }, [initCheckList]);
     const onCheckChange = (e, id) => {
-        console.log(e.target.checked);
         if (e.target.checked) {
             setCheckedList((prev) => [...prev, id]);
         } else {
@@ -132,25 +127,16 @@ function ProductManage({
         }
     };
     const checkAll = () => {
-        console.log("Aaaaa");
-        console.log("in checkAll = checkedList: " + checkedList);
         if (checkedList.length === 0) return false;
         return products.every((product) => checkedList.includes(product.id));
     };
     const haveCheck = () => {
-        console.log("Bbbbb");
-        console.log("in haveCheck = checkedList: " + checkedList);
-
         if (checkedList.length === 0) return false;
         return products.some((product) => checkedList.includes(product.id));
     };
 
     const onCheckAllChange = (e) => {
-        console.log("select change to: " + e.target.checked);
         if (e.target.checked) {
-            //da check full
-            console.log("herere 1");
-
             setCheckedList((prev) => [
                 ...prev,
                 ...products
@@ -158,7 +144,6 @@ function ProductManage({
                     .filter((id) => !prev.includes(id))
             ]);
         } else {
-            console.log("here 2");
             setCheckedList((prev) =>
                 prev.filter(
                     (id) => !products.some((product) => product.id === id)
@@ -167,9 +152,6 @@ function ProductManage({
         }
     };
 
-    console.log("checkedList.length" + checkedList.length);
-    console.log("checkAll()" + checkAll());
-    console.log("indeterminate()" + haveCheck());
     const columns = useMemo(
         () => [
             {
@@ -359,6 +341,7 @@ function ProductManage({
                 dataSource={products}
                 pagination={false}
                 loading={loading}
+                scroll={{ x: 1500, y: 650 }}
             />
             <Pagination
                 className="mt-3"

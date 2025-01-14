@@ -86,100 +86,104 @@ const CampaignPage = () => {
         setProductIds(selectedProductIds); // Update the productIds state
     };
     return (
-        <Row>
-            {contextHolder}
-            <Col sm={12}>
-                <Alert
-                    banner
-                    message={
-                        <Marquee pauseOnHover gradient={false}>
-                            CHÚ Ý: Tạo chiến dịch để hiện thị ở trang chính, mục
-                            đích làm nổi bật các sản phẩm cần bán ra.
-                        </Marquee>
-                    }
-                />
-            </Col>
-            <Col sm={12} className="mt-5">
-                <Form
-                    size="large"
-                    {...formItemLayout}
-                    form={form}
-                    variant={"outlined"}
-                    onFinish={handleSubmit}
-                >
-                    <Form.Item
-                        label="Tên chiến dịch"
-                        name="name"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Please name!"
-                            }
-                        ]}
+        <div style={{ height: "90vh", overflowY: "scroll" }}>
+            <Row>
+                {contextHolder}
+                <Col sm={12}>
+                    <Alert
+                        banner
+                        message={
+                            <Marquee pauseOnHover gradient={false}>
+                                CHÚ Ý: Tạo chiến dịch để hiện thị ở trang chính,
+                                mục đích làm nổi bật các sản phẩm cần bán ra.
+                            </Marquee>
+                        }
+                    />
+                </Col>
+                <Col sm={12} className="mt-5">
+                    <Form
+                        size="large"
+                        {...formItemLayout}
+                        form={form}
+                        variant={"outlined"}
+                        onFinish={handleSubmit}
                     >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label="Mô tả"
-                        name="description"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Please description!"
-                            }
-                        ]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        label="Thời gian diễn ra"
-                        name="dateTime"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Please input!"
-                            }
-                        ]}
-                    >
-                        <RangePicker showTime />
-                    </Form.Item>
-                    <Form.Item
-                        label="Số lượng"
-                        rules={[
-                            {
-                                required: false
-                            }
-                        ]}
-                    >
-                        <span className="fs-6">
-                            {" "}
-                            <strong>{productIds.length}</strong> Sản phẩm được
-                            chọn cho chiến dịch này
-                        </span>
-                    </Form.Item>
-                    <Form.Item
-                        name="status"
-                        label="Trạng thái hoạt động"
-                        valuePropName="checked"
-                    >
-                        <Switch />
-                    </Form.Item>
-                    <Form.Item
-                        wrapperCol={{
-                            offset: 6,
-                            span: 16
-                        }}
-                    >
-                        <Button type="primary" htmlType="submit">
-                            Thêm
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Col>
-            <Col sm={12}>
-                <ProductManage onProductSelection={handleProductSelection} />
-            </Col>
-        </Row>
+                        <Form.Item
+                            label="Tên chiến dịch"
+                            name="name"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please name!"
+                                }
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Mô tả"
+                            name="description"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please description!"
+                                }
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item
+                            label="Thời gian diễn ra"
+                            name="dateTime"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please input!"
+                                }
+                            ]}
+                        >
+                            <RangePicker showTime />
+                        </Form.Item>
+                        <Form.Item
+                            label="Số lượng"
+                            rules={[
+                                {
+                                    required: false
+                                }
+                            ]}
+                        >
+                            <span className="fs-6">
+                                {" "}
+                                <strong>{productIds.length}</strong> Sản phẩm
+                                được chọn cho chiến dịch này
+                            </span>
+                        </Form.Item>
+                        <Form.Item
+                            name="status"
+                            label="Trạng thái hoạt động"
+                            valuePropName="checked"
+                        >
+                            <Switch />
+                        </Form.Item>
+                        <Form.Item
+                            wrapperCol={{
+                                offset: 6,
+                                span: 16
+                            }}
+                        >
+                            <Button type="primary" htmlType="submit">
+                                Thêm
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Col>
+                <Col sm={12}>
+                    <ProductManage
+                        onProductSelection={handleProductSelection}
+                    />
+                </Col>
+            </Row>
+        </div>
     );
 };
 export default CampaignPage;

@@ -13,7 +13,6 @@ function ProtectedRoute({ children, allowedRoles }) {
             introspect()
                 .then((data) => {
                     setValidInfo({ valid: data.valid, role: data.role });
-                    console.log("run heee1: " + data);
                 })
                 .catch(() => {
                     setValidInfo({ valid: false, role: null });
@@ -21,16 +20,16 @@ function ProtectedRoute({ children, allowedRoles }) {
         }
     }, [token]);
 
+    console.log("validInfo: " + validInfo);
+
     if (!validInfo) {
         return <div>Loading...</div>;
     }
 
     if (!validInfo.valid) {
-        console.log("unauth token invalid");
         return <Navigate to="/" />;
     }
     if (!allowedRoles.includes(validInfo.role)) {
-        console.log("unauth=> 403");
         return <Navigate to="/accessdenied" />;
     }
 

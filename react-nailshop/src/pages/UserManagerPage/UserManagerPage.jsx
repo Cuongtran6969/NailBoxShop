@@ -166,7 +166,7 @@ function UserManagerPage() {
             />
             <div>
                 <Table
-                    rowSelection={rowSelection}
+                    // rowSelection={rowSelection}
                     columns={columns}
                     dataSource={users}
                     pagination={false}

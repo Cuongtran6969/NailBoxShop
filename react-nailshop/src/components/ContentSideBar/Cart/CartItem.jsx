@@ -39,7 +39,11 @@ function CartItem({ data }) {
                         Size {data.size}
                     </span>
                     <span className={itemValue}>
-                        {data.quantity} × {data.price - 0.01 * data.price}₫
+                        {data.quantity} ×{" "}
+                        {new Intl.NumberFormat("vi-VN").format(
+                            data.price - data.price * 0.01 * data.discount
+                        )}
+                        ₫
                     </span>
                 </div>
                 <div className={removeBox}>

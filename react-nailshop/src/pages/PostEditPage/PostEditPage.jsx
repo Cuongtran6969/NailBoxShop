@@ -100,67 +100,73 @@ function PostCreatePage() {
     const handleRemoveImage = () => {
         setFileList([]);
     };
-    console.log(content);
-    if (loading) return <div>...</div>;
     return (
         <div className={container}>
             {contextHolder}
-            <Form
-                form={form}
-                labelCol={{
-                    span: 4
-                }}
-                wrapperCol={{
-                    span: 18
-                }}
-                onFinish={handleSubmit}
-            >
-                <Form.Item name="image" label="Picture">
-                    <Upload
-                        listType="picture-card"
-                        fileList={fileList}
-                        onChange={({ fileList }) => setFileList(fileList)}
-                        onRemove={handleRemoveImage}
-                        beforeUpload={() => false}
-                        maxCount={1}
-                        min
+            {loading ? (
+                <></>
+            ) : (
+                <>
+                    <Form
+                        form={form}
+                        labelCol={{
+                            span: 4
+                        }}
+                        wrapperCol={{
+                            span: 18
+                        }}
+                        onFinish={handleSubmit}
                     >
-                        <button
-                            style={{
-                                border: 0,
-                                background: "none"
-                            }}
-                            type="button"
-                        >
-                            <PlusOutlined />
-                            <div
-                                style={{
-                                    marginTop: 8
-                                }}
+                        <Form.Item name="image" label="Picture">
+                            <Upload
+                                listType="picture-card"
+                                fileList={fileList}
+                                onChange={({ fileList }) =>
+                                    setFileList(fileList)
+                                }
+                                onRemove={handleRemoveImage}
+                                beforeUpload={() => false}
+                                maxCount={1}
+                                min
                             >
-                                Upload
-                            </div>
-                        </button>
-                    </Upload>
-                </Form.Item>
-                <Form.Item name="title" label="Tiêu đề bài viết">
-                    <Input />
-                </Form.Item>
-                <Form.Item name="description" label="Mô tả">
-                    <Input />
-                </Form.Item>
-                <Form.Item label="Bài viết">
-                    <Editor
-                        onChange={(e) => setContent(e.markdown)}
-                        initialValue={content}
-                    />
-                </Form.Item>
-                <Form.Item>
-                    <Button type="primary" htmlType="submit">
-                        Cập nhật bài viết
-                    </Button>
-                </Form.Item>
-            </Form>
+                                <button
+                                    style={{
+                                        border: 0,
+                                        background: "none"
+                                    }}
+                                    type="button"
+                                >
+                                    <PlusOutlined />
+                                    <div
+                                        style={{
+                                            marginTop: 8
+                                        }}
+                                    >
+                                        Upload
+                                    </div>
+                                </button>
+                            </Upload>
+                        </Form.Item>
+                        <Form.Item name="title" label="Tiêu đề bài viết">
+                            <Input />
+                        </Form.Item>
+                        <Form.Item name="description" label="Mô tả">
+                            <Input />
+                        </Form.Item>
+                        <Form.Item label="Bài viết">
+                            <Editor
+                                onChange={(e) => setContent(e.markdown)}
+                                initialValue={content}
+                            />
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit">
+                                Cập nhật bài viết
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </>
+            )}
         </div>
     );
 }

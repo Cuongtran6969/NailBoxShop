@@ -3,11 +3,7 @@ import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { htmlToMarkdown, markdownToHtml } from "@/utils/Parser";
 import uploadToCloudinary from "@/apis/uploadToCloudinary";
-
 function Editor({ initialValue = "", onChange }) {
-    console.log("in: " + initialValue);
-    console.log("markdownToHtml: " + markdownToHtml(initialValue));
-
     const [value, setValue] = useState(markdownToHtml(initialValue));
     const reactQuillRef = useRef(null);
     const fontSize = ["small", false, "large", "huge"];

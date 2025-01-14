@@ -13,6 +13,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
@@ -27,7 +28,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .build();
-
         ObjectMapper objectMapper = new ObjectMapper();
         response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
         response.flushBuffer();

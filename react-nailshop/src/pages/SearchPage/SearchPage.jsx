@@ -26,7 +26,7 @@ function SearchPage() {
     const [searchData, setSearchData] = useState({
         keyword: keyword,
         page: 1,
-        orderBy: "",
+        orderBy: location.state?.orderBy || "",
         size: 10
     });
     const [data, setData] = useState(null);
@@ -78,6 +78,7 @@ function SearchPage() {
     };
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         setSearchData((prevData) => ({
             ...prevData,
             keyword: keyword,
@@ -90,6 +91,8 @@ function SearchPage() {
             let filterQuery = "";
             if (searchData.keyword) {
                 filterQuery += `name~'${searchData.keyword}'`;
+            } else {
+                filterQuery += `name~''`;
             }
             if (tags.length > 0) {
                 filterQuery += `& (`;

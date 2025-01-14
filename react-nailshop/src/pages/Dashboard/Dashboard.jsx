@@ -32,7 +32,7 @@ function Dashboard() {
     console.log(data);
 
     return (
-        <div style={{ height: "800px", overflowY: "scroll" }}>
+        <div style={{ height: "90vh", overflowY: "scroll" }}>
             <TimeLine time={time} setTime={setTime} />
             <TotalStatics
                 time={time}

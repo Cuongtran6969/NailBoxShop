@@ -27,7 +27,7 @@ function Header() {
         headerNavCart
     } = styles;
     const { setIsOpen, setType } = useContext(SideBarContext);
-    const { authenticated, refresh } = useContext(AuthContext);
+    const { authenticated, refresh, setUser } = useContext(AuthContext);
     const { list } = useSelector((state) => state.cart);
     const { keyword, setKeyword } = useContext(HeaderSearchContext);
     const [api, contextHolder] = notification.useNotification();
@@ -70,6 +70,7 @@ function Header() {
             Cookies.remove("accessToken");
             Cookies.remove("refreshToken");
             Cookies.remove("userId");
+            setUser(null);
             await refresh();
             openNotificationWithIcon(
                 "success",
@@ -99,7 +100,7 @@ function Header() {
         <>
             {contextHolder}
             <div className={headerText}>
-                Nail Box Xinh - Nâng niu bàn tay phái đẹp.
+                Nail La Box - Nâng niu bàn tay phái đẹp.
             </div>
             <Container className="py-2">
                 <Row style={{ alignItems: "center" }}>

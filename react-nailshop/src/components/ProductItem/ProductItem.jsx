@@ -43,7 +43,7 @@ function ProductItem(props) {
             <div className={productItem}>
                 <div className={boxImage}>
                     <img
-                        src={pictures.split(",")[0]}
+                        src={pictures ? pictures.split(",")[0] : ""}
                         alt=""
                         onClick={() => navigate(`/detail/${id}`)}
                     />
@@ -58,7 +58,7 @@ function ProductItem(props) {
                     >
                         {categories && categories.length > 0
                             ? categories[0].name
-                            : "No Category"}
+                            : "Nail box"}
                     </a>
                     <p
                         className={productTitle}
@@ -78,7 +78,17 @@ function ProductItem(props) {
                             <span>₫</span>
                         </p>
                     </div>
-                    <DiscountTicket value={discount} />
+                    {discount > 0 ? (
+                        <DiscountTicket value={discount} />
+                    ) : (
+                        <div
+                            style={{
+                                height: "23px",
+                                width: "50px",
+                                margin: "10px auto 0"
+                            }}
+                        ></div>
+                    )}
                 </div>
             </div>
         </div>

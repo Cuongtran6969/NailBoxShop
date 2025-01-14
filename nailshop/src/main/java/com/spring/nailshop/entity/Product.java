@@ -22,22 +22,25 @@ public class Product extends AbstractEntity<Long> {
     private BigDecimal price;
 
     @Column(name = "stock")// Số lượng sản phẩm trong kho
-    private Integer stock;
+    private Integer stock=0;
 
     @Column(name = "sold")// Số lượng sản phẩm đã bán
-    private Integer sold;
+    private Integer sold=0;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "discount")
-    private Integer discount;
+    private Integer discount=0;
 
     @Column(name = "isActive", nullable = false)
     private Boolean isActive = true;
 
     @Column(name = "pictures", columnDefinition = "TEXT")
     private String pictures;
+
+    @Column(name = "size")
+    private String size="";
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "product_category",

@@ -1,9 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { introspect } from "@/apis/authService";
-
 export const AuthContext = createContext();
-
 export const AuthProvider = ({ children }) => {
     const [authenticated, setAuthenticated] = useState(false);
     const [user, setUser] = useState(null);
@@ -12,16 +10,24 @@ export const AuthProvider = ({ children }) => {
 
         if (!token) {
             setAuthenticated(false);
+            setUser(null);
             return;
         }
         try {
             const result = await introspect(token);
             setAuthenticated(result.valid);
+            setUser({
+                role: result.role,
+                name: result.name,
+                avatar: result.avatar
+            });
         } catch (error) {
             console.error("Error introspecting token:", error);
             setAuthenticated(false);
+            setUser(null);
         }
     };
+
     useEffect(() => {
         refresh();
     }, []);

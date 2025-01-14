@@ -46,7 +46,11 @@ instance.interceptors.response.use(
     },
     async (error) => {
         const originalRequest = error.config;
-        if (error.response.status === 401 && !originalRequest._retry) {
+        if (
+            error.response.status === 401 &&
+            error.response.data.message === "EXPIRED_TOKEN" &&
+            !originalRequest._retry
+        ) {
             originalRequest._retry = true;
             if (!refreshingFunc) {
                 refreshingFunc = refreshToken();

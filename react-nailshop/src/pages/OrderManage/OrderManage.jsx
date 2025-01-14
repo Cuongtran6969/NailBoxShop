@@ -33,7 +33,6 @@ import {
     SyncOutlined
 } from "@ant-design/icons";
 import { IoMdMore } from "react-icons/io";
-
 import {
     getShipStatus,
     createOrderShip,
@@ -55,10 +54,10 @@ import styles from "./styles.module.scss";
 import OrderItem from "./components/OrderItem";
 const statusInfo = {
     PENDING: { label: "Chờ xác nhận", color: "orange" },
-    PAYMENT_SUCCESS: { label: "Đã thanh toán trước", color: "green" },
-    PROCESSING: { label: "Đơn hàng đang giao đến bạn", color: "blue" },
+    PAYMENT_SUCCESS: { label: "Đã thanh toán trước", color: "cyan" },
+    PROCESSING: { label: "Đang giao", color: "blue" },
     CANCELLED: { label: "Đã hủy", color: "red" },
-    COMPLETED: { label: "Hoàn thành", color: "volcano" }
+    COMPLETED: { label: "Hoàn thành", color: "green" }
 };
 const shipStatusInfo = {
     none: { label: "Chưa yêu cầu", color: "" },
@@ -129,7 +128,6 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
             key: "COMPLETED"
         }
     ];
-    const itemStatus = [];
     const handleMenuClick = (e) => {
         setFilter((prev) => ({
             ...prev,
@@ -138,9 +136,6 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
         }));
     };
 
-    const handleUpdateSatus = (e, id) => {
-        console.log({ e, id });
-    };
     const menuProps = {
         items,
         onClick: handleMenuClick
@@ -182,19 +177,13 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
         onClick: (e) => handleChangeStatus(id, e.key)
     });
     const [order, setOrder] = useState();
-    console.log("initCheckList: " + initCheckList);
 
-    // const handlePageChange = (page) => {
-    //     setPagination((prev) => ({ ...prev, currentPage: page }));
-    // };
     const fetchApiShopInfo = async () => {
         await getShopInfo()
             .then((res) => {
                 setShopInfo(res.result);
             })
-            .catch((err) => {
-                console.log(err);
-            });
+            .catch((err) => {});
     };
 
     const parseMoneyFormat = (price) => {
@@ -217,7 +206,6 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
             if (shipFee.type) query += `&sort=shipFee:${shipFee.type}`;
             if (totalPrice.type) query += `&sort=totalPrice:${totalPrice.type}`;
             const response = await getAllOrders(page, size, query);
-            console.log(shopInfo.token);
 
             const ordersWithShipStatus = await Promise.all(
                 response.result.items.map(async (item) => {
@@ -246,22 +234,16 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
                 total: response.result.total
             }));
         } catch (error) {
-            console.error("Error fetching orders:", error);
         } finally {
             setLoading(false);
         }
     };
     const handleSortChange = (field) => {
-        console.log("--------------------" + field);
-
         setFilter((prev) => {
             const nextSortIndex = prev[field].id % sortOptions.length;
-            console.log("--------------------" + nextSortIndex);
             return { ...prev, [field]: sortOptions[nextSortIndex] };
         });
     };
-    console.log("loading:" + loading);
-    console.log("chooseId:" + chooseId);
 
     useEffect(() => {
         fetchApiShopInfo();
@@ -281,10 +263,7 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
     ]);
 
     const showOrderDetail = (id) => {
-        //orders chưa dc load len
-        console.log(orders);
         const order = orders.find((order) => order.id === id);
-        console.log("order: " + order);
         setIsOpenDetail(true);
         setOrder(order);
     };
@@ -503,9 +482,6 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
                             </Tag>
                             <Dropdown
                                 menu={menuPropsForRow(r.id)}
-                                onClick={(e) => {
-                                    handleUpdateSatus(e, r.id);
-                                }}
                                 trigger={["click"]}
                                 placement="bottom"
                                 className="text-black"
@@ -632,8 +608,6 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
                     fetchApiShopInfo();
                 })
                 .catch((err) => {
-                    console.log(err);
-
                     openNotificationWithIcon(
                         "error",
                         "Yêu cầu vận chuyển thất bại",
@@ -647,7 +621,6 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
         if (chooseId) {
             createShipOrder();
         } else {
-            console.log("errr");
         }
     };
 
@@ -677,8 +650,6 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
                 open={isOpenDetail}
                 width={580}
             >
-                {console.log(order)}
-
                 {order &&
                     order?.items.map((item) => {
                         return <OrderItem key={item.productId} item={item} />;

@@ -15,6 +15,7 @@ import com.spring.nailshop.service.AddressService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ public class AddressServiceImpl implements AddressService {
     int MAX_ADDRESS = 3;
 
     @Override
+    @PreAuthorize("isAuthenticated()")
     public AddressResponse createAddress(AddressRequest request) {
         SecurityContext contextHolder = SecurityContextHolder.getContext();
         String email = contextHolder.getAuthentication().getName();
@@ -52,6 +54,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated()")
     public AddressResponse updateAddress(AddressRequest request, Long addressId) {
         SecurityContext contextHolder = SecurityContextHolder.getContext();
         String email = contextHolder.getAuthentication().getName();
@@ -67,6 +70,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated()")
     public void deleteAddress(Long addressId) {
         Address address = addressRepository.findById(addressId).orElseThrow(() -> new AppException(ErrorCode.ADDRESS_ID_INVALID));
         SecurityContext contextHolder = SecurityContextHolder.getContext();
@@ -82,6 +86,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated()")
     public List<AddressResponse> getAllMyAddress() {
         SecurityContext contextHolder = SecurityContextHolder.getContext();
         String email = contextHolder.getAuthentication().getName();

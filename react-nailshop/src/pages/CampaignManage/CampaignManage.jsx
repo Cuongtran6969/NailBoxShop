@@ -24,7 +24,7 @@ function CampaignManage() {
     const navigate = useNavigate();
     const [campaigns, setCampaigns] = useState([]);
     const [keyword, setKeyword] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [searchValue, setSearchValue] = useState();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCampaignId, setSelectedCampaignId] = useState(null);
@@ -217,11 +217,11 @@ function CampaignManage() {
             />
             <div>
                 <Table
-                    rowSelection={rowSelection}
+                    // rowSelection={rowSelection}
                     columns={columns}
                     dataSource={campaigns}
                     pagination={false}
-                    // loading={loading}
+                    loading={loading}
                 />
                 <Pagination
                     className="mt-3"

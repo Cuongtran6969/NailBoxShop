@@ -34,11 +34,8 @@ function ProductTrend() {
             try {
                 setLoading(true);
                 const data = await getProductPublic(page, size, null, sort);
-                console.log(data.result.products);
                 setProducts(data.result.items);
-            } catch (error) {
-                console.log(error);
-            }
+            } catch (error) {}
             setLoading(false);
         };
         fetchProductCampaign();

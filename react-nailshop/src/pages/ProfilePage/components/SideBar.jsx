@@ -5,6 +5,7 @@ import { MdLogout } from "react-icons/md";
 import styles from "../styles.module.scss";
 import { Menu, Divider } from "antd";
 import { LuMoveLeft } from "react-icons/lu";
+import { IoMdBusiness } from "react-icons/io";
 const items = [
     {
         key: "key1",
@@ -36,8 +37,42 @@ const items = [
         ]
     }
 ];
+const adminItems = [
+    {
+        key: "key1",
+        label: "Tài khoản",
+        type: "group",
+        children: [
+            {
+                key: "myInfo",
+                label: "Thông tin",
+                icon: <FaRegCircleUser />
+            },
+            {
+                key: "myBusiness",
+                label: "Quản lý",
+                icon: <IoMdBusiness />
+            }
+        ]
+    },
+    {
+        key: "key2",
+        label: "Chung",
+        type: "group",
+        children: [
+            {
+                key: "logout",
+                label: "Thoát",
+                icon: <MdLogout />
+            }
+        ]
+    }
+];
+import { AuthContext } from "@contexts/AuthContext";
+import { useContext } from "react";
 
 const SideBar = ({ toggleNav, setType, type }) => {
+    const { authenticated, refresh, user } = useContext(AuthContext);
     const onClick = (e) => {
         setType(e.key);
     };
@@ -55,7 +90,7 @@ const SideBar = ({ toggleNav, setType, type }) => {
                 onClick={onClick}
                 defaultSelectedKeys={[type ? type : "sub1"]}
                 mode="inline"
-                items={items}
+                items={user?.role === "ADMIN" ? adminItems : items}
                 style={{
                     fontSize: "15px",
                     width: "250px",

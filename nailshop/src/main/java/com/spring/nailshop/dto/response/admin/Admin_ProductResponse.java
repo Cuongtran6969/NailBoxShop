@@ -24,6 +24,7 @@ public class Admin_ProductResponse {
     Integer sold;//
     Boolean isActive;
     String pictures;
+    String size;
     LocalDateTime createAt;
     Set<CategoryResponse> categories;
 }

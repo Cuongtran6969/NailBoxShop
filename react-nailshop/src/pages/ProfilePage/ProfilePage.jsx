@@ -20,7 +20,7 @@ function ProfilePage() {
     const [type, setType] = useState("myInfo");
     const [content, setContent] = useState(null);
     const [width, setWidth] = useState(window.innerWidth);
-    const { authenticated, refresh } = useContext(AuthContext);
+    const { authenticated, refresh, user } = useContext(AuthContext);
 
     useEffect(() => {
         function updateWidth() {
@@ -63,6 +63,11 @@ function ProfilePage() {
                 return <MyAddress />;
             case "logout":
                 handleLogout();
+                return "";
+            case "myBusiness":
+                if (user.role === "ADMIN") {
+                    navigate("/admin/analytics");
+                }
                 return "";
             default:
                 return <UserInfo />;

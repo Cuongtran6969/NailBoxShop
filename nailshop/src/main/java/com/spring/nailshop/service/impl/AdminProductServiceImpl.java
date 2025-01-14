@@ -59,9 +59,8 @@ public class AdminProductServiceImpl implements AdminProductService {
 //            throw new AppException(ErrorCode.INVALID_DESIGN);
 //        }
         Product product = productMapper.toProduct(productRequest);
-        log.info("have {} design and {} image", productRequest.getDesigns().size(), designImages.size());
         //set Design for product
-        if (!productRequest.getDesigns().isEmpty()) {
+        if (productRequest.getDesigns()!= null && !productRequest.getDesigns().isEmpty()) {
             int i = 0;
             Set<Design> designs = new HashSet<>();
             for (DesignRequest designRequest : productRequest.getDesigns()) {
