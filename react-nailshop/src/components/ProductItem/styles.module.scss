@@ -25,9 +25,14 @@
         border: 1px solid $color_border;
         border-radius: 15px;
         overflow: hidden;
+        transition: all linear 0.2s;
+        &:hover {
+            transform: translateY(-2px);
+        }
         .boxImage {
             img {
                 height: 240px;
+                overflow: hidden;
                 cursor: pointer;
             }
         }

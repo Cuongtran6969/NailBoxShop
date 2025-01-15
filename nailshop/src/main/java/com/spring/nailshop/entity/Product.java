@@ -54,4 +54,19 @@ public class Product extends AbstractEntity<Long> {
 
     @ManyToMany(mappedBy = "products")
     private List<Campaign> campaigns;
+    @PrePersist
+    private void prePersist() {
+        if (this.stock == null) {
+            stock = 0;
+        }
+        if (this.discount == null) {
+            discount = 0;
+        }
+        if (this.sold == null) {
+            sold = 0;
+        }
+        if (this.size == null) {
+            size = "";
+        }
+    }
 }

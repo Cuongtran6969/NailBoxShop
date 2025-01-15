@@ -38,6 +38,8 @@ function PaymentPage() {
     };
 
     useEffect(() => {
+        console.log("cccc: " + orderId);
+
         if (orderId) {
             const fetchApiOrderPayment = async () => {
                 setLoading(true);

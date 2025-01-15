@@ -129,7 +129,9 @@ const cartSlice = createSlice({
             saveToLocalStorage("cart", state);
         },
         removeItem(state, action) {
+            console.log("action:" + action.payload);
             const { productId, size, designId } = action.payload;
+            console.log({ productId, size, designId });
             state.list = state.list.filter(
                 (product) =>
                     product.productId !== productId ||
@@ -150,6 +152,8 @@ const cartSlice = createSlice({
                     order.designId == action.payload.designId
             );
             if (checkBuy !== -1) {
+                console.log("heeee");
+
                 state.listBuy = state.listBuy.filter(
                     (product) =>
                         product.productId !== productId ||
@@ -169,7 +173,7 @@ const cartSlice = createSlice({
                     state.totalAfterVoucher = state.totalCheckout;
                 }
             }
-            saveToLocalStorage("cart", state);
+            // saveToLocalStorage("cart", state);
         },
         changeListBuy(state, action) {
             //handle click checkbox choose buy

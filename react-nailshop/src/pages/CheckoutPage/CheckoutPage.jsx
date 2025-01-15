@@ -135,7 +135,6 @@ function CheckoutPage() {
                     paymentId: paymentMethodRes.result?.[0].id || ""
                 }));
             } catch (error) {
-                console.error("Error fetching data:", error);
             } finally {
                 setLoading(false);
             }
@@ -154,9 +153,7 @@ function CheckoutPage() {
                 }));
 
                 setDistrict(formattedOptions);
-            } catch (error) {
-                console.error(error);
-            }
+            } catch (error) {}
         };
         setWard([]);
         setDistrict([]);
@@ -209,12 +206,9 @@ function CheckoutPage() {
                 };
                 await getShipFee(shopInfo.token, shopInfo.shop_id, formData)
                     .then((res) => {
-                        console.log("success fee");
-                        console.log(res);
                         setShipFee(res.data.total);
                     })
                     .catch((err) => {
-                        console.log("fail fee");
                         console.log(err);
                     });
             } else {
@@ -233,11 +227,9 @@ function CheckoutPage() {
                 };
                 await getLeadtime(shopInfo.token, formData)
                     .then((res) => {
-                        console.log(res);
                         setShipDay(getNumberDay(res.data.leadtime));
                     })
                     .catch((err) => {
-                        console.log("fail day number");
                         console.log(err);
                     });
             } else {
@@ -249,8 +241,6 @@ function CheckoutPage() {
     }, [initForm.wardId]);
 
     const handleChangePayment = (e) => {
-        console.log(e.target.value);
-
         setInitForm((prev) => ({
             ...prev,
             paymentId: e.target.value
@@ -323,12 +313,11 @@ function CheckoutPage() {
                 })
             );
         }
+        dispatch(removeVoucher());
     };
 
     const fetchApiOrder = async (data) => {
         const items = [];
-        console.log(listBuy);
-
         for (const item of listBuy) {
             items.push({
                 productId: item.productId,
@@ -361,13 +350,11 @@ function CheckoutPage() {
                     if (formData.payment_id == 1) {
                         createPaymentQR(orderId)
                             .then((res) => {
-                                console.log("createPaymentQR: " + res);
                                 navigate("/payment", {
                                     state: { orderId }
                                 });
                             })
                             .catch((err) => {
-                                console.log("err: " + err);
                                 navigate("/payment", {
                                     state: { orderId }
                                 });
@@ -387,18 +374,11 @@ function CheckoutPage() {
                         dispatch(removeVoucher());
                     }
                 }
-                console.log(res);
             })
-            .catch((err) => {
-                console.log(err);
-            });
-
-        console.log(formData);
+            .catch((err) => {});
     };
 
     const onChangeStep = (value) => {
-        console.log(value);
-
         if (value === 0) {
             navigate("/cart");
         }

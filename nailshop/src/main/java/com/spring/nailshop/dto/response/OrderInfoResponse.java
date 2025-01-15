@@ -16,4 +16,5 @@ public class OrderInfoResponse {
   String status;
   Integer shipFee;
   Boolean isFreeShip;
+  String qrImg;
 }

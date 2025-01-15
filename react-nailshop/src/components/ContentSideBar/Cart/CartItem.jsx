@@ -19,6 +19,8 @@ function CartItem({ data }) {
     const dispatch = useDispatch();
 
     const handleRemoveItem = () => {
+        console.log("reee");
+
         dispatch(
             removeItem({
                 ...data
@@ -35,8 +37,9 @@ function CartItem({ data }) {
                 <div className={itemInfo}>
                     <div className={itemName}>{data.productName}</div>
                     <span className={itemOption}>
-                        {data.designName} <span className="text-black">|</span>{" "}
-                        Size {data.size}
+                        {data.designName}
+                        <span className="text-black">|</span>{" "}
+                        {data.size ? "Size" + data.size : ""}
                     </span>
                     <span className={itemValue}>
                         {data.quantity} ×{" "}
