@@ -12,6 +12,31 @@ export const sendOtpRegister = async (email) => {
     }
 };
 
+export const sendOtpResetPassword = async (email) => {
+    try {
+        const response = await axiosClient.post(`/auth/send-otp`, {
+            email: email
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error send Otp Reset Password", error);
+        throw error;
+    }
+};
+
+export const resetPassword = async (formData) => {
+    try {
+        const response = await axiosClient.post(
+            `/auth/reset-password`,
+            formData
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error Reset Password", error);
+        throw error;
+    }
+};
+
 export const register = async (otp, formData) => {
     let urlApi = `/auth/register?otp=${otp}`;
     try {

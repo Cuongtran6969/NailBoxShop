@@ -117,10 +117,10 @@ function Login() {
                         isRequire={true}
                     />
 
-                    <div className={boxRememberMe}>
+                    {/* <div className={boxRememberMe}>
                         <input type="checkbox" />
                         <span>Remember me</span>
-                    </div>
+                    </div> */}
                     <Button
                         content={isLoading ? "...Loading" : "LOGIN"}
                         type={isLoading ? "" : "submit"}

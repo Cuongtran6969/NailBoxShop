@@ -89,17 +89,16 @@ function SearchPage() {
     useEffect(() => {
         const fetchApiGetProduct = async () => {
             let filterQuery = "";
-            if (searchData.keyword) {
-                filterQuery += `name~'${searchData.keyword}'`;
-            } else {
-                filterQuery += `name~''`;
-            }
+
             if (tags.length > 0) {
-                filterQuery += `& (`;
+                filterQuery += `(`;
                 filterQuery += tags
                     .map((tag) => `categories:'${tag.id}'`)
                     .join(" or ");
                 filterQuery += `)`;
+            }
+            if (searchData.keyword) {
+                filterQuery += `name~'${searchData.keyword}'`;
             }
             console.log(
                 searchData.page,

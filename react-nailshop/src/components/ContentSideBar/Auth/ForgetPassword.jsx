@@ -4,7 +4,13 @@ import { useContext, useState } from "react";
 import Button from "@components/Button/Button";
 import { Input, Typography, notification } from "antd";
 const { Title } = Typography;
-import { sendOtpRegister, register, login } from "@/apis/authService";
+import {
+    sendOtpRegister,
+    register,
+    login,
+    sendOtpResetPassword,
+    resetPassword
+} from "@/apis/authService";
 import classNames from "classnames";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -14,6 +20,7 @@ import { SideBarContext } from "@contexts/SideBarProvider";
 function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const [isSendOtp, setIsSendOtp] = useState(true);
+    const [isSendingOtp, setIsSendingOtp] = useState(false);
     const [api, contextHolder] = notification.useNotification();
     const { setType } = useContext(SideBarContext);
     const openNotificationWithIcon = (type, mess, desc) => {
@@ -63,53 +70,72 @@ function Login() {
     const formik = useFormik({
         initialValues: isSendOtp ? initForm : resetPasswordForm,
         validationSchema: validateForm,
-        onSubmit: async (values) => {
-            loginHandle(values);
-        }
+        onSubmit: async (values) => {}
     });
 
     const sendOtpHandle = async () => {
-        // setIsSendingOtp(true);
-        console.log("here");
-        // const email = formik.values.email;
-        // try {
-        //     const res = await sendOtpRegister(email);
-        //     openNotificationWithIcon(
-        //         "success",
-        //         res.message,
-        //         "Vui lòng kiểm tra email để lấy OTP"
-        //     );
-        // } catch (error) {
-        //     openNotificationWithIcon(
-        //         "error",
-        //         "Có lỗi xảy ra",
-        //         error.message || "Không thể gửi OTP"
-        //     );
-        // } finally {
-        //     setIsSendingOtp(false);
-        // }
+        setIsSendingOtp(true);
+        const email = formik.values.email;
+        try {
+            const res = await sendOtpResetPassword(email);
+            console.log();
+            if (res.code == 200) {
+                openNotificationWithIcon(
+                    "success",
+                    "Gửi Otp thành công",
+                    "Vui lòng kiểm tra email để lấy OTP"
+                );
+                setIsSendOtp(false);
+            } else if (res.code == 404) {
+                openNotificationWithIcon(
+                    "error",
+                    "Gửi Otp thất bại",
+                    "Tài khoản không tồn tại"
+                );
+            }
+        } catch (error) {
+            openNotificationWithIcon(
+                "error",
+                "Có lỗi xảy ra",
+                error.message || "Không thể gửi OTP"
+            );
+        } finally {
+            setIsSendingOtp(false);
+        }
     };
 
     const resetPasswordHandle = async () => {
-        // setIsSendingOtp(true);
-        console.log("here");
-        // const email = formik.values.email;
-        // try {
-        //     const res = await sendOtpRegister(email);
-        //     openNotificationWithIcon(
-        //         "success",
-        //         res.message,
-        //         "Vui lòng kiểm tra email để lấy OTP"
-        //     );
-        // } catch (error) {
-        //     openNotificationWithIcon(
-        //         "error",
-        //         "Có lỗi xảy ra",
-        //         error.message || "Không thể gửi OTP"
-        //     );
-        // } finally {
-        //     setIsSendingOtp(false);
-        // }
+        setIsLoading(true);
+        try {
+            const res = await resetPassword({
+                email: formik.values.email,
+                password: formik.values.password,
+                otp: formik.values.otp
+            });
+            if (res.code == 200) {
+                openNotificationWithIcon(
+                    "success",
+                    "Reset thành công",
+                    "Vui lòng đăng nhập lại, để truy cập"
+                );
+                await new Promise((resolve) => setTimeout(resolve, 2000));
+                setType("login");
+            } else {
+                openNotificationWithIcon(
+                    "error",
+                    "Có lỗi xảy ra",
+                    "Vui lòng thực hiện lại, hoặc liên hệ chúng tôi"
+                );
+            }
+        } catch (error) {
+            openNotificationWithIcon(
+                "error",
+                "Có lỗi xảy ra",
+                "Vui lòng thực hiện lại, hoặc liên hệ chúng tôi"
+            );
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -127,7 +153,7 @@ function Login() {
                             className="mb-0"
                         />
                     </div>
-                    {isSendOtp ?? (
+                    {!isSendOtp ? (
                         <>
                             <InputCommon
                                 formik={formik}
@@ -143,9 +169,32 @@ function Login() {
                                 type={"password"}
                                 isRequire={true}
                             />
+                            <InputCommon
+                                formik={formik}
+                                label={"Otp"}
+                                type={"number"}
+                                id="otp"
+                                isRequire={true}
+                            />
                         </>
+                    ) : (
+                        ""
                     )}
-                    <Button content={"RECEIVE OTP"} type={"submit"} />
+                    {isSendOtp ? (
+                        <Button
+                            content={
+                                isSendingOtp ? "Đang gửi OTP..." : "Nhận OTP"
+                            }
+                            // type={!isSendingOtp ? "" : "submit"}
+                            onClick={sendOtpHandle}
+                        />
+                    ) : (
+                        <Button
+                            content={"Thay đổi mật khẩu"}
+                            type={"submit"}
+                            onClick={resetPasswordHandle}
+                        />
+                    )}
                 </form>
                 <Button
                     content={"Don't have an account?"}

@@ -64,6 +64,9 @@ const ProductCreatePage = () => {
     }, []);
     const renderSkeletons = () => (
         <Row className="gx-3 gy-2 " style={{ marginLeft: "150px" }}>
+            <Row>
+                <div className="d-flex">Đang tạo</div>
+            </Row>
             <Col sd={12}>
                 <Row>
                     <div className="d-flex">
@@ -194,7 +197,7 @@ const ProductCreatePage = () => {
     };
 
     return (
-        <div>
+        <div style={{ height: "90vh", overflowY: "scroll" }}>
             {contextHolder}
             {loading ? (
                 renderSkeletons()

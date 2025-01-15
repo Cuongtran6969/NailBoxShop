@@ -78,7 +78,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public void unBanUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -92,7 +92,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public UserResponse getUserInfo(Long userId) {
         return userMapper.toUserResponse(userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
@@ -113,7 +113,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN')")
     public UserResponse updateUser(UserUpdateRequest request, MultipartFile file) {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));

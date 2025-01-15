@@ -17,7 +17,8 @@ function UserInfo() {
         avatar: null,
         file: null
     });
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [updateTing, setUpdateTing] = useState(false);
     const [userInfo, setUserInfo] = useState({
         email: "",
         firstName: "",
@@ -96,8 +97,6 @@ function UserInfo() {
     });
 
     const handleSubmitForm = async (values) => {
-        console.log("herr");
-
         const formData = new FormData();
         formData.append(
             "user",
@@ -115,7 +114,7 @@ function UserInfo() {
         if (avatarUpdate.file) {
             formData.append("file", avatarUpdate.file);
         }
-
+        setUpdateTing(true);
         await updateInfo(formData)
             .then((res) => {
                 console.log(res);
@@ -149,6 +148,7 @@ function UserInfo() {
                     "Cập nhật thông tin thất bại"
                 );
             });
+        setUpdateTing(false);
         getUserInfo();
     };
 
@@ -246,7 +246,7 @@ function UserInfo() {
                             htmlType={"submit"}
                             className={saveInfoBtn}
                         >
-                            Lưu
+                            {updateTing ? "Đang lưu..." : "Lưu"}
                         </Button>
                     </form>
                 </div>

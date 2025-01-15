@@ -2,6 +2,7 @@ package com.spring.nailshop.service.impl;
 
 import com.spring.nailshop.constant.PredefinedRole;
 import com.spring.nailshop.dto.request.EmailRequest;
+import com.spring.nailshop.dto.request.PasswordCreationRequest;
 import com.spring.nailshop.dto.request.UserCreationRequest;
 import com.spring.nailshop.dto.request.UserInfoUpdateRequest;
 import com.spring.nailshop.dto.response.UserProfileResponse;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 
@@ -150,6 +152,44 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         log.info("User profile updated successfully for user with email: {}", email);
         return profileMapper.toUserUpdateResponse(user);
+    }
+
+    @Override
+    public void sendOtpForgotPassword(EmailRequest request) throws MessagingException, UnsupportedEncodingException {
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        String otp = generateOtp();
+
+        otpService.saveOtp(request.getEmail(), otp);
+
+        String subject = "Your OTP Code";
+        String content = String.format(
+                "<p>Xin chào " +user.getName()+ ",</p>"+
+                        "<p>Chúng tôi nhận được yêu cầu reset password. Sử dụng OTP này reset:</p>" +
+                        "<h2>%s</h2>" +
+                        "<p>Nếu bạn không yêu cầu, vui lòng bỏ qua email này.</p>" +
+                        "<p>Trân trọng,<br/>NailLaBox</p>",
+                otp
+        );
+        mailService.sendMail(List.of(request.getEmail()), subject, content, null);
+    }
+
+    @Override
+    public void resetPassword(PasswordCreationRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        String storeOtp = otpService.getOtp(request.getEmail());
+
+        if (storeOtp == null || !storeOtp.equals(request.getOtp())) {
+            throw new AppException(ErrorCode.INVALID_OTP);
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        otpService.deleteOtp(request.getEmail());
+        userRepository.save(user);
     }
 
     private static String generateOtp() {

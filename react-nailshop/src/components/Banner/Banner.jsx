@@ -37,8 +37,10 @@ function Banner() {
             await getBanners()
                 .then((res) => {
                     const filteredBanners = res.result
-                        .split(",")
-                        .filter((banner) => banner.trim() !== ""); // Loại bỏ giá trị rỗng
+                        ? res.result
+                              .split(",")
+                              .filter((banner) => banner.trim() !== "")
+                        : []; // Loại bỏ giá trị rỗng
                     setBanners(filteredBanners);
                 })
                 .catch((err) => {

@@ -84,6 +84,26 @@ public class AuthenticationController {
                 .build();
     }
 
+    @PostMapping("/send-otp")
+    ApiResponse<Void> sendOtpForgotPassword(@RequestBody EmailRequest request)
+            throws MessagingException, UnsupportedEncodingException {
+        userService.sendOtpForgotPassword(request);
+        return ApiResponse.<Void>builder()
+                .code(HttpStatus.OK.value())
+                .message("Send Otp Successfully")
+                .build();
+    }
+
+    @PostMapping("/reset-password")
+    ApiResponse<Void> resetPassword(@RequestBody @Valid PasswordCreationRequest request ){
+        userService.resetPassword(request);
+
+        return ApiResponse.<Void>builder()
+                .code(HttpStatus.OK.value())
+                .message("Reset Password Successfully")
+                .build();
+    }
+
     @PostMapping("/introspect")
     public ApiResponse<IntrospectResponse> introspect(@RequestBody IntrospectRequest request) {
         var result = authenticationService.introspect(request);

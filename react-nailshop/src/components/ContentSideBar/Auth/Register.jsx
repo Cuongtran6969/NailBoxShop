@@ -11,7 +11,6 @@ import { useFormik } from "formik";
 import OtpInput from "formik-otp-input";
 import { SideBarContext } from "@contexts/SideBarProvider";
 function Register() {
-    const [isRegister, setIsRegister] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [isSendingOtp, setIsSendingOtp] = useState(false);
     const [api, contextHolder] = notification.useNotification();
@@ -68,75 +67,47 @@ function Register() {
         initialValues: initForm,
         validationSchema: validateForm,
         onSubmit: async (values) => {
-            console.log(isRegister);
-            if (isRegister) {
-                registerHandle(values);
-            }
-
-            if (!isRegister) {
-                loginHandle(values);
-            }
+            registerHandle(values);
         }
     });
 
     const registerHandle = async (values) => {
         try {
             setIsLoading(true);
-            const data = await register(values.otp, {
+            const res = await register(values.otp, {
                 email: values.email,
                 firstName: values.firstName,
                 lastName: values.lastName,
                 password: values.password
             });
-            openNotificationWithIcon(
-                "success",
-                "Đăng ký thành công",
-                data.message
-            );
+            if (res.code == 201) {
+                openNotificationWithIcon(
+                    "success",
+                    "Đăng ký thành công",
+                    "Hãy đăng nhập để tiếp tục"
+                );
+                await new Promise((resolve) => setTimeout(resolve, 2000));
+                setType("login");
+            } else {
+                openNotificationWithIcon(
+                    "error",
+                    "Đăng ký không thành công",
+                    res.message
+                );
+            }
         } catch (error) {
             openNotificationWithIcon(
                 "error",
                 "Đăng ký không thành công",
-                error.response.data.message
+                error.response?.data?.message
             );
         } finally {
             setIsLoading(false);
-            setIsRegister(false);
         }
-    };
-
-    const loginHandle = async (values) => {
-        console.log("re");
-
-        await login({
-            email: values.email,
-            password: values.password
-        })
-            .then((res) => {
-                openNotificationWithIcon(
-                    "success",
-                    "Đăng nhập thành công",
-                    res.message
-                );
-                setIsLoading(false);
-            })
-            .catch((err) => {
-                openNotificationWithIcon(
-                    "error",
-                    "Đăng nhập không thành công",
-                    err.response.data.message
-                );
-                setIsLoading(false);
-            });
-    };
-
-    const handleToggle = () => {
-        //change content
     };
 
     const handleSendOtp = async () => {
         setIsSendingOtp(true);
-        console.log("here");
         const email = formik.values.email;
         try {
             const res = await sendOtpRegister(email);
@@ -160,7 +131,7 @@ function Register() {
         <>
             {contextHolder}
             <div className={container}>
-                <div className={title}>SIGN IN</div>
+                <div className={title}>SIGN UP</div>
                 <form onSubmit={formik.handleSubmit}>
                     <div className="position-relative mb-5">
                         <InputCommon

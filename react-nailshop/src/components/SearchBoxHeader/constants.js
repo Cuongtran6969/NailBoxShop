@@ -48,5 +48,4 @@ export const keywords = [
     "Nail box dài",
     "Đính đá lấp lánh",
     "Nail box lấp lánh"
-    // Thêm nhiều từ khóa khác ở đây
 ];

@@ -22,12 +22,12 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
     @Query("SELECT o FROM Order o WHERE o.createAt BETWEEN :startDate AND :endDate")
     List<Order> findOrdersByPeriod(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
-    @Query("SELECT SUM(o.totalPrice) FROM Order o WHERE o.createAt BETWEEN :startDate AND :endDate")
+    @Query("SELECT SUM(o.totalPrice) FROM Order o WHERE o.createAt BETWEEN :startDate AND :endDate and o.status = 'COMPLETED'")
     BigDecimal getRevenue(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     @Query("SELECT new com.spring.nailshop.dto.response.RevenueData(" +
             "CAST(o.createAt AS DATE), SUM(o.totalPrice)) " +
-            "FROM Order o WHERE o.createAt BETWEEN :startDate AND :endDate " +
+            "FROM Order o WHERE o.createAt BETWEEN :startDate AND :endDate and o.status = 'COMPLETED' " +
             "GROUP BY CAST(o.createAt AS DATE) ORDER BY CAST(o.createAt AS DATE)")
     List<RevenueData> findRevenueBetweenDates(@Param("startDate") LocalDateTime startDate,
                                               @Param("endDate") LocalDateTime endDate);
