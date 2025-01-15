@@ -31,21 +31,6 @@ public class AdminUserController {
 
     private final AdminUserService adminUserService;
 
-//    @GetMapping
-//    public ApiResponse<PageResponse<?>> getAllUsers( @RequestParam(defaultValue = "1") int page,
-//                                                     @RequestParam(defaultValue = "10") int size,
-//                                                     @RequestParam(required = false) String[] user,
-//                                                     @RequestParam(required = false) String[] address
-//    ) {
-//        ApiResponse<PageResponse<?>> apiResponse = new ApiResponse<>();
-//        Pageable pageable = PageRequest.of(page - 1, size);
-//        PageResponse pageResponse = adminUserService.advanceSearchWithSpecifications(pageable, user, address);
-//        apiResponse.setCode(HttpStatus.OK.value());
-//        apiResponse.setResult(pageResponse);
-//        apiResponse.setMessage("Get List Of User");
-//        return apiResponse;
-//    }
-
    @GetMapping("/search")
     public ApiResponse<PageResponse<List<UserResponse>>> getAllUsers(
             @RequestParam String keyword,

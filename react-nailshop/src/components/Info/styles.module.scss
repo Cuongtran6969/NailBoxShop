@@ -15,11 +15,12 @@
     @include flex_box_custom(center, center, 0px);
     width: 350px;
     height: 130px;
-    background-color: $white_color;
+    background-color: #fafafa;
     border-radius: 6px;
     overflow: hidden;
     padding: 10px;
     cursor: pointer;
+    border: 1px solid rgba(241, 241, 241, 0.671);
     .cardContent {
         width: 70%;
         margin-bottom: auto;

@@ -31,7 +31,18 @@ public class SecurityConfig {
     private final AuthenticationEntryPoint authEntryPoint;
 
     private final String[] PUBLIC_ENDPOINT = {
-            "/api/v1/**", "/auth/**"
+            "/api/v1/**",
+            "/api/v1/coupon/code/{value}",
+            "/api/v1/coupon/code/get-random",
+            "/api/v1/payment/methods",
+            "/api/v1/payment/method/{id}",
+            "/api/v1/posts",
+            "/api/v1/post/{id}",
+            "/api/v1/product/campaign",
+            "/api/v1/products",
+            "/api/v1/product/{id}",
+            "/api/v1/shop/banners",
+            "/auth/**"
     };
 
     @Bean
@@ -44,6 +55,4 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
-
 }

@@ -86,6 +86,7 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public PageResponse<List<CouponResponse>> getAllCoupon(Specification<Coupon> spec, Pageable pageable) {
         Page<Coupon> products = couponRepository.findAll(spec, pageable);
         List<CouponResponse> couponResponse = products.getContent()
@@ -102,6 +103,7 @@ public class CouponServiceImpl implements CouponService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public void deleteCoupon(Long couponId) {
         Coupon coupon = couponRepository.findById(couponId)
                 .orElseThrow(() -> new AppException(ErrorCode.COUPON_CODE_INVALID));

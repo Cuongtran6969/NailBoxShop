@@ -243,7 +243,12 @@ const AdminSideBar = () => {
                 })}
             >
                 <div>
-                    <img src={Logo} className={sideBarLogo} alt="" />
+                    <img
+                        src={Logo}
+                        className={sideBarLogo}
+                        alt=""
+                        onClick={() => navigate("/")}
+                    />
                 </div>
                 <Menu
                     className="mt-5"

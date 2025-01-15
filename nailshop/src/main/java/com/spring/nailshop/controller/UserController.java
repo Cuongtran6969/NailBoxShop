@@ -5,7 +5,6 @@ import com.spring.nailshop.dto.request.UserInfoUpdateRequest;
 import com.spring.nailshop.dto.response.ApiResponse;
 import com.spring.nailshop.dto.response.UserProfileResponse;
 import com.spring.nailshop.dto.response.UserUpdateResponse;
-import com.spring.nailshop.service.CloudinaryService;
 import com.spring.nailshop.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,8 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
 
     UserService userService;
-
-    CloudinaryService cloudinaryService;
 
     @GetMapping("/get-info")
     ApiResponse<UserProfileResponse> getUserProfile() {
@@ -53,19 +49,4 @@ public class UserController {
                 .code(HttpStatus.CREATED.value())
                 .build();
     }
-
-//    @PostMapping("/update-avatar")
-//    ApiResponse<String> updateAvatar(@RequestParam("file") MultipartFile file) {
-//        SecurityContext context = SecurityContextHolder.getContext();
-//        String email = context.getAuthentication().getName();
-//
-//        String url = cloudinaryService.uploadImage(file);
-//
-//        cloudinaryService.updateImage(url, email);
-//
-//        return ApiResponse.<String>builder()
-//                .code(HttpStatus.OK.value())
-//                .message("Profile updated successfully")
-//                .build();
-//    }
 }

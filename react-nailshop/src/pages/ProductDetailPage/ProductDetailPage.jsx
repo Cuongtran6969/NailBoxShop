@@ -28,7 +28,6 @@ import { FaShoppingCart } from "react-icons/fa";
 import CateFilter from "@components/CateFilter/CateFilter";
 import ProductSuggest from "@components/ProductSuggest/ProductSuggest";
 import Description from "@productPages/CollapseDesc/Description";
-import ProductItem from "@components/ProductItem/ProductItem";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getProductById } from "@/apis/productService";
 import { useDispatch } from "react-redux";
@@ -85,7 +84,8 @@ const ProductDetailPage = () => {
         designName: "",
         pciture: "",
         price: "",
-        discount: ""
+        discount: "",
+        size: ""
     });
 
     const handleChoose = (checkedKeys) => {
@@ -199,7 +199,8 @@ const ProductDetailPage = () => {
                     designName: designs[0]?.name,
                     price: data.result.price,
                     discount: data.result.discount,
-                    pciture: firstPicture ?? pictures[0]
+                    pciture: firstPicture ?? pictures[0],
+                    size: data.result.size ? data.result.size.split(",")[0] : ""
                 });
             } catch (error) {
                 console.error("Error fetching initial data:", error);
@@ -334,33 +335,39 @@ const ProductDetailPage = () => {
                                                         navigation={true}
                                                         modules={[Navigation]}
                                                     >
-                                                        {images.map((image) => {
-                                                            return (
-                                                                <SwiperSlide>
-                                                                    <div
-                                                                        onClick={() =>
-                                                                            handleChangeImage(
-                                                                                image
-                                                                            )
+                                                        {images.map(
+                                                            (image, index) => {
+                                                                return (
+                                                                    <SwiperSlide
+                                                                        key={
+                                                                            index
                                                                         }
                                                                     >
-                                                                        <img
-                                                                            className={classNames(
-                                                                                {
-                                                                                    [activeImg]:
-                                                                                        image ===
-                                                                                        currentImage
-                                                                                }
-                                                                            )}
-                                                                            src={
-                                                                                image
+                                                                        <div
+                                                                            onClick={() =>
+                                                                                handleChangeImage(
+                                                                                    image
+                                                                                )
                                                                             }
-                                                                            alt=""
-                                                                        />
-                                                                    </div>
-                                                                </SwiperSlide>
-                                                            );
-                                                        })}
+                                                                        >
+                                                                            <img
+                                                                                className={classNames(
+                                                                                    {
+                                                                                        [activeImg]:
+                                                                                            image ===
+                                                                                            currentImage
+                                                                                    }
+                                                                                )}
+                                                                                src={
+                                                                                    image
+                                                                                }
+                                                                                alt=""
+                                                                            />
+                                                                        </div>
+                                                                    </SwiperSlide>
+                                                                );
+                                                            }
+                                                        )}
                                                     </Swiper>
                                                 </div>
                                             </Col>
@@ -477,107 +484,65 @@ const ProductDetailPage = () => {
                                                             </Space>
                                                         </div>
                                                     )}
-                                                    <div
-                                                        className={productSize}
-                                                    >
-                                                        <p
-                                                            style={{
-                                                                marginBottom: 3
-                                                            }}
+                                                    {product.size && (
+                                                        <div
+                                                            className={
+                                                                productSize
+                                                            }
                                                         >
-                                                            Kích cỡ:{" "}
-                                                        </p>
-                                                        <Flex wrap gap="small">
-                                                            <Button
-                                                                ghost={isCurrentSize(
-                                                                    "XS"
-                                                                )}
-                                                                onClick={() =>
-                                                                    handleChooseSize(
-                                                                        "XS"
-                                                                    )
-                                                                }
-                                                                type={
-                                                                    isCurrentSize(
-                                                                        "XS"
-                                                                    )
-                                                                        ? "primary"
-                                                                        : ""
-                                                                }
-                                                                className={
-                                                                    sizeBtn
-                                                                }
+                                                            <p
+                                                                style={{
+                                                                    marginBottom: 3
+                                                                }}
                                                             >
-                                                                XS
-                                                            </Button>
-                                                            <Button
-                                                                ghost={isCurrentSize(
-                                                                    "S"
-                                                                )}
-                                                                onClick={() =>
-                                                                    handleChooseSize(
-                                                                        "S"
-                                                                    )
-                                                                }
-                                                                type={
-                                                                    isCurrentSize(
-                                                                        "S"
-                                                                    )
-                                                                        ? "primary"
-                                                                        : ""
-                                                                }
-                                                                className={
-                                                                    sizeBtn
-                                                                }
+                                                                Kích cỡ:{" "}
+                                                            </p>
+                                                            <Flex
+                                                                wrap
+                                                                gap="small"
                                                             >
-                                                                S
-                                                            </Button>
-                                                            <Button
-                                                                ghost={isCurrentSize(
-                                                                    "M"
-                                                                )}
-                                                                onClick={() =>
-                                                                    handleChooseSize(
-                                                                        "M"
-                                                                    )
-                                                                }
-                                                                type={
-                                                                    isCurrentSize(
-                                                                        "M"
-                                                                    )
-                                                                        ? "primary"
-                                                                        : ""
-                                                                }
-                                                                className={
-                                                                    sizeBtn
-                                                                }
-                                                            >
-                                                                M
-                                                            </Button>
-                                                            <Button
-                                                                ghost={isCurrentSize(
-                                                                    "L"
-                                                                )}
-                                                                onClick={() =>
-                                                                    handleChooseSize(
-                                                                        "L"
-                                                                    )
-                                                                }
-                                                                type={
-                                                                    isCurrentSize(
-                                                                        "L"
-                                                                    )
-                                                                        ? "primary"
-                                                                        : ""
-                                                                }
-                                                                className={
-                                                                    sizeBtn
-                                                                }
-                                                            >
-                                                                L
-                                                            </Button>
-                                                        </Flex>
-                                                    </div>
+                                                                {product.size
+                                                                    .split(",")
+                                                                    .map(
+                                                                        (
+                                                                            item,
+                                                                            index
+                                                                        ) => {
+                                                                            return (
+                                                                                <Button
+                                                                                    key={
+                                                                                        index
+                                                                                    }
+                                                                                    ghost={isCurrentSize(
+                                                                                        item
+                                                                                    )}
+                                                                                    onClick={() =>
+                                                                                        handleChooseSize(
+                                                                                            item
+                                                                                        )
+                                                                                    }
+                                                                                    type={
+                                                                                        isCurrentSize(
+                                                                                            item
+                                                                                        )
+                                                                                            ? "primary"
+                                                                                            : ""
+                                                                                    }
+                                                                                    className={
+                                                                                        sizeBtn
+                                                                                    }
+                                                                                >
+                                                                                    {
+                                                                                        item
+                                                                                    }
+                                                                                </Button>
+                                                                            );
+                                                                        }
+                                                                    )}
+                                                            </Flex>
+                                                        </div>
+                                                    )}
+
                                                     <div
                                                         className={
                                                             productQuantity
@@ -588,7 +553,7 @@ const ProductDetailPage = () => {
                                                                 marginBottom: 3
                                                             }}
                                                         >
-                                                            Kích cỡ:{" "}
+                                                            Số lượng
                                                         </p>
                                                         <Space>
                                                             <InputNumberBox
