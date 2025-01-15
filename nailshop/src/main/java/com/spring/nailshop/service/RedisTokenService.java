@@ -1,15 +1,11 @@
 package com.spring.nailshop.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.nailshop.exception.AppException;
 import com.spring.nailshop.exception.ErrorCode;
 import com.spring.nailshop.model.RedisToken;
 import com.spring.nailshop.repository.RedisTokenRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.webjars.NotFoundException;
 
 
 @Service
