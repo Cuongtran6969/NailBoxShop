@@ -23,3 +23,15 @@ services:
       - REDIS_DISABLE_COMMANDS=FLUSHDB;FLUSHALL
     networks:
       - backend
+
+  mysqldb:
+    image: mysql:8.0.36-debian
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=notes
+    ports:
+      - "3370:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/1.sql
+      - db:/var/lib/mysql

@@ -23,7 +23,8 @@ export default defineConfig({
             "@productManagePages": path.resolve(
                 __dirname,
                 "src/pages/ProductManage/components"
-            )
+            ),
+            "@redux": path.resolve(__dirname, "src/redux")
         }
     }
 });

@@ -1,0 +1,75 @@
+@import "@styles/mixin.module.scss";
+@import "@styles/variables.module.scss";
+.searchBox {
+    width: 400px;
+    padding: 2px;
+    border-radius: 35px;
+    border: 1px solid $color_border;
+    background-color: #00000008;
+    input {
+        height: 40px;
+        padding: 0 10px;
+        background-color: transparent;
+        width: 100%;
+        border: none;
+        outline: none;
+    }
+    .suggestionBox {
+        position: absolute;
+        top: 105%;
+        left: 0;
+        right: 0;
+        border: 1px solid #ccc;
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        // max-height: 200px; /* Giảm max-height */
+        // height: 200px; /* Giữ chiều cao cố định */
+        text-align: start;
+        overflow-y: auto; /* Đổi từ scroll thành auto */
+        z-index: 10000;
+        border-radius: 5px;
+
+        &::-webkit-scrollbar {
+            width: 5px; /* Chiều rộng thanh cuộn */
+            height: 5px; /* Giảm chiều cao thanh cuộn ngang (nếu có) */
+        }
+
+        &::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 2px transparent;
+            border-radius: 10px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            background: #f77aac83;
+        }
+
+        &::-webkit-scrollbar-thumb:hover {
+            background: #ff90bc7e;
+        }
+
+        .suggestionItem {
+            padding: 10px;
+            font-size: 14px;
+            height: 40px;
+            cursor: pointer;
+            &:hover {
+                background-color: #f1f1f1;
+            }
+        }
+        .suggestionItemActive {
+            background-color: #f1f1f1;
+        }
+    }
+
+    @include flex_box_custom(space-between, center, 0px);
+}
+.searchBox {
+    position: relative;
+    display: flex;
+    align-items: center;
+    input {
+        padding: 10px;
+        border-radius: 5px;
+    }
+}

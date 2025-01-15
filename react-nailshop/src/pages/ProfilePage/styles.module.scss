@@ -1,0 +1,252 @@
+@import "@styles/mixin.module.scss";
+@import "@styles/variables.module.scss";
+.appContainer {
+    display: flex;
+    // height: 100vh;
+}
+
+.leftNav {
+    width: 250px;
+    background-color: #f8f9fa;
+    transition: width 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    border-top-left-radius: 25px;
+}
+
+.toggleBtn {
+    background-color: transparent;
+    border: none;
+    font-size: 18px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+.navContent {
+    margin-top: 20px;
+}
+
+.mainContent {
+    background-color: #fff;
+    flex-grow: 1;
+    transition: margin-left 0.3s ease;
+
+    &.full {
+        margin-left: 0;
+    }
+}
+.mainContent.contentBorder {
+    border-top-left-radius: 25px;
+    overflow: hidden;
+}
+.profileDetails label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.profileDetails input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.headerMenu {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.containerContent {
+    background-color: #fff;
+    padding: 20px;
+    padding-top: 0;
+
+    .title {
+        font-size: 18px;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .avatarBox {
+        width: 100px !important;
+        height: 100px !important;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+    .uploadBox {
+        margin-left: 10px;
+        position: relative;
+        cursor: pointer;
+        .uploadBtn {
+            background-color: #000;
+            color: #fff;
+            border-radius: 25px;
+            padding: 10px !important;
+            font-size: 14px;
+            &:hover {
+                border-color: $primary_color !important;
+                color: $primary_color !important;
+            }
+        }
+        .hiddenUpload {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+    }
+
+    .userName {
+        font-size: 14px;
+        text-align: center;
+        margin-bottom: 0;
+    }
+    .saveInfoBtn {
+        background-color: $primary_color !important;
+        font-size: 16px;
+    }
+}
+//myorder
+.orderHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .orderCode {
+        font-size: 15px;
+        color: $four_color;
+    }
+    .orderDate {
+        color: $thr_color;
+        font-size: 12px;
+    }
+
+    .orderStatus {
+        background-color: $color_line;
+        padding: 8px 15px;
+        border-radius: 10px;
+        color: #fff;
+        font-size: 14px;
+        text-align: center;
+        cursor: pointer;
+    }
+}
+.orderFooter {
+    background-color: rgb(248, 249, 250);
+    display: flex;
+    justify-content: left;
+    align-items: end;
+    flex-direction: column;
+    padding: 20px 10px;
+    margin-top: 5px;
+    border-radius: 10px;
+    .footerPrice {
+        margin-bottom: 10px;
+        .footerTitle {
+            font-size: 14px;
+        }
+        .totalPrice {
+            margin-left: 10px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+    }
+    .orderCancel {
+        background-color: rgb(228, 1, 1);
+        padding: 8px 15px;
+        border-radius: 10px;
+        color: #fff;
+        font-size: 14px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+    .buyAgainBtn {
+        background-color: $white_color;
+        border: 1px solid $color_border;
+    }
+    .contactBtn {
+        background-color: $primary_color;
+        color: $white_color;
+        border: 1px solid $color_border;
+        margin-left: 20px;
+    }
+}
+.orderItemBox {
+    display: flex;
+    width: 100%;
+    .orderImgBox {
+        width: 120px;
+        height: 120px;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    .orderItemInfo {
+        margin-left: 10px;
+        width: 100%;
+        .orderName {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .orderValue {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            .orderType {
+                display: flex;
+                align-items: center;
+                font-size: 14px;
+                margin-top: 5px;
+                color: #ccc;
+                color: #2c2c2c88;
+                .space {
+                    margin: 0 10px;
+                    color: #2c2c2c88;
+                }
+            }
+            .orderItemPrice {
+                display: flex;
+                align-items: center;
+                font-size: 16px;
+                .originPrice {
+                    text-decoration: line-through;
+                    color: $color_border;
+                }
+                .price {
+                    color: $color_line;
+                    margin-left: 5px;
+                }
+            }
+        }
+
+        .orderCount {
+            font-size: 14px;
+        }
+    }
+}
+
+.provinceSelect,
+.districtSelect,
+.wardSelect,
+.detailAdd {
+    font-size: 14px;
+}
+.formMess {
+    font-size: 12px;
+    color: red;
+}
+@media (max-width: 768px) {
+    .leftNav {
+        display: none;
+    }
+}
+@media (max-width: 768px) {
+    .containerContent {
+        padding: 0;
+    }
+}

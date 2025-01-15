@@ -8,32 +8,25 @@ import { PiTicket } from "react-icons/pi";
 import { MdOutlineLocalShipping } from "react-icons/md";
 import { IoSettingsOutline } from "react-icons/io5";
 import { CiLogout } from "react-icons/ci";
+import { FaPeopleCarryBox } from "react-icons/fa6";
+import { BsShop } from "react-icons/bs";
+import { MdOutlineCampaign } from "react-icons/md";
+import { BsPostcard } from "react-icons/bs";
 import Logo from "@icons/images/nailLaBoxLogo.png";
 import styles from "./styles.module.scss";
 import classNames from "classnames";
 const items = [
     {
         key: "sub1",
-        label: "Analytics",
+        label: "Phân tích",
         icon: <GrAnalytics />,
-        path: "/analytics"
+        path: "/admin/analytics"
     },
     {
         key: "sub2",
-        label: "Customer",
+        label: "Người dùng",
         icon: <HiOutlineUserGroup />,
-        children: [
-            {
-                key: "1",
-                label: "Manager user",
-                path: "/admin/users"
-            },
-            {
-                key: "2",
-                label: "Create user",
-                path: "/admin/users/create"
-            }
-        ]
+        path: "/admin/users"
     },
     {
         type: "divider"
@@ -45,50 +38,35 @@ const items = [
         children: [
             {
                 key: "3",
-                label: "Manager product",
+                label: "Quản lý sản phẩm",
                 path: "/admin/products"
             },
             {
                 key: "4",
-                label: "Create product",
+                label: "Tạo sản phẩm",
                 path: "/admin/products/create"
             }
         ]
     },
     {
         key: "grp1",
-        label: "Sales",
+        label: "Campaign",
         type: "group",
         children: [
             {
                 key: "sub4",
-                label: "Campaign",
-                icon: <PiTicket />,
+                label: "Chiến dịch",
+                icon: <MdOutlineCampaign />,
                 children: [
                     {
                         key: "5",
-                        label: "Manager campaign",
+                        label: "Quản lý chiến dịch",
                         path: "/admin/campaigns"
                     },
                     {
                         key: "6",
-                        label: "Create campaign",
+                        label: "Tạo chiến dịch",
                         path: "/admin/campaigns/create"
-                    }
-                ]
-            },
-            {
-                key: "sub5",
-                label: "Shipment",
-                icon: <MdOutlineLocalShipping />,
-                children: [
-                    {
-                        key: "7",
-                        label: "Manager ship"
-                    },
-                    {
-                        key: "8",
-                        label: "Create ship"
                     }
                 ]
             }
@@ -99,17 +77,94 @@ const items = [
     },
     {
         key: "grp2",
-        label: "Settings",
+        label: "OrderOrder",
         type: "group",
         children: [
             {
                 key: "sub6",
-                label: "Settings",
-                icon: <IoSettingsOutline />
-            },
+                label: "Đơn hàng",
+                icon: <FaPeopleCarryBox />,
+                children: [
+                    {
+                        key: "9",
+                        label: "Quản lý đơn hàng",
+                        path: "/admin/orders"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        type: "divider"
+    },
+    {
+        key: "grp3",
+        label: "Post",
+        type: "group",
+        children: [
             {
                 key: "sub7",
-                label: "Logout",
+                label: "Bài viết",
+                icon: <BsPostcard />,
+                children: [
+                    {
+                        key: "10",
+                        label: "Quản lý bài viết",
+                        path: "/admin/post/manage"
+                    },
+                    {
+                        key: "11",
+                        label: "Tạo bài viết",
+                        path: "/admin/post/create"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        key: "grp4",
+        label: "Ticket",
+        type: "group",
+        children: [
+            {
+                key: "sub8",
+                label: "Mã giảm giá",
+                icon: <PiTicket />,
+                children: [
+                    {
+                        key: "12",
+                        label: "Quản lý ticket",
+                        path: "/admin/ticket/manage"
+                    },
+                    {
+                        key: "13",
+                        label: "Tạo ticket",
+                        path: "/admin/ticket/create"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        key: "grp5",
+        label: "Setting",
+        type: "group",
+        children: [
+            {
+                key: "14",
+                label: "Cửa hàng",
+                icon: <BsShop />,
+                path: "/admin/shop"
+            },
+            {
+                key: "15",
+                label: "Cài đặt chung",
+                icon: <IoSettingsOutline />,
+                path: "/admin/setting"
+            },
+            {
+                key: "16",
+                label: "Đăng xuất",
                 icon: <CiLogout />
             }
         ]
@@ -118,7 +173,7 @@ const items = [
 
 const AdminSideBar = () => {
     const navigate = useNavigate();
-    const location = useLocation(); // Lấy thông tin đường dẫn hiện tại
+    const location = useLocation();
     const [selectedKey, setSelectedKey] = useState("");
     const [openKeys, setOpenKeys] = useState([]);
     const [openNavMenu, setOpenNavMenu] = useState(true);

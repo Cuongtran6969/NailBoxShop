@@ -21,14 +21,17 @@ import java.util.stream.Collectors;
 
 @Service
 public class JwtServiceImpl implements JwtService {
+    @NonFinal
+    @Value("${jwt.secret-key}")
+    private String SECRET_KEY;
 
-    private static final String SECRET_KEY= "803ccb9767523d85485cb85e6310e73b34929e7df240d51fb5c9606a9cd94148";
+    @NonFinal
+    @Value("${jwt.refresh-key}")
+    private String REFRESH_KEY;
 
-    private static final String REFRESH_KEY = "04efcb14e6e81940dde1c386ad894d63fc5428a3749185aa70b1e5b82faf8ed7";
+    private long expiryTime = 5;
 
-    private long expiryTime = 1;
-
-    private long expiryDay = 14;
+    private long expiryDay = 7;
 
     @Override
     public String generateToken(UserDetails userDetails) {

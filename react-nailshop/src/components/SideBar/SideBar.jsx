@@ -6,6 +6,7 @@ import Login from "@components/ContentSideBar/Auth/Login";
 import Register from "@components/ContentSideBar/Auth/Register";
 import ForgetPassword from "@components/ContentSideBar/Auth/ForgetPassword";
 import { TfiClose } from "react-icons/tfi";
+import Cart from "@components/ContentSideBar/Cart/Cart";
 function SideBar() {
     const { container, sideBar, overlay, slideSideBar, boxIcon } = styles;
     const { isOpen, setIsOpen, type } = useContext(SideBarContext);
@@ -18,6 +19,8 @@ function SideBar() {
                 return <Register />;
             case "forgetPassword":
                 return <ForgetPassword />;
+            case "cart":
+                return <Cart />;
             // case "cart":
             //     return <Cart />;
             default:

@@ -24,10 +24,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,16 +50,17 @@ public class AdminProductServiceImpl implements AdminProductService {
 
     private final CategoryService categoryService;
 
+
     @Override
     @Transactional
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public ProductResponse createProduct(ProductRequest productRequest, List<MultipartFile> productImages, List<MultipartFile> designImages) {
 //        if (designImages != null && productRequest.getDesigns().size() != designImages.size()) {
 //            throw new AppException(ErrorCode.INVALID_DESIGN);
 //        }
         Product product = productMapper.toProduct(productRequest);
-        log.info("have {} design and {} image", productRequest.getDesigns().size(), designImages.size());
         //set Design for product
-        if (!productRequest.getDesigns().isEmpty()) {
+        if (productRequest.getDesigns()!= null && !productRequest.getDesigns().isEmpty()) {
             int i = 0;
             Set<Design> designs = new HashSet<>();
             for (DesignRequest designRequest : productRequest.getDesigns()) {
@@ -91,6 +94,7 @@ public class AdminProductServiceImpl implements AdminProductService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public String deleteProductDesign(long designId) {
         var design = designRepository.findById(designId).orElseThrow(() -> new AppException(ErrorCode.DESIGN_NOT_EXISTED));
         designRepository.delete(design);
@@ -99,6 +103,7 @@ public class AdminProductServiceImpl implements AdminProductService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public DesignResponse updateProductDesign(MultipartFile image, DesignUpdateRequest request) {
         Design design = designRepository.findById(request.getId()).orElseThrow(() -> new AppException(ErrorCode.DESIGN_NOT_EXISTED));
         if(image != null) {
@@ -111,6 +116,7 @@ public class AdminProductServiceImpl implements AdminProductService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public DesignResponse createProductDesign(Long proId, MultipartFile image, DesignRequest request) {
         Product product = productRepository.findById(proId)
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_ID_INVALID));
@@ -126,6 +132,7 @@ public class AdminProductServiceImpl implements AdminProductService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public void updateProductStatus(ProductStatusRequest request) {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_ID_INVALID));
@@ -134,6 +141,7 @@ public class AdminProductServiceImpl implements AdminProductService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public PageResponse<List<Admin_ProductResponse>> getAllProduct(Specification<Product> spec, Pageable pageable) {
         Page<Product> products = productRepository.findAll(spec, pageable);
 
@@ -150,13 +158,16 @@ public class AdminProductServiceImpl implements AdminProductService {
                 .build();
     }
 
+
     @Override
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public ProductResponse getProductDetail(long productId) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_ID_INVALID));
         return productMapper.toProductResponse(product);
     }
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public ProductResponse updateProduct(ProductUpdateRequest request, List<MultipartFile> productImages) {
         Product product = productRepository.findById(request.getId()).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_ID_INVALID));
         productMapper.updateProduct(request, product);
@@ -192,6 +203,7 @@ public class AdminProductServiceImpl implements AdminProductService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated()")
     public List<Product> getProductsByIds(List<Long> ids) {
         List<Product> products = new ArrayList<>();
         for (Long proId : ids) {
@@ -201,6 +213,7 @@ public class AdminProductServiceImpl implements AdminProductService {
         }
         return products;
     }
+
 
 
 }

@@ -2,21 +2,26 @@ import InputCommon from "@components/InputCommon/InputCommon";
 import styles from "./styles.module.scss";
 import { useContext, useState } from "react";
 import Button from "@components/Button/Button";
-import { Typography, notification } from "antd";
+import { notification } from "antd";
 import { login } from "@/apis/authService";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { SideBarContext } from "@contexts/SideBarProvider";
+import { AuthContext } from "@contexts/AuthContext";
 import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 function Login() {
+    const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [isSendingOtp, setIsSendingOtp] = useState(false);
     const [api, contextHolder] = notification.useNotification();
-    const { setType } = useContext(SideBarContext);
+    const { setType, setIsOpen } = useContext(SideBarContext);
+    const { authenticated, refresh } = useContext(AuthContext);
     const openNotificationWithIcon = (type, mess, desc) => {
         api[type]({
             message: mess,
-            description: desc
+            description: desc,
+            placement: "top"
         });
     };
     const {
@@ -50,33 +55,43 @@ function Login() {
     });
 
     const loginHandle = async (values) => {
+        setIsLoading(true);
         await login({
             email: values.email,
             password: values.password
         })
             .then((res) => {
-                openNotificationWithIcon(
-                    "success",
-                    "Đăng nhập thành công",
-                    res.message
-                );
-
-                const { userId, accessToken, refreshToken } = res.result;
-                Cookies.set("accessToken", accessToken);
-                Cookies.set("refreshToken", refreshToken);
-                Cookies.set("userId", userId);
-                setIsLoading(false);
+                if (res.code == 401) {
+                    openNotificationWithIcon(
+                        "error",
+                        "Đăng nhập không thành công",
+                        "Email hoặc password chưa chính xác"
+                    );
+                    console.log("runherrr");
+                } else if (res.code == 200) {
+                    openNotificationWithIcon(
+                        "success",
+                        "Đăng nhập thành công",
+                        "Chào bạn đến với website NailLabox"
+                    );
+                    const { userId, accessToken, refreshToken } = res.result;
+                    Cookies.set("accessToken", accessToken);
+                    Cookies.set("refreshToken", refreshToken);
+                    Cookies.set("userId", userId);
+                    setIsOpen(false);
+                    refresh();
+                }
             })
             .catch((err) => {
                 console.log(err);
-
+                console.log("runherrr");
                 openNotificationWithIcon(
                     "error",
                     "Đăng nhập không thành công",
                     err
                 );
-                setIsLoading(false);
             });
+        setIsLoading(false);
     };
 
     return (
@@ -106,7 +121,10 @@ function Login() {
                         <input type="checkbox" />
                         <span>Remember me</span>
                     </div>
-                    <Button content={"LOGIN"} type={"submit"} />
+                    <Button
+                        content={isLoading ? "...Loading" : "LOGIN"}
+                        type={isLoading ? "" : "submit"}
+                    />
                 </form>
                 <Button
                     content={"Don't have an account?"}

@@ -12,4 +12,6 @@ import lombok.experimental.FieldDefaults;
 public class IntrospectResponse {
     boolean valid;
     String role;
+    String name;
+    String avatar;
 }

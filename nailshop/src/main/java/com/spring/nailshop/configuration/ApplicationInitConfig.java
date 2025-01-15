@@ -2,8 +2,10 @@ package com.spring.nailshop.configuration;
 
 import com.spring.nailshop.constant.PredefinedRole;
 import com.spring.nailshop.entity.Role;
+import com.spring.nailshop.entity.Shop;
 import com.spring.nailshop.entity.User;
 import com.spring.nailshop.repository.RoleRepository;
+import com.spring.nailshop.repository.ShopRepository;
 import com.spring.nailshop.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -29,13 +31,14 @@ public class ApplicationInitConfig {
     @NonFinal
     static final String ADMIN_PASSWORD = "123456";
 
+
     @Bean
     @ConditionalOnProperty(
             prefix = "spring",
             value = "datasource.driverClassName",
             havingValue = "com.mysql.cj.jdbc.Driver"
     )
-    ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository) {
+    ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository, ShopRepository shopRepository) {
         log.info("Initializing application.....");
         return args -> {
             if(roleRepository.findByName(PredefinedRole.ADMIN_ROLE).isEmpty()) {
@@ -70,6 +73,20 @@ public class ApplicationInitConfig {
                         .build();
                 userRepository.save(user);
             }
+            if(shopRepository.findAll().isEmpty()) {
+                Shop shop = Shop.builder()
+                        .name("NailLaShop")
+                        .district_name("Dien Chau")
+                        .province_name("Nghe An")
+                        .ward_name("Dien Thai")
+                        .bank_code("083838383999")
+                        .bank_name("MB Bank")
+                        .bank_account_name("TRAN VAN CUONG")
+                        .phone("0383459560")
+                        .build();
+                shopRepository.save(shop);
+            }
+
             log.info("Application initialization completed .....");
         };
     }

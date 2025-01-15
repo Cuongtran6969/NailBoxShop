@@ -1,0 +1,61 @@
+.newsItem {
+    display: flex;
+    .newsContent {
+        flex: 1; /* Nội dung chiếm phần còn lại */
+        margin-left: 10px;
+        .newsTitle {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+        }
+    }
+    img {
+        width: 20%; /* Ảnh chiếm 20% */
+        height: 120px;
+        object-fit: cover;
+        border-radius: 10px;
+        cursor: pointer;
+        &:hover {
+            transform: scale(1.02);
+        }
+    }
+}
+.cardImg {
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s;
+    &:hover {
+        transform: scale(1.02);
+    }
+}
+.cardDescription {
+    height: 45px;
+    margin-bottom: 5px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.createTime {
+    display: flex;
+    align-items: center;
+    color: #333;
+}
+.timeValue {
+    margin-top: 2px;
+    margin-left: 5px;
+    font-size: 12px;
+}
+.cardTitle {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}

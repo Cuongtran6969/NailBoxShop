@@ -7,26 +7,54 @@ import { BiSolidDiscount } from "react-icons/bi";
 import InputNumberBox from "@components/InputNumberBox/InputNumberBox";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { MdDelete } from "react-icons/md";
-
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import {
+    updateQuantity,
+    removeItem,
+    changeListBuy
+} from "@redux/slice/cartSlice";
+import { useSelector } from "react-redux";
 const { confirm } = Modal;
-function OrderItem() {
-    const showDeleteConfirm = () => {
-        confirm({
-            title: "Are you sure delete this task?",
-            icon: <ExclamationCircleFilled />,
-            content: "Some descriptions",
-            okText: "Yes",
-            okType: "danger",
-            cancelText: "No",
-            onOk() {
-                console.log("OK");
-            },
-            onCancel() {
-                console.log("Cancel");
-            }
-        });
+function OrderItem({ data }) {
+    const dispatch = useDispatch();
+
+    const handleChangeQuantity = (quantity) => {
+        dispatch(
+            updateQuantity({
+                ...data,
+                quantity
+            })
+        );
+    };
+    const { listBuy } = useSelector((state) => state.cart);
+
+    const isChecked = listBuy.some(
+        (item) =>
+            item.productId === data.productId &&
+            item.size === data.size &&
+            item.designId === data.designId
+    );
+
+    const handleRemoveItem = () => {
+        dispatch(
+            removeItem({
+                ...data
+            })
+        );
     };
 
+    const parseMoneyFormat = (price) => {
+        return new Intl.NumberFormat("vi-VN").format(price);
+    };
+
+    const handeCheckBox = () => {
+        dispatch(
+            changeListBuy({
+                ...data
+            })
+        );
+    };
     const {
         itemImage,
         title,
@@ -36,7 +64,6 @@ function OrderItem() {
         iconDot,
         iconSize,
         removeBtn,
-        cateName,
         price,
         itemPrice,
         originPrice,
@@ -57,11 +84,11 @@ function OrderItem() {
         <div>
             <Row style={{ alignItems: "center" }}>
                 <Col sm={1} md={1} className="col-1 p-0 text-center">
-                    <Checkbox />
+                    <Checkbox checked={isChecked} onChange={handeCheckBox} />
                 </Col>
                 <Col sm={3} md={2} className="col-3 ps-0">
                     <div className={itemImage}>
-                        <img src="https://nailboxxinh.com/wp-content/uploads/2024/12/combo-nail-box-xinh-4-300x300.webp" />
+                        <img src={data.pciture} />
                     </div>
                 </Col>
                 <Col sm={8} md={9} className="col-8">
@@ -70,48 +97,53 @@ function OrderItem() {
                             <div>
                                 <h4 className={title}>
                                     <span className={titleValue}>
-                                        Combo 2 bộ Nail box Trắng gạo + Cute
-                                        đính bướm
-                                    </span>
-                                    <span>
-                                        <Button
-                                            type="primary"
-                                            className={cateName}
-                                        >
-                                            Nail box xinh
-                                        </Button>
+                                        {data.productName}
                                     </span>
                                 </h4>
                                 <div className={categrory}>
-                                    <div className={cateValue}>
-                                        <GoDotFill className={iconDot} />
-                                        <span>Mẫu 1</span>
-                                    </div>
+                                    {data.designName && (
+                                        <>
+                                            <div className={cateValue}>
+                                                <GoDotFill
+                                                    className={iconDot}
+                                                />
+                                                <span>{data.designName}</span>
+                                            </div>
+                                        </>
+                                    )}
                                     <div className={cateValue}>
                                         <PiResizeFill className={iconSize} />
-                                        <span>Size S</span>
+                                        <span>Size {data.size}</span>
                                     </div>
                                     <div className={removeBtnHehind}>
-                                        <MdDelete />
+                                        <MdDelete onClick={handleRemoveItem} />
                                     </div>
                                 </div>
-                                <div
-                                    className={removeBtn}
-                                    onClick={showDeleteConfirm}
-                                >
-                                    <span>Remove</span>
+                                <div className={removeBtn}>
+                                    <span onClick={handleRemoveItem}>
+                                        Remove
+                                    </span>
                                 </div>
                                 <div className={itemPriceBox}>
-                                    <span className={itemPrice}>122.000₫</span>
                                     <span className={originPrice}>
-                                        222.000₫
+                                        {parseMoneyFormat(data.price)}₫
                                     </span>
+                                    <span className={itemPrice}>
+                                        {parseMoneyFormat(
+                                            data.price -
+                                                0.01 *
+                                                    data.discount *
+                                                    data.price
+                                        )}
+                                        ₫
+                                    </span>
+
                                     <Button
                                         type="primary"
                                         icon={<BiSolidDiscount />}
                                         className={discount}
                                     >
-                                        20%
+                                        {data.discount}%
                                     </Button>
                                 </div>
                             </div>
@@ -119,23 +151,39 @@ function OrderItem() {
                         <Col sm={3} className={totalItemBox}>
                             <div className={totalItemPrice}>
                                 <span className={totalItemPricevalue}>
-                                    388.000
+                                    {parseMoneyFormat(
+                                        (data.price -
+                                            0.01 * data.discount * data.price) *
+                                            data.quantity
+                                    )}
                                     <span class={priceSymbol}>₫</span>
                                 </span>
                             </div>
                             <div className={boxBehind}>
                                 <div>
                                     <span className={originPriceBehind}>
-                                        222.000₫
+                                        {parseMoneyFormat(data.price)}₫
                                     </span>
                                     <span className={itemPriceBehind}>
-                                        122.000₫
+                                        {parseMoneyFormat(
+                                            data.price -
+                                                0.01 *
+                                                    data.discount *
+                                                    data.price
+                                        )}
+                                        ₫
                                     </span>
                                 </div>
-                                <p className={discountBehind}>Discount 5%</p>
+                                <p className={discountBehind}>
+                                    Discount {data.discount}%
+                                </p>
                             </div>
                             <div className={quantityBox}>
-                                <InputNumberBox type="small" />
+                                <InputNumberBox
+                                    type="small"
+                                    quantity={data.quantity}
+                                    changeQuantity={handleChangeQuantity}
+                                />
                             </div>
                         </Col>
                     </Row>

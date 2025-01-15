@@ -21,6 +21,7 @@ public class ProductUpdateRequest {
     String description;
     Integer discount;
     Boolean isActive;
+    String size;
     Set<String> oldImages;
     Set<Long> categoryIds;
 }

@@ -25,46 +25,10 @@ function ProductSuggest() {
         proDiscount,
         proPriceInfo
     } = styles;
-    const videos = [
-        {
-            id: 1,
-            title: "Dùng thử chuột trên iPadOS - Tính năng ngon như vậy mà giờ mới có",
-            imgSrc: "https://nailboxxinh.com/wp-content/uploads/2024/12/combo-nail-box-xinh-1-150x150.webp", // Placeholder cho ảnh
-            price: "4,500,000₫",
-            originalPrice: "5,000,000₫",
-            discount: "10%"
-        },
-        {
-            id: 2,
-            title: "iPad Mini 5, hàng NGON BỔ RẺ của Apple là đây chứ đâu!",
-            imgSrc: "https://nailboxxinh.com/wp-content/uploads/2024/12/combo-nail-box-xinh-4-150x150.webp",
-            price: "3,900,000₫",
-            originalPrice: "4,500,000₫",
-            discount: "13%"
-        },
-        {
-            id: 3,
-            title: "Đánh giá chi tiết iPad Mini 5 - Chiếc tablet",
-            imgSrc: "https://nailboxxinh.com/wp-content/uploads/2024/12/combo-nail-box-xinh-4-150x150.webp",
-            price: "4,200,000₫",
-            originalPrice: "4,700,000₫",
-            discount: "11%"
-        },
-        {
-            id: 4,
-            title: "iPad chơi game BÁ ĐẠO NHẤT ???",
-            imgSrc: "https://nailboxxinh.com/wp-content/uploads/2024/12/combo-nail-box-xinh-4-150x150.webp",
-            price: "5,200,000₫",
-            originalPrice: "5,500,000₫",
-            discount: "6%"
-        }
-    ];
-    // const targetDate = "2024-12-17T06:00:00";
     useEffect(() => {
         const fetchProductCampaign = async () => {
             try {
                 const data = await getProductPublic(page, size, null, sort);
-                console.log(data.result.products);
                 setProducts(data.result.items);
             } catch (error) {
                 console.log(error);
@@ -144,7 +108,15 @@ function ProductSuggest() {
                     </Row>
                     {/* Nút Xem thêm */}
                     <div className="text-center mt-2">
-                        <Button type="default" style={{ width: "100%" }}>
+                        <Button
+                            type="default"
+                            style={{ width: "100%" }}
+                            onClick={() =>
+                                navigate(`/search`, {
+                                    state: { orderBy: "sold:desc" }
+                                })
+                            }
+                        >
                             Xem thêm...
                         </Button>
                     </div>

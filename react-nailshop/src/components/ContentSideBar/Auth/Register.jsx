@@ -11,7 +11,7 @@ import { useFormik } from "formik";
 import OtpInput from "formik-otp-input";
 import { SideBarContext } from "@contexts/SideBarProvider";
 function Register() {
-    const [isRegister, setIsRegister] = useState(false);
+    const [isRegister, setIsRegister] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [isSendingOtp, setIsSendingOtp] = useState(false);
     const [api, contextHolder] = notification.useNotification();

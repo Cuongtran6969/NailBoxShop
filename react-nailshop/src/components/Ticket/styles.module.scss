@@ -1,0 +1,82 @@
+.container {
+    display: flex;
+    margin: 0 auto;
+    margin-top: 20px;
+    // align-items: center;
+    height: 90px;
+    width: fit-content;
+    // padding: 10px 10px 10px;
+    border-radius: 5px;
+    background-color: #fff;
+    overflow: hidden;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+
+    .type {
+        display: flex;
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+        align-items: center;
+        font-size: 16px;
+        font-weight: 500;
+        padding: 0 10px;
+        padding-left: 20px;
+        position: relative;
+        background-color: #26aa99;
+        line-height: 90px;
+        color: #fff;
+        user-select: none;
+        border: 1px solid #a7a7a754;
+        &::after {
+            position: absolute;
+            content: "";
+            width: 1px;
+            height: 90px;
+            background-color: 797979;
+            right: 0;
+            transform: translateY(-50%);
+            top: 50%;
+        }
+        &::before {
+            position: absolute;
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: red;
+            left: 5px;
+            transform: translateY(-50%);
+            top: 50%;
+            background-color: #fff;
+        }
+    }
+    .type.priceTicket {
+        background-color: #ff9034;
+    }
+    .content {
+        padding: 0 10px;
+        display: flex;
+        height: 90px;
+        align-items: center;
+        user-select: none;
+        .ticketName {
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .description {
+            font-size: 10px;
+            margin-top: 10px;
+            margin-bottom: 0;
+        }
+    }
+    .icon {
+        cursor: pointer;
+        display: flex;
+        height: 90px;
+        align-items: center;
+        margin-right: 10px;
+        font-size: 20px;
+        &:hover {
+            color: #ff9034;
+        }
+    }
+}

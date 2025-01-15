@@ -1,13 +1,7 @@
 package com.spring.nailshop.dto.response;
-
-import com.spring.nailshop.entity.Address;
-import com.spring.nailshop.entity.Role;
-import com.spring.nailshop.entity.User;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.mapstruct.Mapping;
 
-import java.util.List;
 
 @Setter
 @Getter
@@ -23,5 +17,5 @@ public class UserResponse {
     String lastName;
     String phone;
     Boolean enabled;
-    String role;
+    RoleResponse role;
 }

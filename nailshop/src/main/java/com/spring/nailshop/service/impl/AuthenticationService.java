@@ -13,7 +13,6 @@ import com.spring.nailshop.model.RedisToken;
 import com.spring.nailshop.repository.UserRepository;
 import com.spring.nailshop.security.UserSecurity;
 import com.spring.nailshop.service.JwtService;
-import com.spring.nailshop.service.JwtTokenService;
 import com.spring.nailshop.service.RedisTokenService;
 import com.spring.nailshop.util.TokenType;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,8 +39,6 @@ public class AuthenticationService {
 
     JwtService jwtService;
 
-    JwtTokenService jwtTokenService;
-
     RedisTokenService redisTokenService;
 
     private final AuthenticationManager authenticationManager;
@@ -50,12 +47,11 @@ public class AuthenticationService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow(() ->
-                new UsernameNotFoundException("Username or password incorrect"));
+                new AppException(ErrorCode.USER_NOT_EXISTED));
 
         UserSecurity userSecurity = new UserSecurity(user);
         var accessToken = jwtService.generateToken(userSecurity);
         var refreshToken = jwtService.generateRefreshToken(userSecurity);
-
 
         redisTokenService.save(RedisToken.builder()
                         .id(user.getEmail())
@@ -73,7 +69,7 @@ public class AuthenticationService {
     public TokenResponse refresh(RefreshTokenRequest request) {
         String refreshToken = request.getToken();
         if(StringUtils.isBlank(refreshToken)) {
-            throw new AppException(ErrorCode.INVALID_TOKEN);
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
         final String userName = jwtService.extractUsername(refreshToken, TokenType.REFRESH_TOKEN);
         User user = userRepository.findByEmail(userName)
@@ -118,6 +114,8 @@ public class AuthenticationService {
         var token = request.getToken();
         boolean isValid = true;
         String scope =  null;
+        String username = "";
+        String avatar = "";
         try {
             if(StringUtils.isBlank(token)) {
                 throw new AppException(ErrorCode.INVALID_TOKEN);
@@ -127,6 +125,8 @@ public class AuthenticationService {
 
             User user = userRepository.findByEmail(userName)
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+            username = user.getName();
+            avatar = user.getAvatar();
             UserSecurity userSecurity = new UserSecurity(user);
 
             if(!jwtService.isValid(token, TokenType.ACCESS_TOKEN, userSecurity)) {
@@ -138,6 +138,8 @@ public class AuthenticationService {
         }
         return IntrospectResponse.builder()
                 .valid(isValid)
+                .name(username)
+                .avatar(avatar)
                 .role(scope)
                 .build();
     }

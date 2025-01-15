@@ -22,6 +22,7 @@ public class ProductResponse {
     Boolean isActive;
     String pictures;
     Integer sold;
+    String size;
     Set<DesignResponse> designs;
     Set<CategoryResponse> categories;
 }

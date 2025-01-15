@@ -51,7 +51,6 @@ public class AdminProductController {
     public ApiResponse<ProductResponse> updateProduct(
             @RequestPart(value = "productImages", required = false) List<MultipartFile> productImages,
             @RequestPart(value = "product") ProductUpdateRequest request) {
-       ;
         return ApiResponse.<ProductResponse>builder()
                 .code(HttpStatus.OK.value())
                 .result(adminProductService.updateProduct(request, productImages))
@@ -144,4 +143,5 @@ public class AdminProductController {
             orders.add(new Sort.Order(direction, sortBy));
         }
         return Sort.by(orders);
+    }
 }

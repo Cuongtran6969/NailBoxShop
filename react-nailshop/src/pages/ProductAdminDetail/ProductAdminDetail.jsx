@@ -14,14 +14,31 @@ import {
     Switch,
     Upload,
     Button,
-    Spin,
+    notification,
     message
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import DesignAdmin from "./DesignAdmin";
 import { Row, Col } from "react-bootstrap";
-
-const { TextArea } = Input;
+import Editor from "@components/Editor/Editor";
+const sizeOption = [
+    {
+        label: "S",
+        value: "S"
+    },
+    {
+        label: "M",
+        value: "M"
+    },
+    {
+        label: "L",
+        value: "L"
+    },
+    {
+        label: "XL",
+        value: "XL"
+    }
+];
 
 const ProductAdminDetail = () => {
     const { id } = useParams();
@@ -33,6 +50,14 @@ const ProductAdminDetail = () => {
     const [designs, setDesigns] = useState([]);
     const [designList, setDesignList] = useState([]);
     const [oldImages, setOldImages] = useState([]);
+    const [content, setContent] = useState("");
+    const [api, contextHolder] = notification.useNotification();
+    const openNotificationWithIcon = (type, mess, desc) => {
+        api[type]({
+            message: mess,
+            description: desc
+        });
+    };
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
@@ -46,7 +71,9 @@ const ProductAdminDetail = () => {
                 const formattedOldImages = pictures
                     .split(",")
                     .map((url) => url.trim());
+
                 setOldImages(formattedOldImages);
+
                 const formattedFileList = pictures
                     .split(",")
                     .map((url, index) => ({
@@ -63,7 +90,10 @@ const ProductAdminDetail = () => {
                     categories: productRes.result.categories.map((c) => c.id),
                     description: productRes.result.description,
                     discount: productRes.result.discount,
-                    isActive: productRes.result.isActive
+                    isActive: productRes.result.isActive,
+                    size: productRes.result.size
+                        ? productRes.result.size.split(",")
+                        : []
                 });
 
                 setProduct(productRes.result);
@@ -75,6 +105,7 @@ const ProductAdminDetail = () => {
                         value: category.id
                     })
                 );
+
                 setCategories(formattedCategories);
             } catch (error) {
                 console.error("Error fetching initial data:", error);
@@ -86,11 +117,21 @@ const ProductAdminDetail = () => {
         fetchInitialData();
     }, [id]);
 
-    const updateDesign = async (updatedDesign) => {};
-
     const handleSubmit = async (values) => {
-        setLoading(true);
+        console.log(values);
+
         const formData = new FormData();
+        if (
+            values.productImages?.fileList.length == 0 &&
+            oldImages.length == 0
+        ) {
+            openNotificationWithIcon(
+                "warning",
+                "Thiếu thông tin",
+                "Cần thêm ảnh cho sản phẩm"
+            );
+            return;
+        }
         formData.append(
             "product",
             new Blob(
@@ -100,46 +141,33 @@ const ProductAdminDetail = () => {
                         name: values.name,
                         price: values.price,
                         stock: values.stock,
-                        description: values.description,
+                        description: content,
                         discount: values.discount,
                         isActive: values.isActive,
                         categoryIds: values.categories,
+                        size: values.size.join(),
                         oldImages
                     })
                 ],
                 { type: "application/json" }
             )
         );
-        console.log({
-            id: id,
-            name: values.name,
-            price: values.price,
-            stock: values.stock,
-            description: values.description,
-            discount: values.discount,
-            isActive: values.isActive,
-            categoryIds: values.categories,
-            oldImages
-        });
 
         fileList.forEach((file) => {
-            console.log(file.originFileObj);
-
             formData.append("productImages", file.originFileObj);
         });
         try {
+            setLoading(true);
             const response = await updateProduct(formData);
-            console.log("Product created successfully:", response);
-            message.success("Product created successfully");
+            console.log("Product update successfully:", response);
+            message.success("Product update successfully");
         } catch (error) {
             console.error("Error creating product:", error);
-            message.success("Error creating product");
+            message.success("Error update product");
         }
         setLoading(false);
     };
     const handleRemoveImage = (file) => {
-        console.log("delete id: " + file.uid);
-
         if (file.uid.startsWith("old-")) {
             setOldImages((prev) => prev.filter((url) => url !== file.url));
         }
@@ -181,102 +209,128 @@ const ProductAdminDetail = () => {
 
         setDesignList([...designList, newDesign]);
     };
-    if (loading) {
-        return <Spin tip="Loading..." />;
-    }
-    console.log("old image: " + oldImages);
 
     return (
-        <Row>
-            <Col sm={6}>
-                <Form
-                    form={form}
-                    labelCol={{ span: 6 }}
-                    wrapperCol={{ span: 18 }}
-                    style={{ flex: 1 }}
-                    onFinish={handleSubmit}
-                >
-                    <Form.Item label="Product Images" name="productImages">
-                        <Upload
-                            listType="picture-card"
-                            fileList={fileList}
-                            onChange={({ fileList }) => setFileList(fileList)}
-                            onRemove={handleRemoveImage}
-                            beforeUpload={() => false}
-                        >
-                            <div>
-                                <PlusOutlined />
-                                <div style={{ marginTop: 8 }}>Upload</div>
-                            </div>
-                        </Upload>
-                    </Form.Item>
-                    <Form.Item
-                        name="name"
-                        label="Product Name"
-                        rules={[{ required: true }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        name="price"
-                        label="Price"
-                        rules={[{ required: true }]}
-                    >
-                        <InputNumber min={0} />
-                    </Form.Item>
-                    <Form.Item
-                        name="stock"
-                        label="Stock"
-                        rules={[{ required: true }]}
-                    >
-                        <InputNumber min={0} />
-                    </Form.Item>
-                    <Form.Item name="description" label="Description">
-                        <TextArea rows={4} />
-                    </Form.Item>
-                    <Form.Item name="discount" label="Discount">
-                        <InputNumber min={0} max={100} />
-                    </Form.Item>
-                    <Form.Item
-                        name="isActive"
-                        label="Active"
-                        valuePropName="checked"
-                    >
-                        <Switch />
-                    </Form.Item>
-                    <Form.Item name="categories" label="Categories">
-                        <Select mode="multiple" options={categories} />
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit">
-                            Update info
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Col>
-            <Col sm={6}>
-                {designList.map((design) => {
-                    console.log(design);
+        <div style={{ height: "90vh", overflowY: "scroll" }}>
+            <Row>
+                {contextHolder}
+                {loading ? (
+                    <></>
+                ) : (
+                    <>
+                        <Col sm={6}>
+                            <Form
+                                form={form}
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                style={{ flex: 1 }}
+                                onFinish={handleSubmit}
+                            >
+                                <Form.Item
+                                    label="Product Images"
+                                    name="productImages"
+                                >
+                                    <Upload
+                                        listType="picture-card"
+                                        fileList={fileList}
+                                        onChange={({ fileList }) =>
+                                            setFileList(fileList)
+                                        }
+                                        onRemove={handleRemoveImage}
+                                        beforeUpload={() => false}
+                                    >
+                                        <div>
+                                            <PlusOutlined />
+                                            <div style={{ marginTop: 8 }}>
+                                                Upload
+                                            </div>
+                                        </div>
+                                    </Upload>
+                                </Form.Item>
+                                <Form.Item
+                                    name="name"
+                                    label="Product Name"
+                                    rules={[{ required: true }]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                                <Form.Item
+                                    name="price"
+                                    label="Price"
+                                    rules={[{ required: true }]}
+                                >
+                                    <InputNumber min={0} />
+                                </Form.Item>
+                                <Form.Item
+                                    name="stock"
+                                    label="Stock"
+                                    rules={[{ required: true }]}
+                                >
+                                    <InputNumber min={0} />
+                                </Form.Item>
+                                <Form.Item label="Description">
+                                    <Editor
+                                        onChange={(e) => setContent(e.markdown)}
+                                        initialValue={content}
+                                    />
+                                </Form.Item>
+                                <Form.Item name="discount" label="Discount">
+                                    <InputNumber min={0} max={100} />
+                                </Form.Item>
+                                <Form.Item
+                                    name="isActive"
+                                    label="Active"
+                                    valuePropName="checked"
+                                >
+                                    <Switch />
+                                </Form.Item>
+                                <Form.Item name="categories" label="Categories">
+                                    <Select
+                                        mode="multiple"
+                                        options={categories}
+                                    />
+                                </Form.Item>
+                                <Form.Item name="size" label="Size">
+                                    <Select
+                                        mode="multiple"
+                                        allowClear
+                                        placeholder="Select size"
+                                        options={sizeOption}
+                                    />
+                                </Form.Item>
+                                <Form.Item>
+                                    <Button type="primary" htmlType="submit">
+                                        Update info
+                                    </Button>
+                                </Form.Item>
+                            </Form>
+                        </Col>
+                        <Col sm={6}>
+                            {designList.map((design) => {
+                                console.log(design);
 
-                    return (
-                        <DesignAdmin
-                            key={design.id}
-                            design={design}
-                            productId={id}
-                            handleRemove={handleRemove}
-                        />
-                    );
-                })}
-                <Button
-                    type="dashed"
-                    style={{ marginTop: "1rem" }}
-                    block
-                    onClick={handleAddDesign}
-                >
-                    Add Design
-                </Button>
-            </Col>
-        </Row>
+                                return (
+                                    <DesignAdmin
+                                        key={design.id}
+                                        design={design}
+                                        productId={id}
+                                        handleRemove={handleRemove}
+                                    />
+                                );
+                            })}
+                            <Button
+                                type="dashed"
+                                style={{ marginTop: "1rem" }}
+                                block
+                                onClick={handleAddDesign}
+                            >
+                                Add Design
+                            </Button>
+                        </Col>
+                    </>
+                )}
+            </Row>
+        </div>
     );
 };
 

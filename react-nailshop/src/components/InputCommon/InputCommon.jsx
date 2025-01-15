@@ -24,7 +24,6 @@ function InputCommon({
     const handleShowPassword = () => {
         setShowPassword(!showPassword);
     };
-
     return (
         <div className={container}>
             <div className={labelInput}>

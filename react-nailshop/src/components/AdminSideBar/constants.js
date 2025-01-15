@@ -61,6 +61,16 @@ export const adminMenu = [
         ]
     },
     {
+        label: "Order",
+        subMenu: [
+            {
+                label: "Quản lý đơn hàng",
+                icon: FaPeopleCarryBox,
+                path: ""
+            }
+        ]
+    },
+    {
         label: "",
         subMenu: [
             {

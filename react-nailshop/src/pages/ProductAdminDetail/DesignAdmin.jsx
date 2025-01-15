@@ -7,7 +7,8 @@ import {
     Button,
     Spin,
     Popconfirm,
-    message
+    message,
+    notification
 } from "antd";
 import { PlusOutlined, CloseOutlined } from "@ant-design/icons";
 import {
@@ -20,7 +21,13 @@ function DesignAdmin({ design, productId, handleRemove }) {
     const [fileLists, setFileLists] = useState([]);
     const [loading, setLoading] = useState(false);
     const [form] = Form.useForm(); // Khởi tạo form
-
+    const [api, contextHolder] = notification.useNotification();
+    const openNotificationWithIcon = (type, mess, desc) => {
+        api[type]({
+            message: mess,
+            description: desc
+        });
+    };
     useEffect(() => {
         let fileImage = [
             {
@@ -45,6 +52,14 @@ function DesignAdmin({ design, productId, handleRemove }) {
     };
 
     const handleSubmit = async (values) => {
+        if (!values.image) {
+            openNotificationWithIcon(
+                "warning",
+                "Thiếu thông tin",
+                "Cần thêm ảnh cho thiết kế"
+            );
+            return;
+        }
         setLoading(true);
         const formData = new FormData();
         formData.append(
@@ -71,9 +86,6 @@ function DesignAdmin({ design, productId, handleRemove }) {
                 response = await updateDesign(formData);
             }
 
-            console.log(response);
-
-            // Cập nhật file list và form fields sau khi update thành công
             const updatedDesign = response.result;
             let fileImage = [
                 {
@@ -103,59 +115,75 @@ function DesignAdmin({ design, productId, handleRemove }) {
     }
 
     return (
-        <Card
-            key={design.id}
-            size="small"
-            title={`Design ${design.id}`}
-            extra={
-                <Popconfirm
-                    placement="leftBottom"
-                    title="Delete the task"
-                    description="Are you sure to delete this task?"
-                    onConfirm={() =>
-                        handleRemove(
-                            form.getFieldValue("id"),
-                            form.getFieldValue("oldId")
-                        )
+        <>
+            {contextHolder}
+            <div>
+                <Card
+                    key={design.id}
+                    size="small"
+                    title={`Design ${design.id}`}
+                    extra={
+                        <Popconfirm
+                            placement="leftBottom"
+                            title="Delete the task"
+                            description="Are you sure to delete this task?"
+                            onConfirm={() =>
+                                handleRemove(
+                                    form.getFieldValue("id"),
+                                    form.getFieldValue("oldId")
+                                )
+                            }
+                            okText="Yes"
+                            cancelText="No"
+                        >
+                            <CloseOutlined style={{ color: "red" }} />
+                        </Popconfirm>
                     }
-                    okText="Yes"
-                    cancelText="No"
                 >
-                    <CloseOutlined style={{ color: "red" }} />
-                </Popconfirm>
-            }
-        >
-            <Form
-                form={form} // Liên kết form
-                layout="vertical"
-                onFinish={handleSubmit}
-            >
-                <Form.Item label="Design Id" name="id" hidden>
-                    <Input readOnly /> {/* Để ID không thể chỉnh sửa */}
-                </Form.Item>
-                <Form.Item label="Design Image" name="image">
-                    <Upload
-                        listType="picture-card"
-                        fileList={fileLists}
-                        maxCount={1}
-                        showUploadList={{ showRemoveIcon: false }}
-                        beforeUpload={() => false}
-                        onChange={(info) => handleUploadChange(info)}
+                    <Form
+                        form={form} // Liên kết form
+                        layout="vertical"
+                        onFinish={handleSubmit}
                     >
-                        <PlusOutlined />
-                        <div>Update</div>
-                    </Upload>
-                </Form.Item>
-                <Form.Item label="Design Name" name="name">
-                    <Input />
-                </Form.Item>
-                <Form.Item>
-                    <Button type="primary" htmlType="submit">
-                        {design.id ? "Update Design" : "Create New Design"}
-                    </Button>
-                </Form.Item>
-            </Form>
-        </Card>
+                        <Form.Item label="Design Id" name="id" hidden>
+                            <Input readOnly /> {/* Để ID không thể chỉnh sửa */}
+                        </Form.Item>
+                        <Form.Item label="Design Image" name="image">
+                            <Upload
+                                listType="picture-card"
+                                fileList={fileLists}
+                                maxCount={1}
+                                showUploadList={{ showRemoveIcon: false }}
+                                beforeUpload={() => false}
+                                onChange={(info) => handleUploadChange(info)}
+                            >
+                                <PlusOutlined />
+                                <div>Update</div>
+                            </Upload>
+                        </Form.Item>
+                        <Form.Item
+                            label="Design Name"
+                            name="name"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Yêu cầu nhập tên thiết kế "
+                                }
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit">
+                                {design.id
+                                    ? "Update Design"
+                                    : "Create New Design"}
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Card>
+            </div>
+        </>
     );
 }
 

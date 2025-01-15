@@ -10,6 +10,7 @@ import com.spring.nailshop.repository.CategoryRepository;
 import com.spring.nailshop.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -26,6 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
 
     @Override
+    @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public void addCategories(CategoryRequest request) {
         categoryRepository.findByName(request.getName())
                 .ifPresent(category -> { throw new AppException(ErrorCode.CATEGORIES_EXISTED); });

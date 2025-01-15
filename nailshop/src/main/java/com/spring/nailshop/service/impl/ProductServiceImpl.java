@@ -23,6 +23,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,6 +54,13 @@ public class ProductServiceImpl implements ProductService {
 
         if (!campaigns.isEmpty()) {
             Campaign latestCampaign = campaigns.get(0);
+            List<Product> activePro = new ArrayList<>();
+            for(Product pro : latestCampaign.getProducts()) {
+                if(pro.getIsActive() && pro.getStock() > 0) {
+                    activePro.add(pro);
+                }
+            }
+            latestCampaign.setProducts(activePro);
             return campaignMapper.toCampaignResponseDetail(latestCampaign);
         }
         return new CampaignDetailResponse();
@@ -60,7 +68,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public PageResponse<List<ProductResponse>> getAllProduct(Specification<Product> spec, Pageable pageable) {
-        Page<Product> products = productRepository.findAll(spec, pageable);
+        Specification<Product> stockGreaterThanZero = (root, query, criteriaBuilder) ->
+                criteriaBuilder.greaterThan(root.get("stock"), 0);
+
+        Specification<Product> isActive = (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("isActive"), true);
+
+        Page<Product> products = productRepository.findAll(spec.and(stockGreaterThanZero).and(isActive), pageable);
 
         List<ProductResponse> productResponse = products.getContent()
                 .stream().map(productMapper::toProductResponse)
@@ -78,6 +92,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponse getProductById(long productId) {
         Product product = productRepository.findById(productId).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_ID_INVALID));
+        if (product.getStock() == 0 || product.getIsActive() == false) {
+            throw new AppException(ErrorCode.PRODUCT_ID_INVALID);
+        }
         return productMapper.toProductResponse(product);
     }
 

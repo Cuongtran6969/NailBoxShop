@@ -3,6 +3,12 @@
 
 .container {
     position: relative;
+    @media screen and (max-width: 480px) {
+        .sideBar {
+            width: 360px !important;
+        }
+    }
+
     .overlay {
         position: fixed;
         top: 0;

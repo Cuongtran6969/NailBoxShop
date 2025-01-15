@@ -21,8 +21,10 @@ public class Admin_ProductResponse {
     BigDecimal price;
     Integer stock;
     Integer discount;
+    Integer sold;//
     Boolean isActive;
     String pictures;
+    String size;
     LocalDateTime createAt;
     Set<CategoryResponse> categories;
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Map;
 
 @Service
@@ -41,5 +42,20 @@ public class CloudinaryService {
         } catch (IOException e) {
             throw new AppException(ErrorCode.FAIL_DELETE_CLOUDINARY);
         }
+    }
+
+    public String uploadImageBase64(String base64Data) throws IOException {
+        // Loại bỏ phần đầu của Base64 nếu có (chuỗi "data:image/png;base64," chẳng hạn)
+        String base64Image = base64Data.replaceFirst("^data:image/.+;base64,", "");
+
+        // Chuyển chuỗi Base64 thành byte array
+        byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+        Map data = this.cloudinary.uploader().upload(imageBytes, ObjectUtils.asMap(
+                "folder", "/upload",
+                "use_filename", true,
+                "unique_filename", true,
+                "resource_type", "auto"
+        ));
+        return data.get("secure_url").toString();
     }
 }

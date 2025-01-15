@@ -3,7 +3,8 @@ package com.spring.nailshop.service.impl;
 import com.spring.nailshop.constant.PredefinedRole;
 import com.spring.nailshop.dto.request.EmailRequest;
 import com.spring.nailshop.dto.request.UserCreationRequest;
-import com.spring.nailshop.dto.request.UserUpdateRequest;
+import com.spring.nailshop.dto.request.UserInfoUpdateRequest;
+import com.spring.nailshop.dto.response.UserProfileResponse;
 import com.spring.nailshop.dto.response.UserResponse;
 import com.spring.nailshop.dto.response.UserUpdateResponse;
 import com.spring.nailshop.entity.Role;
@@ -21,6 +22,7 @@ import com.spring.nailshop.service.UserService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -52,13 +54,6 @@ public class UserServiceImpl implements UserService {
 
     private final CloudinaryService cloudinaryService;
 
-
-    @Override
-    public List<UserResponse> getAllUsers() {
-        return userRepository.findAll()
-                .stream().map(userMapper::toUserResponse).toList();
-    }
-
     @Override
     public UserResponse createUser(UserCreationRequest request, String otp) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -83,9 +78,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getUserInfo(Long userId) {
-        return userMapper.toUserResponse(userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+    @PreAuthorize("isAuthenticated()")
+    public UserProfileResponse getInfoProfile() {
+        var context = SecurityContextHolder.getContext();
+        String email = context.getAuthentication().getName();
+
+        User user = userRepository.findByEmail(email).orElseThrow(()
+                -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        return userMapper.toProfileResponse(user);
     }
+
 
     @Override
     public void sendOtpRegister(EmailRequest request)
@@ -94,25 +97,37 @@ public class UserServiceImpl implements UserService {
         //luu otp vao cache
         otpService.saveOtp(request.getEmail(), otp);
 
-        String subject = "Your OTP Code for Account Registration";
-
+        String subject = "Mã OTP của bạn để đăng ký tài khoản";
         StringBuilder content = new StringBuilder();
         content.append("<html>")
-                .append("<body style='font-family: Arial, sans-serif; line-height: 1.6;'>")
-                .append("<h2 style='color: #4CAF50;'>Welcome to DLearning!</h2>")
-                .append("<p>Dear <strong>")
-                .append(request.getEmail())
-                .append("</strong>,</p>")
-                .append("<p>Thank you for registering with <strong>DLearning</strong>. We are excited to have you on board!</p>")
-                .append("<p style='font-size: 18px;'><strong>Your OTP Code is:</strong> ")
-                .append("<span style='font-size: 22px; color: #FF5733;'><strong>")
-                .append(otp)
-                .append("</strong></span></p>")
-                .append("<p><strong>Note:</strong> This OTP is valid for <em>5 minutes</em>. Please enter it as soon as possible to complete your registration.</p>")
-                .append("<p>If you did not request this code, please ignore this email. For your security, do not share this code with anyone.</p>")
-                .append("<br/>")
-                .append("<p>Best regards,</p>")
-                .append("<p><strong>DLearning Team</strong></p>")
+                .append("<head>")
+                .append("<style>")
+                .append("  body { font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0; }")
+                .append("  .container { max-width: 600px; margin: 20px auto; background: #ffffff; border: 1px solid #dddddd; border-radius: 8px; overflow: hidden; }")
+                .append("  .header { padding: 20px; text-align: center; background: #f5f5f5; border-bottom: 1px solid #dddddd; }")
+                .append("  .header h1 { color: #333333; font-size: 24px; margin: 0; }")
+                .append("  .content { padding: 20px; color: #333333; line-height: 1.6; }")
+                .append("  .content h2 { color: #4CAF50; font-size: 22px; }")
+                .append("  .otp { font-size: 36px; color: #FF5733; font-weight: bold; margin: 20px 0; text-align: center; }")
+                .append("  .footer { text-align: center; padding: 20px; background: #f5f5f5; border-top: 1px solid #dddddd; color: #999999; font-size: 12px; }")
+                .append("</style>")
+                .append("</head>")
+                .append("<body>")
+                .append("<div class='container'>")
+                .append("<div class='header'>")
+                .append("<h1>NaiLaBox</h1>")
+                .append("</div>")
+                .append("<div class='content'>")
+                .append("<h2>Xin chào, ").append(request.getEmail()).append("</h2>")
+                .append("<p>Sử dụng mã bên dưới để hoàn tất đăng ký của bạn:</p>")
+                .append("<div class='otp'>").append(otp).append("</div>")
+                .append("<p><strong>Note:</strong> Mã này hết hạn trong <strong>5 phút</strong>. Nếu bạn không yêu cầu mã này, vui lòng bỏ qua email này hoặc <a href='https://zalo.me/0383459560' style='color: #4CAF50;'>liên hệ với chúng tôi</a>.</p>")
+                .append("</div>")
+                .append("<div class='footer'>")
+                .append("Được cung cấp bởi nhóm<br>")
+                .append("Để được hỗ trợ, <a href='https://zalo.me/0383459560' style='color: #4CAF50;'>liên hệ với chúng tôi</a>.")
+                .append("</div>")
+                .append("</div>")
                 .append("</body>")
                 .append("</html>");
         String emailContent = content.toString();
@@ -120,7 +135,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserUpdateResponse updateUser(UserUpdateRequest request, MultipartFile file) {
+    @PreAuthorize("isAuthenticated()")
+    public UserUpdateResponse updateUser(UserInfoUpdateRequest request, MultipartFile file) {
         SecurityContext contextHolder = SecurityContextHolder.getContext();
         String email = contextHolder.getAuthentication().getName();
         User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
