@@ -45,7 +45,7 @@ function OrderItem({ data }) {
     };
 
     const parseMoneyFormat = (price) => {
-        return new Intl.NumberFormat("vi-VN").format(price);
+        return new Intl.NumberFormat("vi-VN").format(Math.floor(price));
     };
 
     const handeCheckBox = () => {

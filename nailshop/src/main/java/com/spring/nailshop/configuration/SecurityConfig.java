@@ -32,6 +32,7 @@ public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINT = {
             "/auth/**",
+            "/api/v1/categories",
             "/api/v1/coupon/code/{value}",
             "/api/v1/coupon/code/get-random",
             "/api/v1/payment/methods",

@@ -69,12 +69,14 @@ function ProductItem(props) {
                     <div className={productContentPrice}>
                         <span className={productPrice}>
                             {new Intl.NumberFormat("vi-VN").format(
-                                price - price * 0.01 * discount
+                                Math.floor(price - price * 0.01 * discount)
                             )}
                             <span>₫</span>
                         </span>
                         <p className={productPriceRoot}>
-                            {new Intl.NumberFormat("vi-VN").format(price)}
+                            {new Intl.NumberFormat("vi-VN").format(
+                                Math.floor(price)
+                            )}
                             <span>₫</span>
                         </p>
                     </div>

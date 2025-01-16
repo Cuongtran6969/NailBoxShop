@@ -4,17 +4,14 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
-
-
-    env_file:
-      - .env
     ports:
       - '8090:8080'
     networks:
-      - backend
+     - backend
+
   redis:
     image: redis:6.2-alpine
-    container_name: my-redis-stack
+    container_name: my-redis
     hostname: redis
     ports:
       - '6379:6379'
@@ -26,12 +23,23 @@ services:
 
   mysqldb:
     image: mysql:8.0.36-debian
+    container_name: mysql-springboot-container
     restart: unless-stopped
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=notes
+      - MYSQL_DATABASE=nailShop
     ports:
-      - "3370:3306"
+      - 3307:3306
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/1.sql
-      - db:/var/lib/mysql
+      - mysql-springboot-data:/var/lib/mysql
+      - mysql-springboot-config:/etc/mysql/conf.d
+    networks:
+      - backend
+
+networks:
+  backend:
+    name: springboot-app-network
+
+volumes:
+  mysql-springboot-data:
+  mysql-springboot-config:

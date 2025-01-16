@@ -397,10 +397,12 @@ const ProductDetailPage = () => {
                                                             {new Intl.NumberFormat(
                                                                 "vi-VN"
                                                             ).format(
-                                                                product.price -
-                                                                    product.price *
-                                                                        0.01 *
-                                                                        product.discount
+                                                                Math.floor(
+                                                                    product.price -
+                                                                        product.price *
+                                                                            0.01 *
+                                                                            product.discount
+                                                                )
                                                             )}
                                                             <span
                                                                 className={

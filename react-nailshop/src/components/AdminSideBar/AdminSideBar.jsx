@@ -7,7 +7,6 @@ import { BsBox } from "react-icons/bs";
 import { PiTicket } from "react-icons/pi";
 import { MdOutlineLocalShipping } from "react-icons/md";
 import { IoSettingsOutline } from "react-icons/io5";
-import { CiLogout } from "react-icons/ci";
 import { FaPeopleCarryBox } from "react-icons/fa6";
 import { BsShop } from "react-icons/bs";
 import { MdOutlineCampaign } from "react-icons/md";
@@ -161,11 +160,6 @@ const items = [
                 label: "Cài đặt chung",
                 icon: <IoSettingsOutline />,
                 path: "/admin/setting"
-            },
-            {
-                key: "16",
-                label: "Đăng xuất",
-                icon: <CiLogout />
             }
         ]
     }
