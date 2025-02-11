@@ -1,0 +1,92 @@
+.boxHand {
+    width: 25%;
+    margin: 0 auto;
+    position: relative;
+    .nail_0 {
+        position: absolute;
+        left: 0;
+        top: 28%;
+        width: 10%;
+        transform: rotate(-24deg);
+    }
+    .nail_1 {
+        position: absolute;
+        left: 0;
+        left: 16%;
+        top: 8%;
+        width: 12%;
+        transform: rotate(-13deg);
+    }
+    .nail_2 {
+        position: absolute;
+        left: 0;
+        left: 38%;
+        top: 0;
+        width: 13%;
+        transform: rotate(-7deg);
+    }
+    .nail_3 {
+        position: absolute;
+        left: 0;
+        left: 65%;
+        top: 2%;
+        width: 12%;
+        transform: rotate(-2deg);
+    }
+    .nail_4 {
+        position: absolute;
+        left: 0;
+        left: 87%;
+        top: 30%;
+        width: 13%;
+        transform: rotate(8deg);
+    }
+}
+.box_option {
+    display: flex;
+    width: 60%;
+    padding: 20px 10px;
+    background-color: rgb(219, 239, 255);
+    .active_option {
+        border: 2px solid red;
+    }
+    .option_item {
+        cursor: pointer;
+        width: 33.333%;
+        margin: 0 10px;
+        background-color: rgb(224, 224, 224);
+        border-radius: 15px;
+        user-select: none;
+        img {
+            border-radius: 15px;
+        }
+    }
+}
+.box_setting {
+    position: absolute;
+    z-index: 1000;
+    width: 30%;
+    height: 100%;
+    top: 0;
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+}
+.box_item {
+    height: 60%;
+    overflow-y: scroll;
+    background-color: rgb(235, 235, 235);
+    .content {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        gap: 10px;
+        border-radius: 10px;
+        .nail_item {
+            width: calc((100% - 20px) / 3);
+            height: fit-content;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+    }
+}

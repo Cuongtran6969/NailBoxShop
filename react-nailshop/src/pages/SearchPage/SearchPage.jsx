@@ -98,7 +98,7 @@ function SearchPage() {
                 filterQuery += `)`;
             }
             if (searchData.keyword) {
-                filterQuery += `name~'${searchData.keyword}'`;
+                filterQuery += `&name~'${searchData.keyword}'`;
             }
             console.log(
                 searchData.page,

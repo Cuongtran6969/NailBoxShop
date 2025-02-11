@@ -3,6 +3,7 @@ package com.spring.nailshop.controller;
 
 import com.spring.nailshop.dto.request.UserInfoUpdateRequest;
 import com.spring.nailshop.dto.response.ApiResponse;
+import com.spring.nailshop.dto.response.IntrospectResponse;
 import com.spring.nailshop.dto.response.UserProfileResponse;
 import com.spring.nailshop.dto.response.UserUpdateResponse;
 import com.spring.nailshop.service.UserService;
@@ -47,6 +48,15 @@ public class UserController {
                 .result(userService.updateUser(userUpdateRequest, file))
                 .message("Update User Profile Successfully")
                 .code(HttpStatus.CREATED.value())
+                .build();
+    }
+
+    @GetMapping("/introspect")
+    public ApiResponse<IntrospectResponse> introspect() {
+        var result = userService.introspect();
+        return ApiResponse.<IntrospectResponse>builder()
+                .code(HttpStatus.OK.value())
+                .result(result)
                 .build();
     }
 }

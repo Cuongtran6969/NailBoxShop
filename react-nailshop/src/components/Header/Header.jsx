@@ -45,6 +45,8 @@ function Header() {
     }, [location.pathname]);
     const countCart = list.reduce((sum, item) => sum + item.quantity, 0);
     const hanleOpenSideBar = (type) => {
+        console.log("authenticated: " + authenticated);
+
         if (type === "login" && authenticated) {
             navigate("/profile");
         } else if (type == "cart" && location.pathname === "/cart") {

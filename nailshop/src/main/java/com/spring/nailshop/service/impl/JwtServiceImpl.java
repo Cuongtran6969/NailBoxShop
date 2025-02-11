@@ -29,9 +29,9 @@ public class JwtServiceImpl implements JwtService {
     @Value("${jwt.refresh-key}")
     private String REFRESH_KEY;
 
-    private long expiryTime = 5;
+    private long expiryTime = 10;
 
-    private long expiryDay = 7;
+    private long expiryDay = 15;
 
     @Override
     public String generateToken(UserDetails userDetails) {
@@ -70,7 +70,7 @@ public class JwtServiceImpl implements JwtService {
                 .setClaims(claims)//thong tin bi mat khong public (ma hoa thong tin)
                 .setSubject(userDetails.getUsername())//khong trung lap
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date((System.currentTimeMillis() + 1000*60*60*expiryTime)))
+                .setExpiration(new Date((System.currentTimeMillis() + 1000*expiryTime)))
                 .signWith(getKey(TokenType.ACCESS_TOKEN), SignatureAlgorithm.HS256)//dinh nghia thuat toan
                 .compact();
     }

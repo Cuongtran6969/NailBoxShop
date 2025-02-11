@@ -12,7 +12,7 @@ function ProtectedRoute({ children, allowedRoles }) {
         } else {
             introspect()
                 .then((data) => {
-                    setValidInfo({ valid: data.valid, role: data.role });
+                    setValidInfo({ valid: true, role: data.role });
                 })
                 .catch(() => {
                     setValidInfo({ valid: false, role: null });
