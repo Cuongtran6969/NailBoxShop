@@ -7,7 +7,7 @@ import { useContext, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "@contexts/AuthContext";
 import { logout } from "@/apis/authService";
-function AminHeader() {
+function AdminHeader() {
     const { container, searchBox, userInfo, userName, userRole } = styles;
     const { user } = useContext(AuthContext);
     const handleLogout = async () => {
@@ -47,7 +47,8 @@ function AminHeader() {
             )
         }
     ];
-
+    console.log("header: " + user);
+    if (!user) return <div>Loading...</div>;
     return (
         <div className={container}>
             <Row style={{ alignItems: "center" }}>
@@ -82,4 +83,4 @@ function AminHeader() {
     );
 }
 
-export default AminHeader;
+export default AdminHeader;

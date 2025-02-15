@@ -19,24 +19,27 @@ const data = {
     }
 };
 function OrderResultPage() {
+    console.log("============================================");
+
     const location = useLocation();
-    const [result, setResult] = useState(location.state?.result || "warning");
-    useEffect(() => {
-        if (!location.state) {
-            navigate("/");
-        }
-    }, [location.state]);
+    // const [result, setResult] = useState(location.state?.result || "warning");
+    // useEffect(() => {
+    //     if (!location.state) {
+    //         navigate("/");
+    //     }
+    // }, [location.state]);
     return (
-        <Result
-            status={data[result].status}
-            title={data[result].title}
-            subTitle={data[result].subTitle}
-            extra={[
-                <Button type="primary" key="buy">
-                    Buy Again
-                </Button>
-            ]}
-        />
+        <>aaaaa</>
+        // <Result
+        //     status={data[result].status}
+        //     title={data[result].title}
+        //     subTitle={data[result].subTitle}
+        //     extra={[
+        //         <Button type="primary" key="buy">
+        //             Buy Again
+        //         </Button>
+        //     ]}
+        // />
     );
 }
 

@@ -4,13 +4,39 @@ import styles from "../styles.module.scss";
 import { DownloadOutlined } from "@ant-design/icons";
 import CountdownTimer from "@components/CoutdownTimer/CountdownTimer";
 import Logo_MB from "@icons/images/Logo_MB.png";
-import { useState } from "react";
+import { QRCodeSVG } from "qrcode.react";
+import Logo from "@icons/images/nailLaBoxLogo.png";
+import { useRef, useState } from "react";
 function Payment({ info, countTime, hanleCancelPayment }) {
     const { qrTitle } = styles;
+    const qrRef = useRef(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleCancelConfirm = () => {
         setIsModalOpen(false);
+    };
+    const downloadQRCode = () => {
+        const svg = qrRef.current;
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const img = new window.Image();
+
+        img.onload = () => {
+            canvas.width = svg.clientWidth;
+            canvas.height = svg.clientHeight;
+            ctx.drawImage(img, 0, 0);
+            const pngFile = canvas.toDataURL("image/png");
+            // Tạo link để tải ảnh xuống
+            const downloadLink = document.createElement("a");
+            downloadLink.href = pngFile;
+            downloadLink.download = "qrcode.png";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        };
+
+        img.src = "data:image/svg+xml;base64," + btoa(svgData);
     };
     return (
         <div>
@@ -35,12 +61,25 @@ function Payment({ info, countTime, hanleCancelPayment }) {
                             </span>
                         </div>
                         <div className="p-5 text-center d-flex justify-content-center flex-column align-items-center">
-                            <img
-                                src={info.qrImage}
-                                className="border"
-                                style={{ width: "300px" }}
+                            <QRCodeSVG
+                                value={info.qrImage}
+                                size={300}
+                                bgColor={"#ffffff"}
+                                fgColor={"#000000"}
+                                level={"L"}
+                                id="qrcode"
+                                ref={qrRef}
+                                imageSettings={{
+                                    src: Logo,
+                                    x: undefined,
+                                    y: undefined,
+                                    height: 50,
+                                    width: 50,
+                                    opacity: 1,
+                                    excavate: true
+                                }}
                             />
-                            <span>
+                            <span className="mt-4">
                                 <img
                                     src={Logo_MB}
                                     alt=""
@@ -54,6 +93,7 @@ function Payment({ info, countTime, hanleCancelPayment }) {
                                 shape="round"
                                 icon={<DownloadOutlined />}
                                 size={24}
+                                onClick={() => downloadQRCode()}
                             >
                                 Download
                             </Button>

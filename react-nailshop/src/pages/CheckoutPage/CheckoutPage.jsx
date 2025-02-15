@@ -77,9 +77,9 @@ function CheckoutPage() {
     const [initForm, setInitForm] = useState({
         name: "",
         phone: "",
-        provinceId: "",
-        districtId: "",
-        wardId: "",
+        provinceId: null,
+        districtId: null,
+        wardId: null,
         provinceName: "",
         districtName: "",
         wardName: "",
@@ -157,8 +157,11 @@ function CheckoutPage() {
         };
         setWard([]);
         setDistrict([]);
-        setCurrentDistrictId(null);
-        setCurrentWardId(null);
+        setInitForm((prev) => ({
+            ...prev,
+            districtId: null,
+            wardId: null
+        }));
         fetchApiDistrict();
     }, [initForm.provinceId]);
 
@@ -177,7 +180,11 @@ function CheckoutPage() {
             }
         };
         setWard([]);
-        setCurrentWardId(null);
+        setInitForm((prev) => ({
+            ...prev,
+            wardId: null
+        }));
+        setShipFee(null);
         fetchApiWard();
     }, [initForm.districtId]);
 
@@ -191,53 +198,52 @@ function CheckoutPage() {
 
     useEffect(() => {
         const fetchApiGetShipFee = async () => {
-            if (initForm.districtId) {
-                const formData = {
-                    service_type_id: service_type_id,
-                    from_district_id: shopInfo.district_id,
-                    from_ward_code: shopInfo.ward_code + "",
-                    to_district_id: parseInt(initForm.districtId),
-                    to_ward_code: initForm.wardId,
-                    length: shopInfo.boxLength,
-                    width: shopInfo.boxWidth,
-                    height: shopInfo.boxHeight,
-                    weight: shopInfo.boxWeight,
-                    insurance_value: totalCheckout
-                };
-                await getShipFee(shopInfo.token, shopInfo.shop_id, formData)
-                    .then((res) => {
-                        setShipFee(res.data.total);
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
-            } else {
-                setShipFee(null);
-            }
+            const formData = {
+                service_type_id: service_type_id,
+                from_district_id: shopInfo.district_id,
+                from_ward_code: shopInfo.ward_code + "",
+                to_district_id: parseInt(initForm.districtId),
+                to_ward_code: initForm.wardId,
+                length: shopInfo.boxLength,
+                width: shopInfo.boxWidth,
+                height: shopInfo.boxHeight,
+                weight: shopInfo.boxWeight,
+                insurance_value: totalCheckout
+            };
+            await getShipFee(shopInfo.token, shopInfo.shop_id, formData)
+                .then((res) => {
+                    setShipFee(res.data.total);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
         };
 
         const fetchApiGetLeadTime = async () => {
-            if (currentWardId != null) {
-                const formData = {
-                    service_type_id: service_type_id,
-                    from_district_id: shopInfo.district_id,
-                    from_ward_code: shopInfo.ward_code + "",
-                    to_district_id: parseInt(currentDistrictId),
-                    to_ward_code: currentWardId
-                };
-                await getLeadtime(shopInfo.token, formData)
-                    .then((res) => {
-                        setShipDay(getNumberDay(res.data.leadtime));
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
-            } else {
-                setShipDay(null);
-            }
+            console.log("initForm.districtId" + initForm.districtId);
+
+            const formData = {
+                service_type_id: service_type_id,
+                from_district_id: shopInfo.district_id,
+                from_ward_code: shopInfo.ward_code + "",
+                to_district_id: parseInt(initForm.districtId),
+                to_ward_code: initForm.wardId
+            };
+            await getLeadtime(shopInfo.token, formData)
+                .then((res) => {
+                    setShipDay(getNumberDay(res.data.leadtime));
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
         };
-        fetchApiGetShipFee();
-        fetchApiGetLeadTime();
+        if (initForm.wardId && initForm.districtId) {
+            fetchApiGetShipFee();
+            fetchApiGetLeadTime();
+        } else {
+            setShipDay(null);
+            setShipFee(null);
+        }
     }, [initForm.wardId]);
 
     const handleChangePayment = (e) => {
@@ -350,16 +356,15 @@ function CheckoutPage() {
                     if (formData.payment_id == 1) {
                         createPaymentQR(orderId)
                             .then((res) => {
-                                navigate("/payment", {
-                                    state: { orderId }
-                                });
+                                navigate("/payment");
                             })
                             .catch((err) => {
-                                navigate("/payment", {
-                                    state: { orderId }
-                                });
+                                alert(err);
+                                navigate("/");
                             });
                     } else {
+                        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+
                         navigate("/order-result", {
                             state: { result: "success" }
                         });

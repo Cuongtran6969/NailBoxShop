@@ -70,7 +70,7 @@ public class JwtServiceImpl implements JwtService {
                 .setClaims(claims)//thong tin bi mat khong public (ma hoa thong tin)
                 .setSubject(userDetails.getUsername())//khong trung lap
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date((System.currentTimeMillis() + 1000*expiryTime)))
+                .setExpiration(new Date((System.currentTimeMillis() + 1000*60*60*expiryTime)))
                 .signWith(getKey(TokenType.ACCESS_TOKEN), SignatureAlgorithm.HS256)//dinh nghia thuat toan
                 .compact();
     }

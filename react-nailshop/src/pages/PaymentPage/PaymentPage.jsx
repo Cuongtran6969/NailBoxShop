@@ -1,19 +1,13 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import {
-    createPaymentQR,
-    getStatusPaymentQR,
-    cancelPaymentQR
-} from "@/apis/paymentService";
-import { getOrderPaymentInfo } from "@/apis/orderService";
+import { useNavigate } from "react-router-dom";
+import { getStatusPaymentQR, cancelPaymentQR } from "@/apis/paymentService";
+import { getOrderPaymentInfo } from "@/apis/paymentService";
 
 import { useEffect, useState } from "react";
 import Payment from "./components/Payment";
 import PaymentResult from "./components/PaymentResult";
 function PaymentPage() {
-    const location = useLocation();
-    console.log("ORDERID: " + location.state?.orderId || "");
     const navigate = useNavigate();
-    const [orderId, setOrderId] = useState(location.state?.orderId || "");
+    const [orderId, setOrderId] = useState(null);
     const [paymentInfo, setPaymentInfo] = useState(null);
     const [paymentStatus, setPaymentStatus] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -38,33 +32,32 @@ function PaymentPage() {
     };
 
     useEffect(() => {
-        console.log("cccc: " + orderId);
-
-        if (orderId) {
-            const fetchApiOrderPayment = async () => {
-                setLoading(true);
-                await getOrderPaymentInfo(orderId)
-                    .then((res) => {
-                        setPaymentInfo(res.result);
-                        setPaymentStatus(res.result.status);
-                        const createdAt = new Date(res.result.createdAt);
-                        createdAt.setMinutes(createdAt.getMinutes() + 5);
-                        setTargetDate(createdAt);
-                        const timeoutId = setTimeout(() => {
-                            hanleCancelPayment();
-                        }, createdAt.getTime() - new Date().getTime());
-                        return () => clearTimeout(timeoutId);
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
-                setLoading(false);
-            };
-            fetchApiOrderPayment();
-        } else {
-            navigate("/");
-        }
-    }, [orderId]);
+        const fetchApiOrderPayment = async () => {
+            setLoading(true);
+            await getOrderPaymentInfo()
+                .then((res) => {
+                    if (res.result === undefined) {
+                        navigate("/");
+                        return;
+                    }
+                    setPaymentInfo(res.result);
+                    setPaymentStatus(res.result.status);
+                    setOrderId(res.result.orderId);
+                    const createdAt = new Date(res.result.createdAt);
+                    createdAt.setMinutes(createdAt.getMinutes() + 5);
+                    setTargetDate(createdAt);
+                    const timeoutId = setTimeout(() => {
+                        hanleCancelPayment();
+                    }, createdAt.getTime() - new Date().getTime());
+                    return () => clearTimeout(timeoutId);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+            setLoading(false);
+        };
+        fetchApiOrderPayment();
+    }, []);
 
     useEffect(() => {
         if (orderId && paymentStatus === "PENDING") {
@@ -72,21 +65,17 @@ function PaymentPage() {
                 try {
                     const res = await getStatusPaymentQR(orderId);
                     setPaymentStatus(res.data.status);
-                    console.log(res.data);
                 } catch (err) {
                     console.log(err);
                 }
             }, 2000);
-
             return () => clearInterval(interval);
         }
-    }, [orderId, paymentStatus]);
+    }, [paymentStatus]);
 
     if (loading) {
         return <div>loading....</div>;
     }
-    console.log("paymentInfo:" + paymentInfo);
-    console.log("paymentStatus:" + paymentStatus);
     return (
         <div>
             {paymentStatus === "PENDING" && (

@@ -14,6 +14,8 @@ export const AuthProvider = ({ children }) => {
         }
         try {
             const result = await introspect();
+            console.log("runheeeeee: " + result.avatar);
+
             setUser({
                 role: result.role,
                 name: result.name,

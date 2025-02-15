@@ -1,4 +1,4 @@
-import AminHeader from "@components/AdminHeader/AdminHeader";
+import AdminHeader from "@components/AdminHeader/AdminHeader";
 import { Col, Row } from "react-bootstrap";
 import AdminSideBar from "@components/AdminSideBar/AdminSideBar";
 import styles from "./styles.module.scss";
@@ -12,7 +12,7 @@ function AdminLayout({ children }) {
                         <AdminSideBar />
                     </Col>
                     <Col sm={10}>
-                        <AminHeader />
+                        <AdminHeader />
                         <div className={AdminContent}>{children}</div>
                     </Col>
                 </Row>

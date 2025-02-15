@@ -6,12 +6,6 @@ export const createOrder = async (formData) => {
     return res.data;
 };
 
-export const getOrderPaymentInfo = async (id) => {
-    let urlApi = `/api/v1/order/payment-info/${id}`;
-    const res = await axiosClient.get(urlApi);
-    return res.data;
-};
-
 export const getAllOrders = async (page, size, query) => {
     let urlApi = `/admin/orders?page=${page}&size=${size}`;
     if (query) {

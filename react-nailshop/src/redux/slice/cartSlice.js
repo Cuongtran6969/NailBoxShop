@@ -17,7 +17,9 @@ const initialState = loadFromLocalStorage("cart", {
     listBuy: [],
     totalCheckout: 0,
     totalAfterVoucher: 0,
-    voucher: null
+    voucher: null,
+    orderError: null,
+    orderSuccess: null
 });
 
 const cartSlice = createSlice({
@@ -25,6 +27,8 @@ const cartSlice = createSlice({
     initialState,
     reducers: {
         addToCart(state, action) {
+            state.orderError = null;
+            state.orderSuccess = null;
             const check = state.list.findIndex(
                 (order) =>
                     order.productId === action.payload.productId &&
@@ -32,8 +36,24 @@ const cartSlice = createSlice({
                     order.designId == action.payload.designId
             );
             if (check !== -1) {
-                state.list[check].quantity += action.payload.quantity;
+                let currentQuantity = state.list[check].quantity;
+                let newQuantity = currentQuantity + action.payload.quantity;
+                console.log(action.payload);
+
+                let maxQuantity = action.payload.stock; // Số lượng tối đa
+                console.log("maxQuantity" + maxQuantity);
+                if (newQuantity > maxQuantity) {
+                    state.orderError =
+                        "Bạn đã đạt số lượng tối đa cho sản phẩm này trong giỏ hàng!";
+                    return;
+                }
+                state.list[check].quantity = newQuantity;
             } else {
+                if (action.payload.quantity > action.payload.stock) {
+                    state.orderError =
+                        "Bạn không thể thêm quá số lượng tối đa vào giỏ hàng!";
+                    return;
+                }
                 state.list.push(action.payload);
             }
             state.total = state.list.reduce((sum, product) => {
@@ -41,6 +61,7 @@ const cartSlice = createSlice({
                     product.price - product.price * 0.01 * product.discount;
                 return sum + price * product.quantity;
             }, 0);
+            state.orderSuccess = "Thêm vào giỏ hàng thành công";
             saveToLocalStorage("cart", state);
         },
         updateQuantity(state, action) {
@@ -173,7 +194,7 @@ const cartSlice = createSlice({
                     state.totalAfterVoucher = state.totalCheckout;
                 }
             }
-            // saveToLocalStorage("cart", state);
+            saveToLocalStorage("cart", state);
         },
         changeListBuy(state, action) {
             //handle click checkbox choose buy
@@ -276,6 +297,11 @@ const cartSlice = createSlice({
             state.voucher = null;
             state.totalAfterVoucher = state.totalCheckout;
             saveToLocalStorage("cart", state);
+        },
+        clearOrderStatus(state) {
+            state.orderError = null;
+            state.orderSuccess = null;
+            saveToLocalStorage("cart", state);
         }
     }
 });
@@ -291,7 +317,8 @@ export const {
     buyNowToCart,
     applyVoucher,
     removeVoucher,
-    updateCartItem
+    updateCartItem,
+    clearOrderStatus
 } = actions;
 
 export default reducer;

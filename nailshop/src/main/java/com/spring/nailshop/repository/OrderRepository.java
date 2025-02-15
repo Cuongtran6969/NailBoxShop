@@ -34,4 +34,5 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
 
     Page<Order> findOrderByUserId(Long userId, Pageable pageable);
 
+    List<Order> findOrderByUserId(Long userId);
 }
