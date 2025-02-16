@@ -100,12 +100,6 @@ function SearchPage() {
             if (searchData.keyword) {
                 filterQuery += `&name~'${searchData.keyword}'`;
             }
-            console.log(
-                searchData.page,
-                searchData.size,
-                filterQuery,
-                searchData.orderBy
-            );
             setLoading(true);
             await getProductPublic(
                 searchData.page,

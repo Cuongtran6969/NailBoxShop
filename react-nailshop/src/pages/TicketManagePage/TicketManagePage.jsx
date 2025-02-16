@@ -162,7 +162,10 @@ function TicketManagePage() {
                         />
                     </div>
                 ),
-                dataIndex: "amount"
+                dataIndex: "amount",
+                render: (amount) => {
+                    return amount + "%";
+                }
             },
             {
                 title: (
@@ -196,13 +199,17 @@ function TicketManagePage() {
                 title: "Tình trạng",
                 dataIndex: "isUsed",
                 render: (t, r) => {
-                    {
-                        return r.isUsed ? (
-                            <span className="text-danger">Hết lượt</span>
-                        ) : (
-                            <span className="text-success">Còn lượt</span>
-                        );
-                    }
+                    const now = new Date().getTime(); // Lấy timestamp thời gian hiện tại
+                    const endTime = r.endTime
+                        ? new Date(r.endTime).getTime()
+                        : 0; // Chuyển endTime thành timestamp
+                    console.log(now > endTime);
+
+                    return r.isUsed || now > endTime ? (
+                        <span className="text-danger">Hết lượt</span>
+                    ) : (
+                        <span className="text-success">Còn lượt</span>
+                    );
                 }
             },
             {

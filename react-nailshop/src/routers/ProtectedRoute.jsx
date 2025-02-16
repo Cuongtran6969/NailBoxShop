@@ -23,10 +23,16 @@ function ProtectedRoute({ children, allowedRoles }) {
     console.log("validInfo: " + validInfo);
 
     if (!validInfo) {
+        console.log(
+            "LoadingLoadingLoadingLoadingLoadingLoadingLoadingLoading: "
+        );
         return <div>Loading...</div>;
     }
 
     if (!validInfo.valid) {
+        console.log(
+            "Navigate to home/Navigate to home/Navigate to home/Navigate to home/Navigate to home/ "
+        );
         return <Navigate to="/" />;
     }
     if (!allowedRoles.includes(validInfo.role)) {

@@ -59,14 +59,9 @@ function CheckoutPage() {
         inputForm,
         errorText
     } = styles;
-    const [paym, setValue] = useState(1);
     const [province, setProvince] = useState([]);
     const [district, setDistrict] = useState([]);
     const [ward, setWard] = useState([]);
-    const [detail, setDetail] = useState("");
-    const [currentProvinceId, setCurrentProvinceId] = useState(null);
-    const [currentDistrictId, setCurrentDistrictId] = useState(null);
-    const [currentWardId, setCurrentWardId] = useState(null);
     const [shipFee, setShipFee] = useState(null);
     const [shipDate, setShipDay] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -311,17 +306,6 @@ function CheckoutPage() {
         fetchApiOrder(initForm);
     };
 
-    const handleRemoveBuyList = () => {
-        for (const item of listBuy) {
-            dispatch(
-                removeItem({
-                    ...item
-                })
-            );
-        }
-        dispatch(removeVoucher());
-    };
-
     const fetchApiOrder = async (data) => {
         const items = [];
         for (const item of listBuy) {
@@ -350,21 +334,21 @@ function CheckoutPage() {
         await createOrder(formData)
             .then((res) => {
                 if (res.code == 200) {
-                    handleRemoveBuyList();
                     const orderId = res.result.id;
 
                     if (formData.payment_id == 1) {
                         createPaymentQR(orderId)
                             .then((res) => {
-                                navigate("/payment");
+                                navigate("/payment", {
+                                    state: { result: true }
+                                });
                             })
                             .catch((err) => {
-                                alert(err);
-                                navigate("/");
+                                navigate("/order-result", {
+                                    state: { result: "error" }
+                                });
                             });
                     } else {
-                        console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-
                         navigate("/order-result", {
                             state: { result: "success" }
                         });
@@ -380,7 +364,11 @@ function CheckoutPage() {
                     }
                 }
             })
-            .catch((err) => {});
+            .catch((err) => {
+                navigate("/order-result", {
+                    state: { result: "error" }
+                });
+            });
     };
 
     const onChangeStep = (value) => {

@@ -209,7 +209,7 @@ public class OrderServiceImpl implements OrderService {
         SecurityContext contextHolder = SecurityContextHolder.getContext();
         String email = contextHolder.getAuthentication().getName();
         User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        List<Order> orders = orderRepository.findOrderByUserId(user.getId());
+        List<Order> orders = orderRepository.findOrderPaymentByUserId(user.getId());
         if(!orders.isEmpty()) {
             Order order = orders.get(orders.size() - 1);
             LocalDateTime createAt = order.getCreateAt();
@@ -218,6 +218,10 @@ public class OrderServiceImpl implements OrderService {
                         .stream()
                         .findFirst()
                         .orElseThrow(() -> new AppException(ErrorCode.SHOP_NOT_FOUND));
+                Double price = order.getTotalPrice();
+                if(order.getCoupon() == null || !order.getCoupon().getType().equals(CouponType.FREE_SHIP)) {
+                    price += order.getShipFee();
+                }
                 return OrderPaymentInfoResponse.builder()
                         .orderId(order.getId())
                         .accountName(shop.getBank_account_name())
@@ -225,7 +229,7 @@ public class OrderServiceImpl implements OrderService {
                         .bankName(shop.getBank_name())
                         .qrImage(order.getQr_img())
                         .orderCode(order.getCode())
-                        .totalPrice(order.getTotalPrice())
+                        .totalPrice(price)
                         .status(order.getStatus().name())
                         .createdAt(order.getCreateAt())
                         .build();

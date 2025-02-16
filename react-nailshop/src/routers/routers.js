@@ -188,6 +188,12 @@ const routers = [
         roles: [ROLE.ADMIN, ROLE.STAFF]
     },
     {
+        path: "admin/ticket/create",
+        component: TicketCreatePage,
+        layout: AdminLayout,
+        roles: [ROLE.ADMIN]
+    },
+    {
         path: "/design",
         component: DesignPage,
         layout: DefaultLayout
