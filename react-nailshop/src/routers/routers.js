@@ -16,6 +16,7 @@ import TicketManagePage from "@pages/TicketManagePage/TicketManagePage";
 import TicketCreatePage from "@pages/TicketCreatePage/TicketCreatePage";
 import Dashboard from "@pages/Dashboard/Dashboard";
 import DesignPage from "@pages/DesignPage/DesignPage";
+import DesignManagePage from "@pages/DesignManagePage/DesignManagePage";
 import SettingShopPage from "@pages/SettingShopPage/SettingShopPage";
 import PostCreatePage from "@pages/PostCreatePage/PostCreatePage";
 import PostEditPage from "@pages/PostEditPage/PostEditPage";
@@ -197,6 +198,11 @@ const routers = [
         path: "/design",
         component: DesignPage,
         layout: DefaultLayout
+    },
+    {
+        path: "/admin/design",
+        component: DesignManagePage,
+        layout: AdminLayout
     }
 ];
 

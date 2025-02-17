@@ -43,6 +43,8 @@ public enum ErrorCode {
     ORDER_PAYMENT_INVALID(404, "Yêu cần thanh toán online không hợp lệ", HttpStatus.BAD_REQUEST),
     POST_NOT_FOUND(400, "Khong tìm thấy post", HttpStatus.BAD_REQUEST),
     NOT_PERMISSION(400, "Bạn không có quyền thực hiện hành động này", HttpStatus.BAD_REQUEST),
+    NAIL_CATEGORY_INVALID(404, "Nail category invalid", HttpStatus.BAD_REQUEST),
+    NAIL_DESIGN_INVALID(404, "Nail design invalid", HttpStatus.BAD_REQUEST),
     ;
     private int code;
     private String message;
