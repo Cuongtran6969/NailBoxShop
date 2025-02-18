@@ -85,7 +85,7 @@ public class NailDesignController {
     public ApiResponse<Void> deleteNailDesign(@PathVariable Integer id) {
         nailDesignService.deleteNailDesign(id);
         return ApiResponse.<Void>builder()
-                .message("Delete nail category successfully")
+                .message("Delete nail design successfully")
                 .code(HttpStatus.OK.value())
                 .build();
     }

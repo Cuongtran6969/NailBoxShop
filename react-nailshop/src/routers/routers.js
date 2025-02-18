@@ -202,7 +202,8 @@ const routers = [
     {
         path: "/admin/design",
         component: DesignManagePage,
-        layout: AdminLayout
+        layout: AdminLayout,
+        roles: [ROLE.ADMIN, ROLE.STAFF]
     }
 ];
 

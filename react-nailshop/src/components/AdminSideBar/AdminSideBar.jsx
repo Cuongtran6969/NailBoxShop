@@ -11,6 +11,8 @@ import { FaPeopleCarryBox } from "react-icons/fa6";
 import { BsShop } from "react-icons/bs";
 import { MdOutlineCampaign } from "react-icons/md";
 import { BsPostcard } from "react-icons/bs";
+import { MdOutlineDesignServices } from "react-icons/md";
+import { SiMaterialdesignicons } from "react-icons/si";
 import Logo from "@icons/images/nailLaBoxLogo.png";
 import styles from "./styles.module.scss";
 import classNames from "classnames";
@@ -146,17 +148,42 @@ const items = [
     },
     {
         key: "grp5",
+        label: "Design",
+        type: "group",
+        children: [
+            {
+                key: "sub9",
+                label: "Design",
+                icon: <MdOutlineDesignServices />,
+
+                children: [
+                    {
+                        key: "14",
+                        label: "Mẫu design",
+                        path: "/admin/design"
+                    },
+                    {
+                        key: "15",
+                        label: "Yêu cầu design",
+                        path: "/admin/design/request"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        key: "grp6",
         label: "Setting",
         type: "group",
         children: [
             {
-                key: "14",
+                key: "16",
                 label: "Cửa hàng",
                 icon: <BsShop />,
                 path: "/admin/shop"
             },
             {
-                key: "15",
+                key: "17",
                 label: "Cài đặt chung",
                 icon: <IoSettingsOutline />,
                 path: "/admin/setting"

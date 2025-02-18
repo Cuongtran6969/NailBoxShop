@@ -7,7 +7,7 @@ import styles from "../styles.module.scss";
 import SubMenu from "antd/es/menu/SubMenu";
 import { useSelector } from "react-redux";
 import { useState } from "react";
-function PurchaseSummary({ shipFee, handleOrderRequest }) {
+function PurchaseSummary({ shipFee, handleOrderRequest, orderLoading }) {
     const { list, listBuy, totalCheckout, totalAfterVoucher, voucher } =
         useSelector((state) => state.cart);
     const parseMoneyFormat = (price) => {
@@ -103,14 +103,25 @@ function PurchaseSummary({ shipFee, handleOrderRequest }) {
                     )}
                 </div>
                 <div>
-                    <Button
-                        color="default"
-                        variant="solid"
-                        className={purchaseBtn}
-                        onClick={handleOrderRequest}
-                    >
-                        Thanh Toán
-                    </Button>
+                    {orderLoading ? (
+                        <Button
+                            color="default"
+                            variant="solid"
+                            style={{ opacity: 0.6 }}
+                            className={purchaseBtn}
+                        >
+                            Đang xử lý...
+                        </Button>
+                    ) : (
+                        <Button
+                            color="default"
+                            variant="solid"
+                            className={purchaseBtn}
+                            onClick={handleOrderRequest}
+                        >
+                            Thanh Toán
+                        </Button>
+                    )}
                 </div>
             </Card>
         </>

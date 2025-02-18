@@ -36,7 +36,10 @@ const nailItem = [
         nails: []
     }
 ];
-
+import {
+    getNailDesign,
+    createNailDesignTemplate
+} from "@/apis/nailDesignService";
 const dinamondItem = [
     {
         id: 1,
@@ -60,21 +63,28 @@ function BoxItem({ type, setSelectors }) {
     const [listItem, setListItem] = useState([]);
     const [cursorActive, setCursorActive] = useState(false);
     const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+    const [loading, setLoading] = useState(true);
+    const [design, setDesign] = useState([]);
 
+    const fecthApiGetAll = (id) => {
+        getNailDesign(`nailCategory:${id}`)
+            .then((res) => {
+                setDesign(res.result.items);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
     useEffect(() => {
-        if (type === "color") {
-            setListItem(nailItem);
-        } else if (type === "icon") {
-            setListItem(dinamondItem);
-        } else {
-            setListItem([]);
+        if (type) {
+            setLoading(true);
+            fecthApiGetAll(type);
+            setLoading(false);
         }
     }, [type]);
-
-    const handleClick = (id) => {
-        if (listItem.length > 0) {
-            const item = nailItem.find((nail) => nail.id === id);
-            setSelectors(item.nails ?? []);
+    const handleClick = (listNail) => {
+        if (listNail.slice(1).length == 5) {
+            setSelectors(listNail.slice(1) ?? []);
         }
         setCursorActive(true);
     };
@@ -94,20 +104,21 @@ function BoxItem({ type, setSelectors }) {
             window.removeEventListener("mousemove", handleMouseMove);
         };
     }, [cursorActive]);
+    if (loading) return <>loading...</>;
 
     return (
         <div className={box_item}>
             <div className={content}>
-                {listItem.map((item, index) => (
+                {design.map((item, index) => (
                     <div
                         key={index}
                         className={nail_item}
                         onClick={(e) => {
                             e.stopPropagation();
-                            handleClick(item.id);
+                            handleClick(item.images.split(","));
                         }}
                     >
-                        <img src={item.icon} alt="" />
+                        <img src={item.images.split(",")[0]} alt="" />
                     </div>
                 ))}
             </div>

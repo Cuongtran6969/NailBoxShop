@@ -50,6 +50,7 @@ function CheckoutPage() {
     );
     const dispatch = useDispatch();
     const [current, setCurrent] = useState(1);
+    const [orderLoading, setOrderLoading] = useState(false);
     const {
         purchaseBtn,
         labelSelect,
@@ -330,7 +331,7 @@ function CheckoutPage() {
             payment_id: data.paymentId,
             items: items
         };
-
+        setOrderLoading(true);
         await createOrder(formData)
             .then((res) => {
                 if (res.code == 200) {
@@ -369,6 +370,7 @@ function CheckoutPage() {
                     state: { result: "error" }
                 });
             });
+        setOrderLoading(false);
     };
 
     const onChangeStep = (value) => {
@@ -613,6 +615,7 @@ function CheckoutPage() {
                             <h5 className="mt-sm-0 mt-5">Đơn hàng của bạn</h5>
                             <PurchaseSummary
                                 shipFee={shipFee}
+                                orderLoading={orderLoading}
                                 handleOrderRequest={handleOrderRequest}
                             />
                         </Col>
