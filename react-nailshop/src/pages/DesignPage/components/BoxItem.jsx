@@ -40,6 +40,7 @@ import {
     getNailDesign,
     createNailDesignTemplate
 } from "@/apis/nailDesignService";
+import classNames from "classnames";
 const dinamondItem = [
     {
         id: 1,
@@ -59,13 +60,13 @@ const dinamondItem = [
 ];
 
 function BoxItem({ type, setSelectors }) {
-    const { box_item, nail_item, content } = styles;
+    const { box_item, nail_item, content, activeItem } = styles;
     const [listItem, setListItem] = useState([]);
     const [cursorActive, setCursorActive] = useState(false);
     const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
     const [loading, setLoading] = useState(true);
     const [design, setDesign] = useState([]);
-
+    const [currentIndex, setCurrentIndex] = useState("");
     const fecthApiGetAll = (id) => {
         getNailDesign(`nailCategory:${id}`)
             .then((res) => {
@@ -82,11 +83,16 @@ function BoxItem({ type, setSelectors }) {
             setLoading(false);
         }
     }, [type]);
-    const handleClick = (listNail) => {
-        if (listNail.slice(1).length == 5) {
+    const handleClick = (index, listNail) => {
+        setCurrentIndex(index);
+        if (listNail.slice(1).length >= 1) {
             setSelectors(listNail.slice(1) ?? []);
         }
-        setCursorActive(true);
+        if (listNail.slice(1).length > 1) {
+            setCursorActive(true);
+        } else {
+            setCursorActive(false);
+        }
     };
 
     // Cập nhật vị trí hình ảnh khi di chuyển chuột
@@ -112,13 +118,16 @@ function BoxItem({ type, setSelectors }) {
                 {design.map((item, index) => (
                     <div
                         key={index}
-                        className={nail_item}
+                        className={classNames(nail_item, {
+                            [activeItem]: currentIndex === index
+                        })}
                         onClick={(e) => {
                             e.stopPropagation();
-                            handleClick(item.images.split(","));
+                            handleClick(index, item.images.split(","));
                         }}
                     >
                         <img src={item.images.split(",")[0]} alt="" />
+                        <span>{item.name}</span>
                     </div>
                 ))}
             </div>

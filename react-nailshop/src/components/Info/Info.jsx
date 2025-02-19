@@ -14,6 +14,7 @@ function Info() {
                             title={item.title}
                             desc={item.description}
                             icon={item.icon}
+                            link={item.link}
                         />
                     );
                 })}

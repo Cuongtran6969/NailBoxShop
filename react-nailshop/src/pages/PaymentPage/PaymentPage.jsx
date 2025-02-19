@@ -28,8 +28,9 @@ function PaymentPage() {
         dispatch(removeVoucher());
     };
 
-    const hanleCancelPayment = (id) => {
-        const fetchApiCancelPayment = async () => {
+    const hanleCancelPayment = (value) => {
+        // console.log("id: " + id);
+        const fetchApiCancelPayment = async (id) => {
             setLoading(true);
             await cancelPaymentQR(id)
                 .then((res) => {
@@ -40,8 +41,8 @@ function PaymentPage() {
                 });
             setLoading(false);
         };
-        if (id) {
-            fetchApiCancelPayment();
+        if (value) {
+            fetchApiCancelPayment(value);
         } else {
             navigate("/");
         }

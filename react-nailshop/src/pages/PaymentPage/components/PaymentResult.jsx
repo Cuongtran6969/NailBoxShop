@@ -1,5 +1,5 @@
 import { Button, Result } from "antd";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 const data = {
     error: {
         status: "error",
@@ -19,13 +19,14 @@ const data = {
     }
 };
 function PaymentResult({ result }) {
+    const navigate = useNavigate;
     return (
         <Result
             status={data[result].status}
             title={data[result].title}
             subTitle={data[result].subTitle}
             extra={[
-                <Button type="primary" key="buy">
+                <Button type="primary" key="buy" onClick={() => nai}>
                     Buy Again
                 </Button>
             ]}

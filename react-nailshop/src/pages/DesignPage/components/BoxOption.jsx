@@ -7,16 +7,7 @@ import {
     createNailDesignTemplate
 } from "@/apis/nailDesignService";
 import { useEffect, useState } from "react";
-// const options = [
-//     {
-//         type: "color",
-//         image: Nail_polish
-//     },
-//     {
-//         type: "icon",
-//         image: Dinamond
-//     }
-// ];
+
 function BoxOption({ type, setType }) {
     const { box_option, option_item, active_option } = styles;
     const [loading, setLoading] = useState(true);
@@ -26,6 +17,7 @@ function BoxOption({ type, setType }) {
         getNailCategory()
             .then((res) => {
                 setCategories(res.result.items);
+                setType(res.result.items[0]?.id);
             })
             .catch((err) => {
                 console.log(err);
@@ -33,7 +25,6 @@ function BoxOption({ type, setType }) {
         setLoading(false);
     }, []);
     if (loading) return <>loading...</>;
-    console.log(categories);
 
     return (
         <ul className={box_option}>
@@ -47,6 +38,7 @@ function BoxOption({ type, setType }) {
                         onClick={() => setType(option.id)}
                     >
                         <img src={option.image ?? ""} alt="" />
+                        <span>{option.name}</span>
                     </li>
                 );
             })}

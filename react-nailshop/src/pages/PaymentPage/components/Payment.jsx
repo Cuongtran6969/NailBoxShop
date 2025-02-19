@@ -43,7 +43,7 @@ function Payment({ info, countTime, hanleCancelPayment }) {
             <Modal
                 title="Xóa sản phẩm"
                 open={isModalOpen}
-                onOk={hanleCancelPayment}
+                onOk={() => hanleCancelPayment(info.orderId)}
                 onCancel={handleCancelConfirm}
             >
                 <p>Bạn có muốn loại hủy thanh toán đơn hàng này</p>
