@@ -1,7 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import Hand from "@icons/images/Hand.png";
 import html2canvas from "html2canvas"; // Import thư viện chụp ảnh
-import messager_icon from "@icons/images/messager_icon.png";
 import form_1 from "@icons/images/form_1.png";
 import form_2 from "@icons/images/form_2.png";
 import form_3 from "@icons/images/form_3.png";
@@ -11,8 +10,8 @@ import styles from "./styles.module.scss";
 import BoxOption from "./components/BoxOption";
 import BoxItem from "./components/BoxItem";
 import { Rnd } from "react-rnd"; // Import thư viện
-import { FloatButton, Tooltip } from "antd";
 import { useNavigate } from "react-router-dom";
+import Introduction from "./components/Introduction";
 
 const DesignPage = () => {
     const navigate = useNavigate();
@@ -26,6 +25,7 @@ const DesignPage = () => {
         form_5
     ]);
     const {
+        container,
         boxHand,
         itemImages,
         nail_0,
@@ -36,15 +36,13 @@ const DesignPage = () => {
         box_option,
         option_item,
         box_setting,
+        box_intro,
         fixedInbox
     } = styles;
     const fingerAngles = [-7, 5, 3, 1, 1];
     const [placedItems, setPlacedItems] = useState([]);
     const handRef = useRef(null);
     const handleFingerClick = (index, event) => {
-        console.log(index);
-        console.log(selectors);
-
         if (selectors.length == 5 && selectors[0] !== "") {
             setNailColors((prev) => {
                 let newList = [...prev];
@@ -91,16 +89,12 @@ const DesignPage = () => {
     };
 
     return (
-        <div className="text-center" style={{ minWidth: "1890px" }}>
-            <div className={fixedInbox}>
-                <Tooltip title="Hãy gửi cho nhà thiết kế ảnh design">
-                    <a href="https://www.facebook.com/naillabox" target="blank">
-                        <img src={messager_icon} alt="" />
-                    </a>
-                </Tooltip>
-            </div>
+        <div className="text-center">
+            {/* <div className={fixedInbox}>
+                
+            </div> */}
             <h5>Thiết Kế Nail</h5>
-            <div className="position-relative">
+            <div className={container}>
                 <div className={boxHand} id="hand" ref={handRef}>
                     <img src={Hand} alt="" style={{ userSelect: "none" }} />
                     <div>
@@ -146,13 +140,10 @@ const DesignPage = () => {
                     <BoxItem type={type} setSelectors={setSelectors} />
                     <BoxOption type={type} setType={setType} />
                 </div>
+                <div className={box_intro}>
+                    <Introduction captureDesign={captureDesign} />
+                </div>
             </div>
-            <button
-                className="mt-5 fs-6 btn btn-primary ms-5"
-                onClick={captureDesign}
-            >
-                Xuất ảnh thiết kế
-            </button>
         </div>
     );
 };

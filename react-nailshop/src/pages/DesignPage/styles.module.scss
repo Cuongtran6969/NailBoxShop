@@ -1,170 +1,204 @@
-.boxHand {
-    width: 20%;
-    margin: 0 auto;
+.container {
+    display: flex;
     position: relative;
-    user-select: none;
-    .itemImages {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        will-change: transform;
-    }
-    .nail_0 {
-        position: absolute;
-        left: -2.3%;
-        top: 35%;
-        width: 20%;
-        will-change: transform;
-    }
-    .nail_1 {
-        position: absolute;
-        left: 37%;
-        top: 2%;
-        width: 20%;
-        will-change: transform;
-    }
-    .nail_2 {
-        position: absolute;
-        left: 53.5%;
-        top: -1px;
-        width: 20%;
-        will-change: transform;
-    }
-    .nail_3 {
-        position: absolute;
-        left: 70.5%;
-        top: 3.5%;
-        width: 20%;
-        will-change: transform;
-    }
-    .nail_4 {
-        position: absolute;
-        left: 87.5%;
-        top: 14.6%;
-        width: 20%;
-        will-change: transform;
-    }
-}
-.box_option {
-    display: flex;
-    width: 60%;
-    padding: 20px 10px;
-    background-color: rgb(219, 239, 255);
-    border-radius: 15px;
-    max-width: 800px;
-    overflow-y: hidden;
-    height: fit-content;
-    margin: 0;
-
-    &::-webkit-scrollbar {
-        width: 5px;
-    }
-
-    &::-webkit-scrollbar-track {
-        box-shadow: inset 0 0 2px transparent;
-        border-radius: 10px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        border-radius: 10px;
-        background: #f77aac83;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-        background: #ff90bc7e;
-    }
-    overflow-x: scroll;
-    .active_option {
-        border: 4px solid rgb(197, 197, 197);
-    }
-    .option_item {
-        cursor: pointer;
-        width: 33.333%;
-        margin: 0 10px;
-        background-color: rgb(245, 152, 222);
-        border-radius: 15px;
-        display: flex;
-        flex-direction: column;
-        user-select: none;
-        img {
-            border-radius: 15px;
-        }
-        span {
-            margin-top: 10px;
-            color: #fff;
-            margin-bottom: 0;
-        }
-    }
-}
-.box_setting {
-    position: absolute;
-    z-index: 1000;
-    width: 30%;
-    height: 100%;
-    top: 0;
-    display: flex;
-    justify-content: space-around;
     flex-direction: column;
-    margin-left: 20px;
-}
-.box_item {
-    height: 60%;
-    overflow-y: scroll;
-    background-color: rgb(226, 237, 247);
-    border-radius: 15px;
-
-    &::-webkit-scrollbar {
-        width: 5px;
+    .boxHand {
+        width: 420px;
+        margin: 0 auto;
+        position: relative;
+        user-select: none;
+        order: 1;
+        .itemImages {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            will-change: transform;
+        }
+        .nail_0 {
+            position: absolute;
+            left: -2.3%;
+            top: 35%;
+            width: 20%;
+            will-change: transform;
+        }
+        .nail_1 {
+            position: absolute;
+            left: 37%;
+            top: 2%;
+            width: 20%;
+            will-change: transform;
+        }
+        .nail_2 {
+            position: absolute;
+            left: 53.5%;
+            top: -1px;
+            width: 20%;
+            will-change: transform;
+        }
+        .nail_3 {
+            position: absolute;
+            left: 70.5%;
+            top: 3.5%;
+            width: 20%;
+            will-change: transform;
+        }
+        .nail_4 {
+            position: absolute;
+            left: 87.5%;
+            top: 14.6%;
+            width: 20%;
+            will-change: transform;
+        }
     }
-
-    &::-webkit-scrollbar-track {
-        box-shadow: inset 0 0 2px transparent;
-        border-radius: 10px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        border-radius: 10px;
-        background: #f77aac83;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-        background: #ff90bc7e;
-    }
-    .content {
-        padding: 10px;
+    .box_option {
         display: flex;
-        flex-wrap: wrap;
-        width: 100%;
-        gap: 10px;
-        border-radius: 10px;
-        .nail_item {
-            width: calc((100% - 20px) / 3);
-            height: fit-content;
-            border-radius: 15px;
+        width: 60%;
+        padding: 20px 10px;
+        background-color: rgb(219, 239, 255);
+        border-radius: 15px;
+        max-width: 800px;
+        overflow-y: hidden;
+        height: fit-content;
+        margin: 0;
+        margin-top: 50px;
+
+        &::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        &::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 2px transparent;
+            border-radius: 10px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            background: #f77aac83;
+        }
+
+        &::-webkit-scrollbar-thumb:hover {
+            background: #ff90bc7e;
+        }
+        overflow-x: scroll;
+        .active_option {
+            border: 4px solid rgb(197, 197, 197);
+        }
+        .option_item {
             cursor: pointer;
-            border: 2px solid #b1b1b1;
+            width: 33.333%;
+            margin: 0 10px;
+            background-color: rgb(245, 152, 222);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            img {
+                border-radius: 15px;
+            }
             span {
-                color: #505050;
+                margin-top: 10px;
+                color: #fff;
+                margin-bottom: 0;
             }
         }
-        .activeItem {
-            border: 2px solid #ff90bc !important;
+    }
+    .box_setting {
+        order: 2;
+        width: 90%;
+        height: 100%;
+        top: 0;
+        display: flex;
+        justify-content: space-around;
+        flex-direction: column;
+        margin: 0 auto;
+    }
+    .box_intro {
+        order: 3;
+    }
+    .box_item {
+        height: 60%;
+        overflow-y: scroll;
+        background-color: rgb(226, 237, 247);
+        border-radius: 15px;
+
+        &::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        &::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 2px transparent;
+            border-radius: 10px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            background: #f77aac83;
+        }
+
+        &::-webkit-scrollbar-thumb:hover {
+            background: #ff90bc7e;
+        }
+        .content {
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            gap: 10px;
+            border-radius: 10px;
+            .nail_item {
+                width: calc((100% - 20px) / 3);
+                height: fit-content;
+                border-radius: 15px;
+                cursor: pointer;
+                border: 2px solid #b1b1b1;
+                span {
+                    color: #505050;
+                }
+            }
+            .activeItem {
+                border: 2px solid #ff90bc !important;
+            }
         }
     }
-}
-.fixedInbox {
-    position: fixed;
-    bottom: 10px;
-    left: 15px;
-    z-index: 100000;
-    a {
-        display: block;
-        img {
-            width: 50px;
-            height: 50px;
-            cursor: pointer;
+    .fixedInbox {
+        position: fixed;
+        bottom: 10px;
+        left: 15px;
+        z-index: 100000;
+        a {
+            display: block;
+            img {
+                width: 50px;
+                height: 50px;
+                cursor: pointer;
+            }
+        }
+    }
+    @media (min-width: 992px) {
+        flex-direction: row;
+        gap: 100px;
+        .boxHand {
+            order: 2;
+            margin: 0;
+        }
+        .box_setting {
+            order: 1;
+            // position: absolute;
+            // z-index: 1000;
+            width: 30%;
+            height: 100%;
+            top: 0;
+            display: flex;
+            justify-content: space-around;
+            flex-direction: column;
+            margin: 0;
+            margin-left: 20px;
+        }
+        .box_intro {
+            order: 3;
+            flex: 1;
         }
     }
 }
