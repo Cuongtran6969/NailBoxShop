@@ -36,7 +36,7 @@ function Introduction({ captureDesign }) {
                                             className="fs-6 btn btn-primary mt-1"
                                             onClick={captureDesign}
                                         >
-                                            Xuất ảnh thiết kế
+                                            Tải xuống
                                         </button>
                                     </div>
                                 </div>
@@ -50,7 +50,7 @@ function Introduction({ captureDesign }) {
                                 <h5 className="text-start">Bước 3</h5>
                                 <div className="text-muted">
                                     <span>
-                                        Gửi ảnh để qua messager để được tư vấn
+                                        Gửi ảnh qua messager để được tư vấn
                                     </span>
                                     <span
                                         style={{
