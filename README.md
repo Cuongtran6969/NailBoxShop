@@ -45,8 +45,8 @@
 ---
 
 ## 📷 Giao diện demo
-🌐 Truy cập website tại: [nailbox.vn]([https://nailbox.vn](https://nailshop.io.vn/))
-📽️ Xem video demo tại: [YouTube Demo]([https://www.youtube.com/watch?v=MaSoVideo](https://www.youtube.com/watch?v=_qcN3mzLGEY))
+🌐 Truy cập website tại: [nailshop.io.vn](https://nailshop.io.vn/)
+📽️ Xem video demo tại: [YouTube Demo](https://www.youtube.com/watch?v=_qcN3mzLGEY)
 
 ## 🔧 Cài đặt & chạy dự án
 
