@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Code') {
+            steps {
+                git branch: 'main',  // hoặc develop tùy bạn
+                    url: 'https://github.com/Cuongtran6969/NailBoxShop.git',
+                    credentialsId: 'gitlab-connection-id'
+            }
+        }
+
+        stage('Build & Deploy Backend') {
+            steps {
+                dir('nailshop') {
+                    sh '''
+                    docker-compose down
+                    docker-compose build
+                    docker-compose up -d
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Backend đã build và deploy thành công!'
+        }
+        failure {
+            echo '❌ Có lỗi xảy ra khi deploy backend.'
+        }
+    }
+}

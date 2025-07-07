@@ -5,12 +5,11 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.0</version>
+        <version>3.3.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.spring</groupId>
     <artifactId>nailshop</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>nailshop</name>
     <description>nailshop</description>
     <url/>
@@ -140,12 +139,6 @@
             <artifactId>payos-java</artifactId>
             <version>1.0.1</version>
         </dependency>
-
-        <!--        <dependency>-->
-<!--            <groupId>com.google.code.gson</groupId>-->
-<!--            <artifactId>gson</artifactId>-->
-<!--            <version>2.9.0</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-core</artifactId>
