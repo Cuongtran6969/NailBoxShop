@@ -62,6 +62,9 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         for(Admin_OrderResponse order : orderResponse) {
             order.setItems(getOrderItemByOID(order.getId()));
         }
+
+        autoCancelOrderExpiredTime();
+
         return PageResponse.<List<Admin_OrderResponse>>builder()
                 .page(pageable.getPageNumber() + 1)
                 .totalPages(orders.getTotalPages())
@@ -69,6 +72,17 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 .total(orders.getTotalElements())
                 .items(orderResponse)
                 .build();
+    }
+
+    //auto cancel payment expired time
+    public void autoCancelOrderExpiredTime() {
+        List<Order> orders = orderRepository.findOrderByPaymentExpired(
+                LocalDateTime.now().minusMinutes(5), OrderStatus.PENDING
+        );
+        for(Order order : orders) {
+           order.setStatus(OrderStatus.CANCELLED);
+           orderRepository.save(order);
+        }
     }
 
     @Override
@@ -90,8 +104,10 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         TimeRange currentRange = TimeRangeUtil.getTimeRange(period);
         TimeRange previousRange = TimeRangeUtil.getPreviousTimeRange(period);
 
-        BigDecimal currentRevenue = orderRepository.getRevenue(currentRange.getStartDate(), currentRange.getEndDate());
-        BigDecimal previousRevenue = orderRepository.getRevenue(previousRange.getStartDate(), previousRange.getEndDate());
+        BigDecimal currentRevenue = orderRepository.getRevenue(currentRange.getStartDate(), currentRange.getEndDate(),
+                OrderStatus.CANCELLED);
+        BigDecimal previousRevenue = orderRepository.getRevenue(previousRange.getStartDate(), previousRange.getEndDate(),
+                OrderStatus.CANCELLED);
 
         currentRevenue = currentRevenue != null ? currentRevenue : BigDecimal.ZERO;
         previousRevenue = previousRevenue != null ? previousRevenue : BigDecimal.ZERO;
@@ -144,12 +160,13 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     @Override
     @PreAuthorize("isAuthenticated() and hasAnyAuthority('ADMIN', 'STAFF')")
     public OrderSummaryResponse getOrderSummary(String period) {
-        log.info("get in"+period);
         TimeRange currentRange = TimeRangeUtil.getTimeRange(period);
         TimeRange previousRange = TimeRangeUtil.getPreviousTimeRange(period);
 
-        List<Order> currentOrders = orderRepository.findOrdersByPeriod(currentRange.getStartDate(), currentRange.getEndDate());
-        List<Order> previousOrders = orderRepository.findOrdersByPeriod(previousRange.getStartDate(), previousRange.getEndDate());
+        List<Order> currentOrders = orderRepository.findOrdersByPeriod(currentRange.getStartDate(),
+                currentRange.getEndDate(), OrderStatus.CANCELLED);
+        List<Order> previousOrders = orderRepository.findOrdersByPeriod(previousRange.getStartDate(),
+                previousRange.getEndDate(), OrderStatus.CANCELLED);
         Long currentNumber = 0L;
         Long beforeNumber = 0L;
         for (Order order : currentOrders) {
@@ -201,7 +218,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         if(request.getStatus() == OrderStatus.PAYMENT_SUCCESS) {
             order.setPaymentAt(LocalDateTime.now());
         } else if(request.getStatus() == OrderStatus.CANCELLED) {
-            order.setPaymentAt(LocalDateTime.now());
+            order.setCancelAt(LocalDateTime.now());
         } else if(request.getStatus() == OrderStatus.COMPLETED) {
             order.setCompleteAt(LocalDateTime.now());
         }

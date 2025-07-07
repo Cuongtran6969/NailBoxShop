@@ -2,6 +2,7 @@ package com.spring.nailshop.repository;
 
 import com.spring.nailshop.dto.response.RevenueData;
 import com.spring.nailshop.entity.Order;
+import com.spring.nailshop.util.OrderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,11 +20,13 @@ import java.util.Optional;
 public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecificationExecutor<Order> {
     Optional<Order> findByCode(String code);
 
-    @Query("SELECT o FROM Order o WHERE o.createAt BETWEEN :startDate AND :endDate")
-    List<Order> findOrdersByPeriod(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    @Query("SELECT o FROM Order o WHERE o.createAt BETWEEN :startDate AND :endDate and o.status != :status")
+    List<Order> findOrdersByPeriod(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate,
+                                   @Param("status") OrderStatus status);
 
-    @Query("SELECT SUM(o.totalPrice) FROM Order o WHERE o.createAt BETWEEN :startDate AND :endDate and o.status = 'COMPLETED'")
-    BigDecimal getRevenue(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    @Query("SELECT SUM(o.totalPrice) FROM Order o WHERE o.createAt BETWEEN :startDate AND :endDate and o.status != :status")
+    BigDecimal getRevenue(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate,
+                          @Param("status") OrderStatus status);
 
     @Query("SELECT new com.spring.nailshop.dto.response.RevenueData(" +
             "CAST(o.createAt AS DATE), SUM(o.totalPrice)) " +
@@ -34,4 +37,9 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
 
     Page<Order> findOrderByUserId(Long userId, Pageable pageable);
 
+    @Query("Select o from Order o where o.user.id = :uid and o.payment.id = 1")
+    List<Order> findOrderPaymentByUserId(@Param("uid")Long userId);
+
+    @Query("Select o from Order o where o.createAt < :checkTime and o.payment.id = 1 and o.status = :status")
+    List<Order> findOrderByPaymentExpired(@Param("checkTime")LocalDateTime checkTime, @Param("status") OrderStatus status);
 }

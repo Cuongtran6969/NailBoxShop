@@ -30,10 +30,15 @@ import ProductSuggest from "@components/ProductSuggest/ProductSuggest";
 import Description from "@productPages/CollapseDesc/Description";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getProductById } from "@/apis/productService";
-import { useDispatch } from "react-redux";
-import { addToCart, buyNowToCart } from "@redux/slice/cartSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+    addToCart,
+    buyNowToCart,
+    clearOrderStatus
+} from "@redux/slice/cartSlice";
 import { notification } from "antd";
 const ProductDetailPage = () => {
+    const { orderError, orderSuccess } = useSelector((state) => state.cart);
     const [tags, setTags] = useState([]);
     const [categories, setCategories] = useState([]);
     const dispatch = useDispatch();
@@ -68,7 +73,8 @@ const ProductDetailPage = () => {
         buyNowBtn,
         productRelation,
         relationTitle,
-        activeImg
+        activeImg,
+        productStock
     } = styles;
     const [currentImage, setCurrentImage] = useState("");
     const [images, setImages] = useState([]);
@@ -80,6 +86,7 @@ const ProductDetailPage = () => {
         productName: "",
         size: "",
         quantity: 1,
+        stock: 1,
         designId: "",
         designName: "",
         pciture: "",
@@ -200,6 +207,7 @@ const ProductDetailPage = () => {
                     price: data.result.price,
                     discount: data.result.discount,
                     pciture: firstPicture ?? pictures[0],
+                    stock: data.result.stock,
                     size: data.result.size ? data.result.size.split(",")[0] : ""
                 });
             } catch (error) {
@@ -209,6 +217,18 @@ const ProductDetailPage = () => {
         };
         fetchInitialData();
     }, [id]);
+    useEffect(() => {
+        if (orderError) {
+            openNotificationWithIcon("error", "Thất bại", orderError);
+            dispatch(clearOrderStatus());
+        }
+
+        if (orderSuccess) {
+            openNotificationWithIcon("success", "Thành công", orderSuccess);
+            dispatch(clearOrderStatus());
+        }
+    }, [orderError, orderSuccess, dispatch]);
+
     useEffect(() => {
         setOrderData({
             ...orderData,
@@ -248,11 +268,6 @@ const ProductDetailPage = () => {
             addToCart({
                 ...orderData
             })
-        );
-        openNotificationWithIcon(
-            "success",
-            "Thành công",
-            "Thêm vào giỏ hàng thành công"
         );
     };
 
@@ -563,6 +578,9 @@ const ProductDetailPage = () => {
                                                                 quantity={
                                                                     currentQuantity
                                                                 }
+                                                                max={
+                                                                    product.stock
+                                                                }
                                                                 changeQuantity={
                                                                     setCurrentQuantity
                                                                 }
@@ -585,6 +603,14 @@ const ProductDetailPage = () => {
                                                                 hàng
                                                             </Button>
                                                         </Space>
+                                                        <p
+                                                            className={
+                                                                productStock
+                                                            }
+                                                        >
+                                                            Còn {product.stock}{" "}
+                                                            sản phẩm
+                                                        </p>
                                                     </div>
                                                     <div>
                                                         <Button

@@ -62,9 +62,7 @@ public class PaymentController {
                     .returnUrl("")
                     .description(order.getOrderCode())
                     .amount(price).build();
-            String qrImagePath = getQRImage(payOS.createPaymentLink(paymentData).getQrCode());
-            String linkImage = cloudinaryService.uploadImageBase64(qrImagePath);
-            orderService.savePaymentQr(order.getOrderId(), linkImage);
+            orderService.savePaymentQr(order.getOrderId(), payOS.createPaymentLink(paymentData).getQrCode());
             response.put("error", 0);
             response.put("message", "success");
             return response;
@@ -114,6 +112,15 @@ public class PaymentController {
             return response;
         }
 
+    }
+
+    @GetMapping("/payment-info/current")
+    public ApiResponse<OrderPaymentInfoResponse> getOrderInfo() {
+        return ApiResponse.<OrderPaymentInfoResponse>builder()
+                .code(HttpStatus.OK.value())
+                .result(orderService.getOrderPaymentInfo())
+                .message("Get payment of order successfully")
+                .build();
     }
 
     @PutMapping(path = "/paymentQR/cancel/{orderId}")

@@ -1,70 +1,97 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-    createPaymentQR,
-    getStatusPaymentQR,
-    cancelPaymentQR
-} from "@/apis/paymentService";
-import { getOrderPaymentInfo } from "@/apis/orderService";
-
+import { getStatusPaymentQR, cancelPaymentQR } from "@/apis/paymentService";
+import { getOrderPaymentInfo } from "@/apis/paymentService";
+import { removeVoucher, removeItem } from "@redux/slice/cartSlice";
 import { useEffect, useState } from "react";
 import Payment from "./components/Payment";
 import PaymentResult from "./components/PaymentResult";
+import { useDispatch, useSelector } from "react-redux";
 function PaymentPage() {
-    const location = useLocation();
-    console.log("ORDERID: " + location.state?.orderId || "");
     const navigate = useNavigate();
-    const [orderId, setOrderId] = useState(location.state?.orderId || "");
+    const location = useLocation();
+    const [orderId, setOrderId] = useState(null);
     const [paymentInfo, setPaymentInfo] = useState(null);
     const [paymentStatus, setPaymentStatus] = useState(null);
     const [loading, setLoading] = useState(false);
     const [targetDate, setTargetDate] = useState("");
+    const { listBuy } = useSelector((state) => state.cart);
+    const dispatch = useDispatch();
 
-    const hanleCancelPayment = () => {
-        if (orderId) {
-            const fetchApiCancelPayment = async () => {
-                setLoading(true);
-                await cancelPaymentQR(orderId)
-                    .then((res) => {
-                        console.log(res.result);
-                        setPaymentStatus(res.result.status);
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
-                setLoading(false);
-            };
-            fetchApiCancelPayment();
+    const handleRemoveBuyList = () => {
+        for (const item of listBuy) {
+            dispatch(
+                removeItem({
+                    ...item
+                })
+            );
+        }
+        dispatch(removeVoucher());
+    };
+
+    const hanleCancelPayment = (value) => {
+        // console.log("id: " + id);
+        const fetchApiCancelPayment = async (id) => {
+            setLoading(true);
+            await cancelPaymentQR(id)
+                .then((res) => {
+                    setPaymentStatus(res.result.status);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+            setLoading(false);
+        };
+        if (value) {
+            fetchApiCancelPayment(value);
+        } else {
+            navigate("/");
         }
     };
 
     useEffect(() => {
-        console.log("cccc: " + orderId);
-
-        if (orderId) {
-            const fetchApiOrderPayment = async () => {
-                setLoading(true);
-                await getOrderPaymentInfo(orderId)
-                    .then((res) => {
-                        setPaymentInfo(res.result);
-                        setPaymentStatus(res.result.status);
-                        const createdAt = new Date(res.result.createdAt);
-                        createdAt.setMinutes(createdAt.getMinutes() + 5);
-                        setTargetDate(createdAt);
-                        const timeoutId = setTimeout(() => {
-                            hanleCancelPayment();
-                        }, createdAt.getTime() - new Date().getTime());
-                        return () => clearTimeout(timeoutId);
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
-                setLoading(false);
-            };
-            fetchApiOrderPayment();
-        } else {
-            navigate("/");
+        if (location.state) {
+            handleRemoveBuyList();
         }
-    }, [orderId]);
+
+        let timeoutId; // Lưu ID của setTimeout
+
+        const fetchApiOrderPayment = async () => {
+            setLoading(true);
+            try {
+                const res = await getOrderPaymentInfo();
+
+                if (res.result === undefined) {
+                    navigate("/");
+                    return;
+                }
+
+                setPaymentInfo(res.result);
+                setPaymentStatus(res.result.status);
+                setOrderId(res.result.orderId);
+
+                const createdAt = new Date(res.result.createdAt);
+                createdAt.setMinutes(createdAt.getMinutes() + 5);
+                setTargetDate(createdAt);
+
+                const delay = createdAt.getTime() - new Date().getTime();
+                if (delay > 0) {
+                    timeoutId = setTimeout(() => {
+                        hanleCancelPayment(res.result.orderId);
+                    }, delay);
+                }
+            } catch (err) {
+                console.log(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchApiOrderPayment();
+
+        return () => {
+            if (timeoutId) clearTimeout(timeoutId);
+        };
+    }, []);
 
     useEffect(() => {
         if (orderId && paymentStatus === "PENDING") {
@@ -72,21 +99,17 @@ function PaymentPage() {
                 try {
                     const res = await getStatusPaymentQR(orderId);
                     setPaymentStatus(res.data.status);
-                    console.log(res.data);
                 } catch (err) {
                     console.log(err);
                 }
             }, 2000);
-
             return () => clearInterval(interval);
         }
-    }, [orderId, paymentStatus]);
+    }, [paymentStatus]);
 
     if (loading) {
         return <div>loading....</div>;
     }
-    console.log("paymentInfo:" + paymentInfo);
-    console.log("paymentStatus:" + paymentStatus);
     return (
         <div>
             {paymentStatus === "PENDING" && (

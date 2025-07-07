@@ -6,6 +6,9 @@ import {
     changeListBuy
 } from "@redux/slice/cartSlice";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { SideBarContext } from "@contexts/SideBarProvider";
+import { useContext } from "react";
 function CartItem({ data }) {
     const {
         imageBox,
@@ -16,8 +19,9 @@ function CartItem({ data }) {
         removeBox,
         boxItem
     } = styles;
+    const { setIsOpen } = useContext(SideBarContext);
     const dispatch = useDispatch();
-
+    const navigate = useNavigate();
     const handleRemoveItem = () => {
         console.log("reee");
 
@@ -35,7 +39,15 @@ function CartItem({ data }) {
                     <img src={data.pciture} alt="" />
                 </div>
                 <div className={itemInfo}>
-                    <div className={itemName}>{data.productName}</div>
+                    <div
+                        className={itemName}
+                        onClick={() => {
+                            setIsOpen(false);
+                            navigate(`/detail/${data.productId}`);
+                        }}
+                    >
+                        {data.productName}
+                    </div>
                     <span className={itemOption}>
                         {data.designName}
                         <span className="text-black">|</span>{" "}

@@ -63,9 +63,7 @@ export const introspect = async () => {
         if (!accessToken) {
             throw new Error("Token is missing");
         }
-        const response = await axiosClient.post(`/auth/introspect`, {
-            token: accessToken
-        });
+        const response = await axiosClient.get(`/users/introspect`);
 
         if (response.data && response.data.result) {
             return response.data.result;

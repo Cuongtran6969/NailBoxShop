@@ -34,7 +34,7 @@ public class SecurityConfig {
             "/auth/**",
             "/api/v1/categories",
             "/api/v1/coupon/code/{value}",
-            "/api/v1/coupon/code/get-random",
+            "/api/v1/coupon/get-random",
             "/api/v1/payment/methods",
             "/api/v1/payment/method/{id}",
             "/api/v1/posts",
@@ -43,11 +43,14 @@ public class SecurityConfig {
             "/api/v1/products",
             "/api/v1/product/{id}",
             "/api/v1/shop/banners",
+            "/api/v1/design/cate/all",
+            "/api/v1/design/all"
     };
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(PUBLIC_ENDPOINT).permitAll()
                         .requestMatchers("/admin/users/info/update").hasAuthority("ADMIN")

@@ -104,12 +104,5 @@ public class AuthenticationController {
                 .build();
     }
 
-    @PostMapping("/introspect")
-    public ApiResponse<IntrospectResponse> introspect(@RequestBody IntrospectRequest request) {
-        var result = authenticationService.introspect(request);
-        return ApiResponse.<IntrospectResponse>builder()
-                .code(HttpStatus.OK.value())
-                .result(result)
-                .build();
-    }
+
 }

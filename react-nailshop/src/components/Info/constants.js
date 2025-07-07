@@ -5,7 +5,8 @@ export const dataInfo = [
     {
         title: "NailBox",
         description: "Thiết Kế Cá Nhân Hóa",
-        icon: NailIcon
+        icon: NailIcon,
+        link: "/design"
     },
     {
         title: "Voucher",

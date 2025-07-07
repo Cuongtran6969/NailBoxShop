@@ -5,6 +5,7 @@ import com.spring.nailshop.dto.request.EmailRequest;
 import com.spring.nailshop.dto.request.PasswordCreationRequest;
 import com.spring.nailshop.dto.request.UserCreationRequest;
 import com.spring.nailshop.dto.request.UserInfoUpdateRequest;
+import com.spring.nailshop.dto.response.IntrospectResponse;
 import com.spring.nailshop.dto.response.UserProfileResponse;
 import com.spring.nailshop.dto.response.UserResponse;
 import com.spring.nailshop.dto.response.UserUpdateResponse;
@@ -12,23 +13,30 @@ import com.spring.nailshop.entity.Role;
 import com.spring.nailshop.entity.User;
 import com.spring.nailshop.exception.AppException;
 import com.spring.nailshop.exception.ErrorCode;
+import com.spring.nailshop.exception.InvalidTokenException;
 import com.spring.nailshop.mapper.ProfileMapper;
 import com.spring.nailshop.mapper.UserMapper;
 import com.spring.nailshop.repository.RoleRepository;
 import com.spring.nailshop.repository.UserRepository;
+import com.spring.nailshop.security.UserSecurity;
 import com.spring.nailshop.service.CloudinaryService;
 import com.spring.nailshop.service.MailService;
 import com.spring.nailshop.service.OtpService;
 import com.spring.nailshop.service.UserService;
+import com.spring.nailshop.util.TokenType;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
@@ -190,6 +198,28 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         otpService.deleteOtp(request.getEmail());
         userRepository.save(user);
+    }
+
+    @Override
+    public IntrospectResponse introspect() {
+        String scope =  "";
+        String username = "";
+        String avatar = "";
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+       if (authentication == null || !authentication.isAuthenticated()) {
+           throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+       }
+       UserSecurity userDetails = (UserSecurity) authentication.getPrincipal();
+       scope = userDetails.getUser().getRole().getName();
+       username = userDetails.getUser().getName();
+       avatar = userDetails.getUser().getAvatar();
+
+       return IntrospectResponse.builder()
+                .name(username)
+                .avatar(avatar)
+                .role(scope)
+                .build();
     }
 
     private static String generateOtp() {

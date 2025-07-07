@@ -4,7 +4,12 @@ import { FaPlus } from "react-icons/fa6";
 import { FiMinus } from "react-icons/fi";
 import styles from "./styles.module.scss";
 import classNames from "classnames";
-function InputNumberBox({ type = "large", quantity = 1, changeQuantity }) {
+function InputNumberBox({
+    type = "large",
+    quantity = 1,
+    changeQuantity,
+    max = 1
+}) {
     const { container, btnLef, btnRight, small, medium, large } = styles;
     const [inputValue, setInputValue] = useState(quantity);
     const handleDecrease = () => {
@@ -15,19 +20,25 @@ function InputNumberBox({ type = "large", quantity = 1, changeQuantity }) {
     };
 
     const handleIncrease = () => {
-        changeQuantity(quantity + 1);
-        setInputValue(inputValue + 1);
+        if (quantity + 1 <= max) {
+            changeQuantity(quantity + 1);
+            setInputValue(inputValue + 1);
+        }
     };
 
     const handleChangeValue = (value) => {
-        console.log(value);
         const numericValue = Number(value);
         if (Number.isInteger(numericValue)) {
-            changeQuantity(numericValue);
-            setInputValue(numericValue);
+            console.log("numericValue <= max: " + (numericValue <= max));
+
+            if (numericValue <= max) {
+                changeQuantity(numericValue);
+                setInputValue(numericValue);
+            } else {
+                setInputValue(max);
+            }
         } else {
             setInputValue(quantity);
-            console.log("ko hop le");
         }
     };
     return (

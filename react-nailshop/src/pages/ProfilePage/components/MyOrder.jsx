@@ -114,13 +114,17 @@ function MyOrder() {
     const handleCancel = async () => {
         await cancelOrder(chooseId)
             .then((res) => {
-                openNotificationWithIcon(
-                    "success",
-                    "Đơn hàng",
-                    "Đơn hàng hủy thành công"
-                );
+                if (res.code == 200) {
+                    openNotificationWithIcon(
+                        "success",
+                        "Đơn hàng",
+                        "Đơn hàng hủy thành công"
+                    );
+                    getOrders();
+                } else {
+                    openNotificationWithIcon("error", "Đơn hàng", res.message);
+                }
                 setIsModalOpen(false);
-                getOrders();
             })
             .catch((err) => {
                 openNotificationWithIcon(
@@ -252,7 +256,9 @@ function MyOrder() {
                                         </span>
                                     </div>
                                     <div>
-                                        {order.status === "PENDING" ? (
+                                        {order.status === "PENDING" ||
+                                        (order.status === "PROCESSING" &&
+                                            !order.ship_code) ? (
                                             <Button
                                                 type="default"
                                                 className={orderCancel}

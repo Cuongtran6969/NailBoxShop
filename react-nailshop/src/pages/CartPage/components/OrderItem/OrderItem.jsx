@@ -15,10 +15,11 @@ import {
     changeListBuy
 } from "@redux/slice/cartSlice";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 const { confirm } = Modal;
 function OrderItem({ data }) {
     const dispatch = useDispatch();
-
+    const navigate = useNavigate();
     const handleChangeQuantity = (quantity) => {
         dispatch(
             updateQuantity({
@@ -96,7 +97,14 @@ function OrderItem({ data }) {
                         <Col sm={9} className="px-0">
                             <div>
                                 <h4 className={title}>
-                                    <span className={titleValue}>
+                                    <span
+                                        className={titleValue}
+                                        onClick={() =>
+                                            navigate(
+                                                `/detail/${data.productId}`
+                                            )
+                                        }
+                                    >
                                         {data.productName}
                                     </span>
                                 </h4>

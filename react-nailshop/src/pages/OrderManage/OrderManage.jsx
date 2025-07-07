@@ -54,11 +54,17 @@ import styles from "./styles.module.scss";
 import OrderItem from "./components/OrderItem";
 const statusInfo = {
     PENDING: { label: "Chờ xác nhận", color: "orange" },
-    PAYMENT_SUCCESS: { label: "Đã thanh toán trước", color: "cyan" },
+    // PAYMENT_SUCCESS: { label: "Đã thanh toán trước", color: "cyan" },
     PROCESSING: { label: "Đang giao", color: "blue" },
     CANCELLED: { label: "Đã hủy", color: "red" },
     COMPLETED: { label: "Hoàn thành", color: "green" }
 };
+
+const paymentInfo = {
+    1: { label: "Thanh toán online", color: "cyan" },
+    2: { label: "Thanh toán sau", color: "orange" }
+};
+
 const shipStatusInfo = {
     none: { label: "Chưa yêu cầu", color: "" },
     ready_to_pick: { label: "Chuẩn bị hàng", color: "gold" },
@@ -69,9 +75,44 @@ const shipStatusInfo = {
     delivery_fail: { label: "Giao hàng thất bại", color: "magenta" },
     waiting_to_return: { label: "Chờ dvvc trả hàng", color: "purple" },
     return: { label: "Đã trả", color: "geekblue" },
-    cancel: { label: "Đã hủy ship", color: "red" }
+    cancel: { label: "Đã hủy ship ghn", color: "red" }
 };
-
+const itemsStatus = [
+    {
+        label: <a>Tất cả</a>,
+        key: ""
+    },
+    {
+        label: <a>Chờ xác nhận</a>,
+        key: "PENDING"
+    },
+    // {
+    //     label: <a>Đã thanh toán trước</a>,
+    //     key: "PAYMENT_SUCCESS"
+    // },
+    {
+        label: <a>Đơn hàng đang giao đến bạn</a>,
+        key: "PROCESSING"
+    },
+    {
+        label: <a>Đã hủy</a>,
+        key: "CANCELLED"
+    },
+    {
+        label: <a>Hoàn thành</a>,
+        key: "COMPLETED"
+    }
+];
+const itemsPayment = [
+    {
+        label: <a>Thanh toán online</a>,
+        key: "1"
+    },
+    {
+        label: <a>Thanh toán sau</a>,
+        key: "2"
+    }
+];
 function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
     const navigate = useNavigate();
     const { table, shipRequireBtn, shipCancelBtn, detailBtn } = styles;
@@ -83,6 +124,7 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
     const [chooseId, setChooseId] = useState(null);
     const [chooseCode, setChooseCode] = useState(null);
     const [shopInfo, setShopInfo] = useState(null);
+    const [items, setItems] = useState(itemsStatus);
     const [filter, setFilter] = useState({
         page: 1,
         size: 10,
@@ -92,7 +134,8 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
         createAt: sortOptions[0],
         shipFee: sortOptions[0],
         totalPrice: sortOptions[0],
-        status: ""
+        status: "",
+        paymentId: ""
     });
     const [api, contextHolder] = notification.useNotification();
     const openNotificationWithIcon = (type, mess, desc) => {
@@ -101,62 +144,6 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
             description: desc,
             placement: "top"
         });
-    };
-    const items = [
-        {
-            label: <a>Tất cả</a>,
-            key: ""
-        },
-        {
-            label: <a>Chờ xác nhận</a>,
-            key: "PENDING"
-        },
-        {
-            label: <a>Đã thanh toán trước</a>,
-            key: "PAYMENT_SUCCESS"
-        },
-        {
-            label: <a>Đơn hàng đang giao đến bạn</a>,
-            key: "PROCESSING"
-        },
-        {
-            label: <a>Đã hủy</a>,
-            key: "CANCELLED"
-        },
-        {
-            label: <a>Hoàn thành</a>,
-            key: "COMPLETED"
-        }
-    ];
-    const handleMenuClick = (e) => {
-        setFilter((prev) => ({
-            ...prev,
-            page: 1,
-            status: e.key
-        }));
-    };
-
-    const menuProps = {
-        items,
-        onClick: handleMenuClick
-    };
-    const handleChangeStatus = async (id, status) => {
-        await updateStatusOrder(id, status)
-            .then((res) => {
-                openNotificationWithIcon(
-                    "success",
-                    "Trạng thái đơn hàng",
-                    "Đơn hàng đã cập nhật thành công"
-                );
-                fetchApiShopInfo();
-            })
-            .catch((err) => {
-                openNotificationWithIcon(
-                    "error",
-                    "Trạng thái đơn hàng",
-                    "Đơn hàng đã cập nhật thất bại"
-                );
-            });
     };
 
     const menuPropsForRow = (id) => ({
@@ -176,6 +163,51 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
         ],
         onClick: (e) => handleChangeStatus(id, e.key)
     });
+    const handleMenuClick = (e) => {
+        setFilter((prev) => ({
+            ...prev,
+            page: 1,
+            status: e.key
+        }));
+    };
+
+    const handleMenuPaymentClick = (e) => {
+        setFilter((prev) => ({
+            ...prev,
+            page: 1,
+            paymentId: e.key
+        }));
+    };
+
+    const menuProps = {
+        items: itemsStatus,
+        onClick: handleMenuClick
+    };
+
+    const menuPropsPayment = {
+        items: itemsPayment,
+        onClick: handleMenuPaymentClick
+    };
+
+    const handleChangeStatus = async (id, status) => {
+        await updateStatusOrder(id, status)
+            .then((res) => {
+                openNotificationWithIcon(
+                    "success",
+                    "Trạng thái đơn hàng",
+                    "Đơn hàng đã cập nhật thành công"
+                );
+                fetchApiShopInfo();
+            })
+            .catch((err) => {
+                openNotificationWithIcon(
+                    "error",
+                    "Trạng thái đơn hàng",
+                    "Đơn hàng đã cập nhật thất bại"
+                );
+            });
+    };
+
     const [order, setOrder] = useState();
 
     const fetchApiShopInfo = async () => {
@@ -193,14 +225,25 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
     const fetchOrders = async () => {
         setLoading(true);
         try {
-            const { page, size, code, createAt, status, shipFee, totalPrice } =
-                filter;
+            const {
+                page,
+                size,
+                code,
+                createAt,
+                status,
+                shipFee,
+                totalPrice,
+                paymentId
+            } = filter;
 
             let query = `code~'${code.trim()}'`;
             if (status) {
                 query += `&filter=status='${status}'`;
             } else {
                 query += `&filter=status~'${status}'`;
+            }
+            if (paymentId) {
+                query += `&filter=payment:'${paymentId}'`;
             }
             if (createAt.type) query += `&sort=createAt:${createAt.type}`;
             if (shipFee.type) query += `&sort=shipFee:${shipFee.type}`;
@@ -259,7 +302,8 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
         filter.status,
         filter.shipFee,
         filter.totalPrice,
-        filter.code
+        filter.code,
+        filter.paymentId
     ]);
 
     const showOrderDetail = (id) => {
@@ -377,7 +421,8 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
             },
             {
                 title: "Người nhận",
-                dataIndex: "receiverName"
+                dataIndex: "receiverName",
+                width: "7%"
             },
             {
                 title: "Địa chỉ",
@@ -392,6 +437,13 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
                                 r.province_name}
                         </span>
                     );
+                }
+            },
+            {
+                title: "Phone",
+                dataIndex: "phone",
+                render: (t, r) => {
+                    return <span>{r.phone}</span>;
                 }
             },
             {
@@ -416,6 +468,7 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
             {
                 title: "Voucher",
                 dataIndex: "coupon",
+                width: "6%",
                 render: (coupon) =>
                     coupon ? (
                         <div className="d-flex">
@@ -452,11 +505,46 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
                         <span className="me-3">Số lượng</span>
                     </div>
                 ),
+                width: "7%",
                 dataIndex: "quantity"
             },
             {
                 title: (
-                    <div>
+                    <div onClick={() => setItems(itemsPayment)}>
+                        <Dropdown
+                            menu={menuPropsPayment}
+                            trigger={["click"]}
+                            placement="bottom"
+                            className="text-black"
+                        >
+                            <span style={{ color: "red !important" }}>
+                                <Space>
+                                    {paymentInfo[filter.paymentId]?.label ||
+                                        "Tất cả"}
+                                    <DownOutlined />
+                                </Space>
+                            </span>
+                        </Dropdown>
+                    </div>
+                ),
+                dataIndex: "payment",
+                render: (t, r) => {
+                    return (
+                        <span>
+                            {r.paymentAt ? (
+                                <Tag color={"green"}>Đã thanh toán online</Tag>
+                            ) : (
+                                <Tag color={paymentInfo[r.payment.id]?.color}>
+                                    {paymentInfo[r.payment.id]?.label}
+                                </Tag>
+                            )}
+                        </span>
+                    );
+                }
+            },
+            {
+                title: (
+                    <div onClick={() => setItems(itemsStatus)}>
                         <Dropdown
                             menu={menuProps}
                             trigger={["click"]}
@@ -480,6 +568,7 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
                             <Tag color={statusInfo[r.status]?.color}>
                                 {statusInfo[r.status]?.label}
                             </Tag>
+
                             <Dropdown
                                 menu={menuPropsForRow(r.id)}
                                 trigger={["click"]}
@@ -496,7 +585,7 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
                     ) : null
             },
             {
-                title: "Tình trạng ship",
+                title: "ship GHN",
                 dataIndex: "ship_status",
                 render: (ship_status) =>
                     ship_status ? (
@@ -508,8 +597,9 @@ function OrderManage({ onProductSelection = () => {}, initCheckList = [] }) {
                     )
             },
             {
-                title: "shipper lấy hàng",
+                title: "GHN",
                 dataIndex: "status",
+                width: "5%",
                 render: (t, r) => (
                     <div className="d-flex">
                         <div>

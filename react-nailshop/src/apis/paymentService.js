@@ -39,3 +39,9 @@ export const cancelPaymentQR = async (orderId) => {
         throw error;
     }
 };
+
+export const getOrderPaymentInfo = async () => {
+    let urlApi = `/api/v1/payment-info/current`;
+    const res = await axiosClient.get(urlApi);
+    return res.data;
+};

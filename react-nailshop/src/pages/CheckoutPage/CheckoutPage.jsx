@@ -50,6 +50,7 @@ function CheckoutPage() {
     );
     const dispatch = useDispatch();
     const [current, setCurrent] = useState(1);
+    const [orderLoading, setOrderLoading] = useState(false);
     const {
         purchaseBtn,
         labelSelect,
@@ -59,14 +60,9 @@ function CheckoutPage() {
         inputForm,
         errorText
     } = styles;
-    const [paym, setValue] = useState(1);
     const [province, setProvince] = useState([]);
     const [district, setDistrict] = useState([]);
     const [ward, setWard] = useState([]);
-    const [detail, setDetail] = useState("");
-    const [currentProvinceId, setCurrentProvinceId] = useState(null);
-    const [currentDistrictId, setCurrentDistrictId] = useState(null);
-    const [currentWardId, setCurrentWardId] = useState(null);
     const [shipFee, setShipFee] = useState(null);
     const [shipDate, setShipDay] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -77,9 +73,9 @@ function CheckoutPage() {
     const [initForm, setInitForm] = useState({
         name: "",
         phone: "",
-        provinceId: "",
-        districtId: "",
-        wardId: "",
+        provinceId: null,
+        districtId: null,
+        wardId: null,
         provinceName: "",
         districtName: "",
         wardName: "",
@@ -157,8 +153,11 @@ function CheckoutPage() {
         };
         setWard([]);
         setDistrict([]);
-        setCurrentDistrictId(null);
-        setCurrentWardId(null);
+        setInitForm((prev) => ({
+            ...prev,
+            districtId: null,
+            wardId: null
+        }));
         fetchApiDistrict();
     }, [initForm.provinceId]);
 
@@ -177,7 +176,11 @@ function CheckoutPage() {
             }
         };
         setWard([]);
-        setCurrentWardId(null);
+        setInitForm((prev) => ({
+            ...prev,
+            wardId: null
+        }));
+        setShipFee(null);
         fetchApiWard();
     }, [initForm.districtId]);
 
@@ -191,53 +194,52 @@ function CheckoutPage() {
 
     useEffect(() => {
         const fetchApiGetShipFee = async () => {
-            if (initForm.districtId) {
-                const formData = {
-                    service_type_id: service_type_id,
-                    from_district_id: shopInfo.district_id,
-                    from_ward_code: shopInfo.ward_code + "",
-                    to_district_id: parseInt(initForm.districtId),
-                    to_ward_code: initForm.wardId,
-                    length: shopInfo.boxLength,
-                    width: shopInfo.boxWidth,
-                    height: shopInfo.boxHeight,
-                    weight: shopInfo.boxWeight,
-                    insurance_value: totalCheckout
-                };
-                await getShipFee(shopInfo.token, shopInfo.shop_id, formData)
-                    .then((res) => {
-                        setShipFee(res.data.total);
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
-            } else {
-                setShipFee(null);
-            }
+            const formData = {
+                service_type_id: service_type_id,
+                from_district_id: shopInfo.district_id,
+                from_ward_code: shopInfo.ward_code + "",
+                to_district_id: parseInt(initForm.districtId),
+                to_ward_code: initForm.wardId,
+                length: shopInfo.boxLength,
+                width: shopInfo.boxWidth,
+                height: shopInfo.boxHeight,
+                weight: shopInfo.boxWeight,
+                insurance_value: totalCheckout
+            };
+            await getShipFee(shopInfo.token, shopInfo.shop_id, formData)
+                .then((res) => {
+                    setShipFee(res.data.total);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
         };
 
         const fetchApiGetLeadTime = async () => {
-            if (currentWardId != null) {
-                const formData = {
-                    service_type_id: service_type_id,
-                    from_district_id: shopInfo.district_id,
-                    from_ward_code: shopInfo.ward_code + "",
-                    to_district_id: parseInt(currentDistrictId),
-                    to_ward_code: currentWardId
-                };
-                await getLeadtime(shopInfo.token, formData)
-                    .then((res) => {
-                        setShipDay(getNumberDay(res.data.leadtime));
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
-            } else {
-                setShipDay(null);
-            }
+            console.log("initForm.districtId" + initForm.districtId);
+
+            const formData = {
+                service_type_id: service_type_id,
+                from_district_id: shopInfo.district_id,
+                from_ward_code: shopInfo.ward_code + "",
+                to_district_id: parseInt(initForm.districtId),
+                to_ward_code: initForm.wardId
+            };
+            await getLeadtime(shopInfo.token, formData)
+                .then((res) => {
+                    setShipDay(getNumberDay(res.data.leadtime));
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
         };
-        fetchApiGetShipFee();
-        fetchApiGetLeadTime();
+        if (initForm.wardId && initForm.districtId) {
+            fetchApiGetShipFee();
+            fetchApiGetLeadTime();
+        } else {
+            setShipDay(null);
+            setShipFee(null);
+        }
     }, [initForm.wardId]);
 
     const handleChangePayment = (e) => {
@@ -305,17 +307,6 @@ function CheckoutPage() {
         fetchApiOrder(initForm);
     };
 
-    const handleRemoveBuyList = () => {
-        for (const item of listBuy) {
-            dispatch(
-                removeItem({
-                    ...item
-                })
-            );
-        }
-        dispatch(removeVoucher());
-    };
-
     const fetchApiOrder = async (data) => {
         const items = [];
         for (const item of listBuy) {
@@ -340,23 +331,22 @@ function CheckoutPage() {
             payment_id: data.paymentId,
             items: items
         };
-
+        setOrderLoading(true);
         await createOrder(formData)
             .then((res) => {
                 if (res.code == 200) {
-                    handleRemoveBuyList();
                     const orderId = res.result.id;
 
                     if (formData.payment_id == 1) {
                         createPaymentQR(orderId)
                             .then((res) => {
                                 navigate("/payment", {
-                                    state: { orderId }
+                                    state: { result: true }
                                 });
                             })
                             .catch((err) => {
-                                navigate("/payment", {
-                                    state: { orderId }
+                                navigate("/order-result", {
+                                    state: { result: "error" }
                                 });
                             });
                     } else {
@@ -375,7 +365,12 @@ function CheckoutPage() {
                     }
                 }
             })
-            .catch((err) => {});
+            .catch((err) => {
+                navigate("/order-result", {
+                    state: { result: "error" }
+                });
+            });
+        setOrderLoading(false);
     };
 
     const onChangeStep = (value) => {
@@ -620,6 +615,7 @@ function CheckoutPage() {
                             <h5 className="mt-sm-0 mt-5">Đơn hàng của bạn</h5>
                             <PurchaseSummary
                                 shipFee={shipFee}
+                                orderLoading={orderLoading}
                                 handleOrderRequest={handleOrderRequest}
                             />
                         </Col>

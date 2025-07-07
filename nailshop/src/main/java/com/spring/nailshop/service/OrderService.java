@@ -19,7 +19,7 @@ public interface OrderService {
 
     void savePaymentQr(Long orderId, String image);
 
-    OrderPaymentInfoResponse getOrderPaymentInfo(Long orderId);
+    OrderPaymentInfoResponse getOrderPaymentInfo();
 
     PageResponse<List<OrderResponse>> getMyOrder(Pageable pageable);
 

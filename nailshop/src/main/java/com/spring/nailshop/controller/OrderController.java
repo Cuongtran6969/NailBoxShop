@@ -48,16 +48,6 @@ public class OrderController {
                 .build();
     }
 
-
-    @GetMapping("/payment-info/{orderId}")
-    public ApiResponse<OrderPaymentInfoResponse> createOrder(@PathVariable(value = "orderId") Long orderId) {
-        return ApiResponse.<OrderPaymentInfoResponse>builder()
-                .code(HttpStatus.OK.value())
-                .result(orderService.getOrderPaymentInfo(orderId))
-                .message("Get payment of order successfully")
-                .build();
-    }
-
     @GetMapping("/my-order")
     public ApiResponse<PageResponse<List<OrderResponse>>> getMyOrder(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,

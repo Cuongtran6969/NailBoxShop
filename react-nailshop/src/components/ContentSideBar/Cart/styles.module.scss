@@ -50,6 +50,10 @@
             font-size: 14px;
             font-weight: 500;
             color: $four_color;
+            cursor: pointer;
+            &:hover {
+                color: rgb(255, 160, 212);
+            }
         }
         .itemOption {
             font-size: 12px;

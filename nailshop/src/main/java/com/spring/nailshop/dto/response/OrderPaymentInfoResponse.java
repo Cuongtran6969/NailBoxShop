@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderPaymentInfoResponse {
+    Long orderId;
     String qrImage;
     String orderCode;
     String status;

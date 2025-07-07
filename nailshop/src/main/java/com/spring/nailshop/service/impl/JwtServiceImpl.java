@@ -29,9 +29,9 @@ public class JwtServiceImpl implements JwtService {
     @Value("${jwt.refresh-key}")
     private String REFRESH_KEY;
 
-    private long expiryTime = 5;
+    private long expiryTime = 10;
 
-    private long expiryDay = 7;
+    private long expiryDay = 15;
 
     @Override
     public String generateToken(UserDetails userDetails) {

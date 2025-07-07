@@ -205,22 +205,37 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @PreAuthorize("isAuthenticated() and hasAuthority('USER')")
-    public OrderPaymentInfoResponse getOrderPaymentInfo(Long orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
-        Shop shop = shopRepository.findAll()
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new AppException(ErrorCode.SHOP_NOT_FOUND));
-        return OrderPaymentInfoResponse.builder()
-                .accountName(shop.getBank_account_name())
-                .bankCode(shop.getBank_code())
-                .bankName(shop.getBank_name())
-                .qrImage(order.getQr_img())
-                .orderCode(order.getCode())
-                .totalPrice(order.getTotalPrice())
-                .status(order.getStatus().name())
-                .createdAt(order.getCreateAt())
-                .build();
+    public OrderPaymentInfoResponse getOrderPaymentInfo() {
+        SecurityContext contextHolder = SecurityContextHolder.getContext();
+        String email = contextHolder.getAuthentication().getName();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        List<Order> orders = orderRepository.findOrderPaymentByUserId(user.getId());
+        if(!orders.isEmpty()) {
+            Order order = orders.get(orders.size() - 1);
+            LocalDateTime createAt = order.getCreateAt();
+            if(createAt.plusMinutes(5).isAfter(LocalDateTime.now())) {
+                Shop shop = shopRepository.findAll()
+                        .stream()
+                        .findFirst()
+                        .orElseThrow(() -> new AppException(ErrorCode.SHOP_NOT_FOUND));
+                Double price = order.getTotalPrice();
+                if(order.getCoupon() == null || !order.getCoupon().getType().equals(CouponType.FREE_SHIP)) {
+                    price += order.getShipFee();
+                }
+                return OrderPaymentInfoResponse.builder()
+                        .orderId(order.getId())
+                        .accountName(shop.getBank_account_name())
+                        .bankCode(shop.getBank_code())
+                        .bankName(shop.getBank_name())
+                        .qrImage(order.getQr_img())
+                        .orderCode(order.getCode())
+                        .totalPrice(price)
+                        .status(order.getStatus().name())
+                        .createdAt(order.getCreateAt())
+                        .build();
+            }
+        }
+        return null;
     }
 
     public boolean isCodeUnique(String code) {
@@ -274,14 +289,49 @@ public class OrderServiceImpl implements OrderService {
         String email = contextHolder.getAuthentication().getName();
         User user = userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new AppException(ErrorCode.ORDER_NOT_FOUND));
-        if(order.getUser().getId().equals(user.getId())) {
-            order.setCancelAt(LocalDateTime.now());
-            order.setStatus(OrderStatus.CANCELLED);
-            orderRepository.save(order);
-        } else {
+
+        if(!order.getUser().getId().equals(user.getId())) {
             throw new AppException(ErrorCode.NOT_PERMISSION);
         }
+
+        Shop shop = shopRepository.findAll()
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new AppException(ErrorCode.SHOP_NOT_FOUND));
+
+        //TH: CODE_SHIP exist +picking or ready to pick => can cancel
+        //TH: PENDING or (PROCESSING but ship by self) can cancel
+        if(order.getShip_code() != null) {
+           String statusShip = shippingFeeService.getShippingStatus(order.getShip_code(), shop.getToken());
+           if(statusShip.equals("picking") || statusShip.equals("ready_to_pick")) {
+              shippingFeeService.cancelShipping(order.getShip_code(), shop.getToken());
+              order.setCancelAt(LocalDateTime.now());
+              order.setStatus(OrderStatus.CANCELLED);
+              orderRepository.save(order);
+           }
+        } else {
+           if(order.getStatus().equals(OrderStatus.PENDING) || order.getStatus().equals(OrderStatus.PROCESSING)) {
+              order.setCancelAt(LocalDateTime.now());
+              order.setStatus(OrderStatus.CANCELLED);
+              orderRepository.save(order);
+           }
+        }
+        rollbackStock(orderId);
     }
+
+    public void rollbackStock(Long orderId) {
+        List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
+        for(OrderItem orderItem : orderItems) {
+            Optional<Product> product = productRepository.findById(orderItem.getProduct().getId());
+            if(product.isPresent()) {
+               Product pro = product.get();
+               pro.setStock(pro.getStock() + orderItem.getQuantity());
+               pro.setSold(pro.getSold() - orderItem.getQuantity());
+               productRepository.save(pro);
+            }
+        }
+    }
+
 
     @Override
     @PreAuthorize("isAuthenticated() and hasAuthority('USER')")

@@ -192,6 +192,10 @@
         .orderName {
             font-size: 16px;
             font-weight: 500;
+            cursor: pointer;
+            &:hover {
+                color: rgb(255, 160, 212);
+            }
         }
         .orderValue {
             display: flex;

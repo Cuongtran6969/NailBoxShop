@@ -1,9 +1,7 @@
 package com.spring.nailshop.service;
 
-import com.spring.nailshop.dto.request.EmailRequest;
-import com.spring.nailshop.dto.request.PasswordCreationRequest;
-import com.spring.nailshop.dto.request.UserCreationRequest;
-import com.spring.nailshop.dto.request.UserInfoUpdateRequest;
+import com.spring.nailshop.dto.request.*;
+import com.spring.nailshop.dto.response.IntrospectResponse;
 import com.spring.nailshop.dto.response.UserProfileResponse;
 import com.spring.nailshop.dto.response.UserResponse;
 import com.spring.nailshop.dto.response.UserUpdateResponse;
@@ -29,4 +27,6 @@ public interface UserService {
     void sendOtpForgotPassword(EmailRequest request) throws MessagingException, UnsupportedEncodingException;
 
     void resetPassword(PasswordCreationRequest request);
+
+    IntrospectResponse introspect();
 }
