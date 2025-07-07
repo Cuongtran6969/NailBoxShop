@@ -6,7 +6,7 @@ spring:
     url: jdbc:mysql://mysqldb:3306/nailShop
     driverClassName: com.mysql.cj.jdbc.Driver
     username: root
-    password: 123456789
+    password: root
 
   jpa:
     hibernate:
