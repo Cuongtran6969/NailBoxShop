@@ -10,6 +10,12 @@ pipeline {
             }
         }
 
+        stage("Build Application") {
+            steps {
+                sh "mvn clean package"
+            }
+        }
+
         stage('Build & Deploy Backend') {
             steps {
                 dir('nailshop') {
