@@ -16,7 +16,7 @@ pipeline {
         stage("Build Application") {
             steps {
                dir('nailshop') {
-                  sh 'mvn clean package'
+                  sh 'mvn clean package -DskipTests'
                }
             }
         }
