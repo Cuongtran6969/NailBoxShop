@@ -1,13 +1,11 @@
 package com.spring.nailshop.controller;
 
-import com.spring.nailshop.dto.request.CouponCodeRequest;
 import com.spring.nailshop.dto.request.CouponRequest;
 import com.spring.nailshop.dto.response.ApiResponse;
 import com.spring.nailshop.dto.response.CouponAvailableResponse;
 import com.spring.nailshop.dto.response.CouponResponse;
 import com.spring.nailshop.dto.response.PageResponse;
 import com.spring.nailshop.entity.Coupon;
-import com.spring.nailshop.entity.Product;
 import com.spring.nailshop.service.CouponService;
 import com.turkraft.springfilter.boot.Filter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -70,7 +68,7 @@ public class CouponController {
         return ApiResponse.<CouponResponse>builder()
                 .code(HttpStatus.CREATED.value())
                 .result(couponService.getRandomCouponForUser())
-                .message("Coupon get successfully")
+                .message("Coupon get random successfully")
                 .build();
     }
 
