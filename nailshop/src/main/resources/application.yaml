@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://mysqldb:3307/nailShop
+    url: jdbc:mysql://mysqldb:3306/nailshop
     driverClassName: com.mysql.cj.jdbc.Driver
     username: root
     password: root

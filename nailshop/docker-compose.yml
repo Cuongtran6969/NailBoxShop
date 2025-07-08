@@ -24,12 +24,12 @@ services:
   mysqldb:
     image: mysql:8.0.42
     container_name: mysql-springboot-container
-    restart: unless-stopped
+    restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=nailshop
     ports:
-      - 3307:3306
+      - 3306:3306
     volumes:
       - mysql-springboot-data:/var/lib/mysql
       - mysql-springboot-config:/etc/mysql/conf.d
