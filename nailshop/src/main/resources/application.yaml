@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://mysqldb:3306/nailShop
+    url: jdbc:mysql://mysqldb:3307/nailShop
     driverClassName: com.mysql.cj.jdbc.Driver
     username: root
     password: root
@@ -24,7 +24,7 @@ spring:
       file-size-threshold: 2KB
   data:
     redis:
-      host: "localhost"
+      host: "redis"
       port: 6379
 
 payos:

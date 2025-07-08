@@ -7,27 +7,27 @@ services:
     ports:
       - '8090:8080'
     networks:
-     - backend
+      - backend
 
   redis:
-    image: redis:6.2-alpine
+    image: redis:6.2
     container_name: my-redis
     hostname: redis
     ports:
       - '6379:6379'
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
-      - REDIS_DISABLE_COMMANDS=FLUSHDB;FLUSHALL
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
     networks:
       - backend
 
   mysqldb:
-    image: mysql:8.0.36-debian
+    image: mysql:8.0.42
     container_name: mysql-springboot-container
     restart: unless-stopped
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=nailShop
+      - MYSQL_DATABASE=nailshop
     ports:
       - 3307:3306
     volumes:
